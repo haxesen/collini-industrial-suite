@@ -71,7 +71,7 @@ const translations = {
 }
 
 function App() {
-  const [lang, setLang] = useState('hu')
+  const [lang, setLang] = useState(() => localStorage.getItem('collini_lang') || 'hu')
   const [currentTime, setCurrentTime] = useState('120')
   const [currentThickness, setCurrentThickness] = useState('17.86')
   const [targetThickness, setTargetThickness] = useState('23')
@@ -111,6 +111,10 @@ function App() {
       .limit(50)
     if (data) setHistory(data)
   }
+
+  useEffect(() => {
+    localStorage.setItem('collini_lang', lang)
+  }, [lang])
 
   useEffect(() => {
     fetchProducts()
