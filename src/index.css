@@ -287,6 +287,31 @@ input:focus {
   padding: 30px;
   text-align: center;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.unit-selector {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.unit-selector button {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unit-selector button.active {
+  background: rgba(0, 229, 255, 0.2);
+  color: white;
+  border-color: var(--accent-color);
 }
 
 .result-label {

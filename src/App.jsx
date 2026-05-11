@@ -14,6 +14,8 @@ const translations = {
     status: 'Státusz',
     active: 'Aktív',
     unitMin: 'perc',
+    unitSec: 'mp',
+    unitHourMin: 'ó:p',
     unitMicron: 'µm',
     manageProducts: 'Termékek kezelése',
     productName: 'Termék neve',
@@ -36,6 +38,8 @@ const translations = {
     status: 'Status',
     active: 'Aktiv',
     unitMin: 'min',
+    unitSec: 'sek',
+    unitHourMin: 'h:m',
     unitMicron: 'µm',
     manageProducts: 'Produkte verwalten',
     productName: 'Produktname',
@@ -56,6 +60,7 @@ function App() {
   const [targetThickness, setTargetThickness] = useState('23')
   const [batchNumber, setBatchNumber] = useState('2604260007')
   const [remainingTime, setRemainingTime] = useState(0)
+  const [outputUnit, setOutputUnit] = useState('min') // 'min', 'sec', 'hm'
   
   // Product management state
   const [products, setProducts] = useState([])
@@ -90,11 +95,23 @@ function App() {
     if (t1 > 0 && d1 > 0 && dTarget > 0) {
       const totalTime = (t1 * dTarget) / d1
       const rest = Math.max(0, totalTime - t1)
-      setRemainingTime(Math.round(rest))
+      setRemainingTime(rest)
     } else {
       setRemainingTime(0)
     }
   }, [currentTime, currentThickness, targetThickness])
+
+  const formatTime = (minutes) => {
+    if (outputUnit === 'sec') {
+      return { val: Math.round(minutes * 60), unit: t.unitSec }
+    }
+    if (outputUnit === 'hm') {
+      const h = Math.floor(minutes / 60)
+      const m = Math.round(minutes % 60)
+      return { val: `${h}:${m.toString().padStart(2, '0')}`, unit: t.unitHourMin }
+    }
+    return { val: Math.round(minutes), unit: t.unitMin }
+  }
 
   const addProduct = async () => {
     if (newProductName && newProductSoll) {
@@ -125,6 +142,8 @@ function App() {
       setTargetThickness(val)
     }
   }
+
+  const { val: formattedVal, unit: formattedUnit } = formatTime(remainingTime)
 
   return (
     <div className="app-container">
@@ -244,17 +263,22 @@ function App() {
         </div>
 
         <div className="result-card">
+          <div className="unit-selector">
+            <button className={outputUnit === 'min' ? 'active' : ''} onClick={() => setOutputUnit('min')}>{t.unitMin}</button>
+            <button className={outputUnit === 'sec' ? 'active' : ''} onClick={() => setOutputUnit('sec')}>{t.unitSec}</button>
+            <button className={outputUnit === 'hm' ? 'active' : ''} onClick={() => setOutputUnit('hm')}>{t.unitHourMin}</button>
+          </div>
           <div className="result-label">{t.remainingTime}</div>
           <div className="result-value">
-            {remainingTime}
-            <span className="result-unit">{t.unitMin}</span>
+            {formattedVal}
+            <span className="result-unit">{formattedUnit}</span>
           </div>
         </div>
 
         <div className="footer-info">
           <div className="info-item">
             <span className="info-label">{t.totalTime}</span>
-            <span className="info-value">{parseInt(currentTime || 0) + remainingTime} min</span>
+            <span className="info-value">{Math.round(parseFloat(currentTime || 0) + remainingTime)} min</span>
           </div>
           <div className="info-item">
             <span className="info-label">{t.status}</span>
