@@ -1,3 +1,4 @@
+// Collini Schichtstärke Rechner - Production Build
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import colliniLogo from './assets/Collini_Logo.svg'
