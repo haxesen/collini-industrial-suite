@@ -26,6 +26,7 @@ const translations = {
     delete: 'Törlés',
     edit: 'Szerkeszt',
     close: 'Bezárás',
+    reset: 'Alaphelyzet',
     manualEntry: 'Kézi bevitel',
     loading: 'Betöltés...',
     createdBy: 'Készítette: Horvát Tamás'
@@ -52,6 +53,7 @@ const translations = {
     delete: 'Löschen',
     edit: 'Edit',
     close: 'Schließen',
+    reset: 'Zurücksetzen',
     manualEntry: 'Manuelle Eingabe',
     loading: 'Laden...',
     createdBy: 'Erstellt von Tamas Horvát'
@@ -168,6 +170,14 @@ function App() {
     if (val !== 'manual') {
       setTargetThickness(val)
     }
+  }
+
+  const handleReset = () => {
+    setCurrentTime('')
+    setCurrentThickness('')
+    setTargetThickness('')
+    setBatchNumber('')
+    setRemainingTime(0)
   }
 
   const { val: formattedVal, unit: formattedUnit } = formatTime(remainingTime)
@@ -303,6 +313,10 @@ function App() {
             <span className="unit">{t.unitMicron}</span>
           </div>
         </div>
+
+        <button className="reset-btn" onClick={handleReset}>
+          <span>🔄</span> {t.reset}
+        </button>
 
         <div className="result-card">
           <div className="unit-selector">
