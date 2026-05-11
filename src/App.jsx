@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
+import colliniLogo from './assets/Collini_Logo.svg'
 import './index.css'
 
 const translations = {
@@ -157,7 +158,7 @@ function App() {
             ⚙️
           </button>
         </div>
-        <div className="logo">COLLINI</div>
+        <img src={colliniLogo} alt="Collini Logo" className="header-logo" />
         <div className="subtitle">{t.title}</div>
         <div className="creator-credit">{t.createdBy}</div>
       </header>
