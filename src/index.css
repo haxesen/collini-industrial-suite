@@ -399,10 +399,40 @@ input[type=number] {
 }
 
 .result-value {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 700;
   color: white;
-  text-shadow: 0 0 20px var(--accent-glow);
+  text-shadow: 0 0 30px var(--accent-glow);
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.save-result-btn {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.save-result-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--accent-glow);
+}
+
+.save-result-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.save-result-btn.saved {
+  background: #00ff88;
+  color: #000;
 }
 
 .result-unit {

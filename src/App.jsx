@@ -29,6 +29,8 @@ const translations = {
     reset: 'Alaphelyzet',
     manualEntry: 'Kézi bevitel',
     loading: 'Betöltés...',
+    saveResult: 'Eredmény mentése',
+    saved: 'Mentve!',
     createdBy: 'Készítette: Horvát Tamás'
   },
   de: {
@@ -56,6 +58,8 @@ const translations = {
     reset: 'Zurücksetzen',
     manualEntry: 'Manuelle Eingabe',
     loading: 'Laden...',
+    saveResult: 'Ergebnis speichern',
+    saved: 'Gespeichert!',
     createdBy: 'Erstellt von Tamas Horvát'
   }
 }
@@ -76,6 +80,8 @@ function App() {
   const [newProductName, setNewProductName] = useState('')
   const [newProductSoll, setNewProductSoll] = useState('')
   const [editingId, setEditingId] = useState(null)
+  const [selectedProductName, setSelectedProductName] = useState('')
+  const [isSaved, setIsSaved] = useState(false)
 
   const t = translations[lang]
 
@@ -168,7 +174,28 @@ function App() {
   const handleProductSelect = (e) => {
     const val = e.target.value
     if (val !== 'manual') {
+      const product = products.find(p => p.target_thickness.toString() === val)
       setTargetThickness(val)
+      setSelectedProductName(product ? product.name : '')
+    } else {
+      setSelectedProductName(t.manualEntry)
+    }
+  }
+
+  const saveCalculation = async () => {
+    if (!remainingTime) return
+    
+    const { error } = await supabase
+      .from('collini_history')
+      .insert([{
+        batch_number: batchNumber,
+        product_name: selectedProductName || t.manualEntry,
+        calculation_result: remainingTime
+      }])
+    
+    if (!error) {
+      setIsSaved(true)
+      setTimeout(() => setIsSaved(false), 3000)
     }
   }
 
@@ -329,6 +356,14 @@ function App() {
             {formattedVal}
             <span className="result-unit">{formattedUnit}</span>
           </div>
+          
+          <button 
+            className={`save-result-btn ${isSaved ? 'saved' : ''}`} 
+            onClick={saveCalculation}
+            disabled={isSaved || remainingTime <= 0}
+          >
+            {isSaved ? `✅ ${t.saved}` : `💾 ${t.saveResult}`}
+          </button>
         </div>
 
         <div className="footer-info">
