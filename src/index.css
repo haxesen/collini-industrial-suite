@@ -65,7 +65,7 @@ header {
   height: 60px;
   width: auto;
   margin-bottom: 15px;
-  filter: drop-shadow(0 0 15px rgba(0, 102, 255, 0.6));
+  filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(0, 102, 255, 0.6));
 }
 
 .subtitle {
