@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import colliniLogo from './assets/Collini_Logo.svg'
+import { Settings, RefreshCw, Save, Trash2, Edit2, X, CheckCircle2 } from 'lucide-react'
 import './index.css'
 
 const translations = {
@@ -218,7 +219,7 @@ function App() {
             <button className={lang === 'de' ? 'active' : ''} onClick={() => setLang('de')}>DE</button>
           </div>
           <button className="settings-btn" onClick={() => setShowManager(!showManager)}>
-            ⚙️
+            <Settings size={20} />
           </button>
         </div>
         <img src={colliniLogo} alt="Collini Logo" className="header-logo" />
@@ -229,7 +230,13 @@ function App() {
       {showManager ? (
         <div className="manager-overlay">
           <div className="manager-content">
-            <h3>{t.manageProducts}</h3>
+            <div className="manager-header">
+              <h3>{t.manageProducts}</h3>
+              <button className="icon-btn" onClick={() => setShowManager(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            
             <div className="product-form">
               <input 
                 type="text" 
@@ -244,7 +251,7 @@ function App() {
                 onChange={(e) => setNewProductSoll(e.target.value)}
               />
               <button className="add-btn" onClick={saveProduct}>
-                {editingId ? t.updateProduct : t.saveProduct}
+                {editingId ? <><Edit2 size={16} /> {t.updateProduct}</> : <><Save size={16} /> {t.saveProduct}</>}
               </button>
               {editingId && (
                 <button className="close-btn" onClick={() => {
@@ -263,14 +270,17 @@ function App() {
                       <span>{p.target_thickness} µm</span>
                     </div>
                     <div className="product-actions">
-                      <button className="edit-btn" onClick={() => startEdit(p)}>{t.edit}</button>
-                      <button className="delete-btn" onClick={() => deleteProduct(p.id)}>{t.delete}</button>
+                      <button className="edit-btn" onClick={() => startEdit(p)}>
+                        <Edit2 size={14} />
+                      </button>
+                      <button className="delete-btn" onClick={() => deleteProduct(p.id)}>
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-            <button className="close-btn" onClick={() => setShowManager(false)}>{t.close}</button>
           </div>
         </div>
       ) : null}
@@ -342,7 +352,7 @@ function App() {
         </div>
 
         <button className="reset-btn" onClick={handleReset}>
-          <span>🔄</span> {t.reset}
+          <RefreshCw size={18} /> {t.reset}
         </button>
 
         <div className="result-card">
@@ -362,7 +372,7 @@ function App() {
             onClick={saveCalculation}
             disabled={isSaved || remainingTime <= 0}
           >
-            {isSaved ? `✅ ${t.saved}` : `💾 ${t.saveResult}`}
+            {isSaved ? <><CheckCircle2 size={18} /> {t.saved}</> : <><Save size={18} /> {t.saveResult}</>}
           </button>
         </div>
 
