@@ -1,12 +1,44 @@
 import { useState, useEffect } from 'react'
 import './index.css'
 
+const translations = {
+  hu: {
+    title: 'Rétegvastagság kalkulátor',
+    batch: 'Sarzsszám',
+    currentTime: 'Köztes idő (Liegezeit)',
+    currentThickness: 'Köztes mérés (Dicke)',
+    targetThickness: 'Cél vastagság (Soll)',
+    remainingTime: 'Hátralévő idő',
+    totalTime: 'Összes idő',
+    status: 'Státusz',
+    active: 'Aktív',
+    unitMin: 'perc',
+    unitMicron: 'µm'
+  },
+  de: {
+    title: 'Schichtstärke Rechner',
+    batch: 'Chargennummer',
+    currentTime: 'Liegezeit (Zwischenm.)',
+    currentThickness: 'Dicke (Zwischenm.)',
+    targetThickness: 'Soll-Schichtdicke',
+    remainingTime: 'Rest-Liegezeit',
+    totalTime: 'Gesamtzeit',
+    status: 'Status',
+    active: 'Aktiv',
+    unitMin: 'min',
+    unitMicron: 'µm'
+  }
+}
+
 function App() {
+  const [lang, setLang] = useState('hu')
   const [currentTime, setCurrentTime] = useState('120')
   const [currentThickness, setCurrentThickness] = useState('17.86')
   const [targetThickness, setTargetThickness] = useState('23')
   const [batchNumber, setBatchNumber] = useState('2604260007')
   const [remainingTime, setRemainingTime] = useState(0)
+
+  const t = translations[lang]
 
   useEffect(() => {
     const t1 = parseFloat(currentTime)
@@ -25,26 +57,39 @@ function App() {
   return (
     <div className="app-container">
       <header>
+        <div className="lang-toggle">
+          <button 
+            className={lang === 'hu' ? 'active' : ''} 
+            onClick={() => setLang('hu')}
+          >
+            HU
+          </button>
+          <button 
+            className={lang === 'de' ? 'active' : ''} 
+            onClick={() => setLang('de')}
+          >
+            DE
+          </button>
+        </div>
         <div className="logo">COLLINI</div>
-        <div className="subtitle">Schichtstärke Rechner</div>
+        <div className="subtitle">{t.title}</div>
       </header>
 
       <main>
         <div className="input-group">
-          <label htmlFor="batch">Chargennummer</label>
+          <label htmlFor="batch">{t.batch}</label>
           <div className="input-wrapper">
             <input
               id="batch"
               type="text"
               value={batchNumber}
               onChange={(e) => setBatchNumber(e.target.value)}
-              placeholder="Sarzsszám..."
             />
           </div>
         </div>
 
         <div className="input-group">
-          <label htmlFor="currentTime">Köztes idő (Liegezeit)</label>
+          <label htmlFor="currentTime">{t.currentTime}</label>
           <div className="input-wrapper">
             <input
               id="currentTime"
@@ -57,7 +102,7 @@ function App() {
         </div>
 
         <div className="input-group">
-          <label htmlFor="currentThickness">Köztes mérés (Dicke)</label>
+          <label htmlFor="currentThickness">{t.currentThickness}</label>
           <div className="input-wrapper">
             <input
               id="currentThickness"
@@ -66,12 +111,12 @@ function App() {
               value={currentThickness}
               onChange={(e) => setCurrentThickness(e.target.value)}
             />
-            <span className="unit">µm</span>
+            <span className="unit">{t.unitMicron}</span>
           </div>
         </div>
 
         <div className="input-group">
-          <label htmlFor="targetThickness">Cél vastagság (Soll)</label>
+          <label htmlFor="targetThickness">{t.targetThickness}</label>
           <div className="input-wrapper">
             <input
               id="targetThickness"
@@ -80,26 +125,26 @@ function App() {
               value={targetThickness}
               onChange={(e) => setTargetThickness(e.target.value)}
             />
-            <span className="unit">µm</span>
+            <span className="unit">{t.unitMicron}</span>
           </div>
         </div>
 
         <div className="result-card">
-          <div className="result-label">Hátralévő idő</div>
+          <div className="result-label">{t.remainingTime}</div>
           <div className="result-value">
             {remainingTime}
-            <span className="result-unit">perc</span>
+            <span className="result-unit">{t.unitMin}</span>
           </div>
         </div>
 
         <div className="footer-info">
           <div className="info-item">
-            <span className="info-label">Összes idő</span>
-            <span className="info-value">{parseInt(currentTime) + remainingTime} min</span>
+            <span className="info-label">{t.totalTime}</span>
+            <span className="info-value">{parseInt(currentTime || 0) + remainingTime} min</span>
           </div>
           <div className="info-item">
-            <span className="info-label">Státusz</span>
-            <span className="info-value" style={{color: '#00e5ff'}}>Aktív</span>
+            <span className="info-label">{t.status}</span>
+            <span className="info-value" style={{color: '#00e5ff'}}>{t.active}</span>
           </div>
         </div>
       </main>
