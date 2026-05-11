@@ -22,7 +22,8 @@ const translations = {
     delete: 'Törlés',
     close: 'Bezárás',
     manualEntry: 'Kézi bevitel',
-    loading: 'Betöltés...'
+    loading: 'Betöltés...',
+    createdBy: 'Készítette: Horvát Tamás'
   },
   de: {
     title: 'Schichtstärke Rechner',
@@ -43,7 +44,8 @@ const translations = {
     delete: 'Löschen',
     close: 'Schließen',
     manualEntry: 'Manuelle Eingabe',
-    loading: 'Laden...'
+    loading: 'Laden...',
+    createdBy: 'Erstellt von Tamas Horvát'
   }
 }
 
@@ -138,6 +140,7 @@ function App() {
         </div>
         <div className="logo">COLLINI</div>
         <div className="subtitle">{t.title}</div>
+        <div className="creator-credit">{t.createdBy}</div>
       </header>
 
       {showManager ? (

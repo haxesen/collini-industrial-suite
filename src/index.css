@@ -75,6 +75,15 @@ header {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.creator-credit {
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .lang-toggle {
