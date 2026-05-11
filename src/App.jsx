@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import colliniLogo from './assets/Collini_Logo.svg'
-import { Settings, RefreshCw, Save, Trash2, Edit2, X, CheckCircle2 } from 'lucide-react'
+import { Settings, RefreshCw, Save, Trash2, Edit2, X, CheckCircle2, History, Calendar, Clock } from 'lucide-react'
 import './index.css'
 
 const translations = {
@@ -32,6 +32,8 @@ const translations = {
     loading: 'Betöltés...',
     saveResult: 'Eredmény mentése',
     saved: 'Mentve!',
+    history: 'Előzmények',
+    noHistory: 'Még nincsenek mentett adatok.',
     createdBy: 'Készítette: Horvát Tamás'
   },
   de: {
@@ -61,6 +63,8 @@ const translations = {
     loading: 'Laden...',
     saveResult: 'Ergebnis speichern',
     saved: 'Gespeichert!',
+    history: 'Verlauf',
+    noHistory: 'Noch keine Daten gespeichert.',
     createdBy: 'Erstellt von Tamas Horvát'
   }
 }
@@ -74,10 +78,12 @@ function App() {
   const [remainingTime, setRemainingTime] = useState(0)
   const [outputUnit, setOutputUnit] = useState('min')
   
-  // Product management state
+  // States
   const [products, setProducts] = useState([])
+  const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [showManager, setShowManager] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
   const [newProductName, setNewProductName] = useState('')
   const [newProductSoll, setNewProductSoll] = useState('')
   const [editingId, setEditingId] = useState(null)
@@ -88,17 +94,26 @@ function App() {
 
   const fetchProducts = async () => {
     setLoading(true)
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('collini_products')
       .select('*')
       .order('name', { ascending: true })
-    
     if (data) setProducts(data)
     setLoading(false)
   }
 
+  const fetchHistory = async () => {
+    const { data } = await supabase
+      .from('collini_history')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50)
+    if (data) setHistory(data)
+  }
+
   useEffect(() => {
     fetchProducts()
+    fetchHistory()
   }, [])
 
   useEffect(() => {
@@ -129,83 +144,48 @@ function App() {
 
   const saveProduct = async () => {
     if (!newProductName || !newProductSoll) return
-
     if (editingId) {
-      // Update existing
-      const { error } = await supabase
-        .from('collini_products')
-        .update({ name: newProductName, target_thickness: parseFloat(newProductSoll) })
-        .eq('id', editingId)
-      
-      if (!error) {
-        setEditingId(null)
-        setNewProductName('')
-        setNewProductSoll('')
-        fetchProducts()
-      }
+      await supabase.from('collini_products').update({ name: newProductName, target_thickness: parseFloat(newProductSoll) }).eq('id', editingId)
+      setEditingId(null)
     } else {
-      // Insert new
-      const { error } = await supabase
-        .from('collini_products')
-        .insert([{ name: newProductName, target_thickness: parseFloat(newProductSoll) }])
-      
-      if (!error) {
-        setNewProductName('')
-        setNewProductSoll('')
-        fetchProducts()
-      }
+      await supabase.from('collini_products').insert([{ name: newProductName, target_thickness: parseFloat(newProductSoll) }])
     }
-  }
-
-  const startEdit = (product) => {
-    setEditingId(product.id)
-    setNewProductName(product.name)
-    setNewProductSoll(product.target_thickness.toString())
+    setNewProductName('')
+    setNewProductSoll('')
+    fetchProducts()
   }
 
   const deleteProduct = async (id) => {
-    const { error } = await supabase
-      .from('collini_products')
-      .delete()
-      .eq('id', id)
-    
-    if (!error) fetchProducts()
+    await supabase.from('collini_products').delete().eq('id', id)
+    fetchProducts()
   }
 
-  const handleProductSelect = (e) => {
-    const val = e.target.value
-    if (val !== 'manual') {
-      const product = products.find(p => p.target_thickness.toString() === val)
-      setTargetThickness(val)
-      setSelectedProductName(product ? product.name : '')
-    } else {
-      setSelectedProductName(t.manualEntry)
-    }
+  const deleteHistory = async (id) => {
+    await supabase.from('collini_history').delete().eq('id', id)
+    fetchHistory()
   }
 
   const saveCalculation = async () => {
     if (!remainingTime) return
-    
-    const { error } = await supabase
-      .from('collini_history')
-      .insert([{
-        batch_number: batchNumber,
-        product_name: selectedProductName || t.manualEntry,
-        calculation_result: remainingTime
-      }])
-    
+    const { error } = await supabase.from('collini_history').insert([{
+      batch_number: batchNumber,
+      product_name: selectedProductName || t.manualEntry,
+      calculation_result: remainingTime
+    }])
     if (!error) {
       setIsSaved(true)
+      fetchHistory()
       setTimeout(() => setIsSaved(false), 3000)
     }
   }
 
   const handleReset = () => {
-    setCurrentTime('')
-    setCurrentThickness('')
-    setTargetThickness('')
-    setBatchNumber('')
-    setRemainingTime(0)
+    setCurrentTime(''); setCurrentThickness(''); setTargetThickness(''); setBatchNumber(''); setRemainingTime(0)
+  }
+
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'de-DE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
   const { val: formattedVal, unit: formattedUnit } = formatTime(remainingTime)
@@ -218,142 +198,125 @@ function App() {
             <button className={lang === 'hu' ? 'active' : ''} onClick={() => setLang('hu')}>HU</button>
             <button className={lang === 'de' ? 'active' : ''} onClick={() => setLang('de')}>DE</button>
           </div>
-          <button className="settings-btn" onClick={() => setShowManager(!showManager)}>
-            <Settings size={20} />
-          </button>
+          <div className="header-actions">
+            <button className="icon-btn-header" onClick={() => setShowHistory(!showHistory)}>
+              <History size={20} />
+            </button>
+            <button className="icon-btn-header" onClick={() => setShowManager(!showManager)}>
+              <Settings size={20} />
+            </button>
+          </div>
         </div>
         <img src={colliniLogo} alt="Collini Logo" className="header-logo" />
         <div className="subtitle">{t.title}</div>
         <div className="creator-credit">{t.createdBy}</div>
       </header>
 
-      {showManager ? (
+      {showManager && (
         <div className="manager-overlay">
           <div className="manager-content">
             <div className="manager-header">
               <h3>{t.manageProducts}</h3>
-              <button className="icon-btn" onClick={() => setShowManager(false)}>
-                <X size={24} />
-              </button>
+              <button className="icon-btn" onClick={() => setShowManager(false)}><X size={24} /></button>
             </div>
-            
             <div className="product-form">
-              <input 
-                type="text" 
-                placeholder={t.productName} 
-                value={newProductName}
-                onChange={(e) => setNewProductName(e.target.value)}
-              />
-              <input 
-                type="number" 
-                placeholder={t.targetThickness} 
-                value={newProductSoll}
-                onChange={(e) => setNewProductSoll(e.target.value)}
-              />
+              <input type="text" placeholder={t.productName} value={newProductName} onChange={(e) => setNewProductName(e.target.value)} />
+              <input type="number" placeholder={t.targetThickness} value={newProductSoll} onChange={(e) => setNewProductSoll(e.target.value)} />
               <button className="add-btn" onClick={saveProduct}>
                 {editingId ? <><Edit2 size={16} /> {t.updateProduct}</> : <><Save size={16} /> {t.saveProduct}</>}
               </button>
-              {editingId && (
-                <button className="close-btn" onClick={() => {
-                  setEditingId(null)
-                  setNewProductName('')
-                  setNewProductSoll('')
-                }}>{t.close}</button>
-              )}
             </div>
-            {loading ? <p>{t.loading}</p> : (
-              <div className="product-list">
-                {products.map((p) => (
-                  <div key={p.id} className="product-item">
-                    <div className="product-info">
-                      <strong>{p.name}</strong>
-                      <span>{p.target_thickness} µm</span>
-                    </div>
-                    <div className="product-actions">
-                      <button className="edit-btn" onClick={() => startEdit(p)}>
-                        <Edit2 size={14} />
-                      </button>
-                      <button className="delete-btn" onClick={() => deleteProduct(p.id)}>
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
+            <div className="product-list">
+              {products.map((p) => (
+                <div key={p.id} className="product-item">
+                  <div className="product-info"><strong>{p.name}</strong><span>{p.target_thickness} µm</span></div>
+                  <div className="product-actions">
+                    <button className="edit-btn" onClick={() => {setEditingId(p.id); setNewProductName(p.name); setNewProductSoll(p.target_thickness.toString())}}><Edit2 size={14} /></button>
+                    <button className="delete-btn" onClick={() => deleteProduct(p.id)}><Trash2 size={14} /></button>
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      ) : null}
+      )}
+
+      {showHistory && (
+        <div className="manager-overlay">
+          <div className="manager-content history-content">
+            <div className="manager-header">
+              <h3>{t.history}</h3>
+              <button className="icon-btn" onClick={() => setShowHistory(false)}><X size={24} /></button>
+            </div>
+            <div className="history-list">
+              {history.length === 0 ? <p>{t.noHistory}</p> : history.map((h) => (
+                <div key={h.id} className="history-item">
+                  <div className="history-main">
+                    <div className="history-title">
+                      <strong>{h.batch_number || '---'}</strong>
+                      <span>{h.product_name}</span>
+                    </div>
+                    <div className="history-result">
+                      {Math.round(h.calculation_result)} <small>min</small>
+                    </div>
+                  </div>
+                  <div className="history-footer">
+                    <div className="history-date"><Calendar size={12} /> {formatDate(h.created_at)}</div>
+                    <button className="delete-btn-small" onClick={() => deleteHistory(h.id)}><Trash2 size={12} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <main>
         <div className="input-group">
-          <label htmlFor="batch">{t.batch}</label>
-          <div className="input-wrapper">
-            <input
-              id="batch"
-              type="text"
-              value={batchNumber}
-              onChange={(e) => setBatchNumber(e.target.value)}
-            />
-          </div>
+          <label>{t.batch}</label>
+          <input type="text" value={batchNumber} onChange={(e) => setBatchNumber(e.target.value)} />
         </div>
 
         <div className="input-group">
-          <label htmlFor="product-select">{t.selectProduct}</label>
-          <div className="input-wrapper">
-            <select id="product-select" onChange={handleProductSelect} defaultValue="manual">
-              <option value="manual">{t.manualEntry}</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.target_thickness}>{p.name}</option>
-              ))}
-            </select>
-          </div>
+          <label>{t.selectProduct}</label>
+          <select onChange={(e) => {
+            const val = e.target.value
+            if (val !== 'manual') {
+              const product = products.find(p => p.target_thickness.toString() === val)
+              setTargetThickness(val)
+              setSelectedProductName(product ? product.name : '')
+            } else { setTargetThickness(''); setSelectedProductName(t.manualEntry) }
+          }} defaultValue="manual">
+            <option value="manual">{t.manualEntry}</option>
+            {products.map((p) => <option key={p.id} value={p.target_thickness}>{p.name}</option>)}
+          </select>
         </div>
 
         <div className="input-group">
-          <label htmlFor="currentTime">{t.currentTime}</label>
+          <label>{t.currentTime}</label>
           <div className="input-wrapper">
-            <input
-              id="currentTime"
-              type="number"
-              value={currentTime}
-              onChange={(e) => setCurrentTime(e.target.value)}
-            />
+            <input type="number" value={currentTime} onChange={(e) => setCurrentTime(e.target.value)} />
             <span className="unit">MIN</span>
           </div>
         </div>
 
         <div className="input-group">
-          <label htmlFor="currentThickness">{t.currentThickness}</label>
+          <label>{t.currentThickness}</label>
           <div className="input-wrapper">
-            <input
-              id="currentThickness"
-              type="number"
-              step="0.01"
-              value={currentThickness}
-              onChange={(e) => setCurrentThickness(e.target.value)}
-            />
-            <span className="unit">{t.unitMicron}</span>
+            <input type="number" step="0.01" value={currentThickness} onChange={(e) => setCurrentThickness(e.target.value)} />
+            <span className="unit">µm</span>
           </div>
         </div>
 
         <div className="input-group">
-          <label htmlFor="targetThickness">{t.targetThickness}</label>
+          <label>{t.targetThickness}</label>
           <div className="input-wrapper">
-            <input
-              id="targetThickness"
-              type="number"
-              step="0.1"
-              value={targetThickness}
-              onChange={(e) => setTargetThickness(e.target.value)}
-            />
-            <span className="unit">{t.unitMicron}</span>
+            <input type="number" step="0.1" value={targetThickness} onChange={(e) => setTargetThickness(e.target.value)} />
+            <span className="unit">µm</span>
           </div>
         </div>
 
-        <button className="reset-btn" onClick={handleReset}>
-          <RefreshCw size={18} /> {t.reset}
-        </button>
+        <button className="reset-btn" onClick={handleReset}><RefreshCw size={18} /> {t.reset}</button>
 
         <div className="result-card">
           <div className="unit-selector">
@@ -362,29 +325,10 @@ function App() {
             <button className={outputUnit === 'hm' ? 'active' : ''} onClick={() => setOutputUnit('hm')}>{t.unitHourMin}</button>
           </div>
           <div className="result-label">{t.remainingTime}</div>
-          <div className="result-value">
-            {formattedVal}
-            <span className="result-unit">{formattedUnit}</span>
-          </div>
-          
-          <button 
-            className={`save-result-btn ${isSaved ? 'saved' : ''}`} 
-            onClick={saveCalculation}
-            disabled={isSaved || remainingTime <= 0}
-          >
+          <div className="result-value">{formattedVal}<span className="result-unit">{formattedUnit}</span></div>
+          <button className={`save-result-btn ${isSaved ? 'saved' : ''}`} onClick={saveCalculation} disabled={isSaved || !remainingTime}>
             {isSaved ? <><CheckCircle2 size={18} /> {t.saved}</> : <><Save size={18} /> {t.saveResult}</>}
           </button>
-        </div>
-
-        <div className="footer-info">
-          <div className="info-item">
-            <span className="info-label">{t.totalTime}</span>
-            <span className="info-value">{Math.round(parseFloat(currentTime || 0) + remainingTime)} min</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">{t.status}</span>
-            <span className="info-value" style={{color: '#00e5ff'}}>{t.active}</span>
-          </div>
         </div>
       </main>
     </div>
