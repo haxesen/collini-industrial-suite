@@ -21,8 +21,10 @@ const translations = {
     manageProducts: 'Termékek kezelése',
     productName: 'Termék neve',
     saveProduct: 'Mentés',
+    updateProduct: 'Frissítés',
     selectProduct: 'Válassz terméket...',
     delete: 'Törlés',
+    edit: 'Szerkeszt',
     close: 'Bezárás',
     manualEntry: 'Kézi bevitel',
     loading: 'Betöltés...',
@@ -45,8 +47,10 @@ const translations = {
     manageProducts: 'Produkte verwalten',
     productName: 'Produktname',
     saveProduct: 'Speichern',
+    updateProduct: 'Aktualisieren',
     selectProduct: 'Produkt wählen...',
     delete: 'Löschen',
+    edit: 'Edit',
     close: 'Schließen',
     manualEntry: 'Manuelle Eingabe',
     loading: 'Laden...',
@@ -61,7 +65,7 @@ function App() {
   const [targetThickness, setTargetThickness] = useState('23')
   const [batchNumber, setBatchNumber] = useState('2604260007')
   const [remainingTime, setRemainingTime] = useState(0)
-  const [outputUnit, setOutputUnit] = useState('min') // 'min', 'sec', 'hm'
+  const [outputUnit, setOutputUnit] = useState('min')
   
   // Product management state
   const [products, setProducts] = useState([])
@@ -69,10 +73,10 @@ function App() {
   const [showManager, setShowManager] = useState(false)
   const [newProductName, setNewProductName] = useState('')
   const [newProductSoll, setNewProductSoll] = useState('')
+  const [editingId, setEditingId] = useState(null)
 
   const t = translations[lang]
 
-  // Fetch products from Supabase
   const fetchProducts = async () => {
     setLoading(true)
     const { data, error } = await supabase
@@ -114,8 +118,24 @@ function App() {
     return { val: Math.round(minutes), unit: t.unitMin }
   }
 
-  const addProduct = async () => {
-    if (newProductName && newProductSoll) {
+  const saveProduct = async () => {
+    if (!newProductName || !newProductSoll) return
+
+    if (editingId) {
+      // Update existing
+      const { error } = await supabase
+        .from('collini_products')
+        .update({ name: newProductName, target_thickness: parseFloat(newProductSoll) })
+        .eq('id', editingId)
+      
+      if (!error) {
+        setEditingId(null)
+        setNewProductName('')
+        setNewProductSoll('')
+        fetchProducts()
+      }
+    } else {
+      // Insert new
       const { error } = await supabase
         .from('collini_products')
         .insert([{ name: newProductName, target_thickness: parseFloat(newProductSoll) }])
@@ -126,6 +146,12 @@ function App() {
         fetchProducts()
       }
     }
+  }
+
+  const startEdit = (product) => {
+    setEditingId(product.id)
+    setNewProductName(product.name)
+    setNewProductSoll(product.target_thickness.toString())
   }
 
   const deleteProduct = async (id) => {
@@ -180,14 +206,29 @@ function App() {
                 value={newProductSoll}
                 onChange={(e) => setNewProductSoll(e.target.value)}
               />
-              <button className="add-btn" onClick={addProduct}>{t.saveProduct}</button>
+              <button className="add-btn" onClick={saveProduct}>
+                {editingId ? t.updateProduct : t.saveProduct}
+              </button>
+              {editingId && (
+                <button className="close-btn" onClick={() => {
+                  setEditingId(null)
+                  setNewProductName('')
+                  setNewProductSoll('')
+                }}>{t.close}</button>
+              )}
             </div>
             {loading ? <p>{t.loading}</p> : (
               <div className="product-list">
                 {products.map((p) => (
                   <div key={p.id} className="product-item">
-                    <span>{p.name} ({p.target_thickness} µm)</span>
-                    <button onClick={() => deleteProduct(p.id)}>{t.delete}</button>
+                    <div className="product-info">
+                      <strong>{p.name}</strong>
+                      <span>{p.target_thickness} µm</span>
+                    </div>
+                    <div className="product-actions">
+                      <button className="edit-btn" onClick={() => startEdit(p)}>{t.edit}</button>
+                      <button className="delete-btn" onClick={() => deleteProduct(p.id)}>{t.delete}</button>
+                    </div>
                   </div>
                 ))}
               </div>
