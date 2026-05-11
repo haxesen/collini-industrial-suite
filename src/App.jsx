@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { supabase } from './supabase'
 import './index.css'
 
 const translations = {
@@ -20,7 +21,8 @@ const translations = {
     selectProduct: 'Válassz terméket...',
     delete: 'Törlés',
     close: 'Bezárás',
-    manualEntry: 'Kézi bevitel'
+    manualEntry: 'Kézi bevitel',
+    loading: 'Betöltés...'
   },
   de: {
     title: 'Schichtstärke Rechner',
@@ -40,7 +42,8 @@ const translations = {
     selectProduct: 'Produkt wählen...',
     delete: 'Löschen',
     close: 'Schließen',
-    manualEntry: 'Manuelle Eingabe'
+    manualEntry: 'Manuelle Eingabe',
+    loading: 'Laden...'
   }
 }
 
@@ -53,19 +56,29 @@ function App() {
   const [remainingTime, setRemainingTime] = useState(0)
   
   // Product management state
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('collini_products')
-    return saved ? JSON.parse(saved) : []
-  })
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [showManager, setShowManager] = useState(false)
   const [newProductName, setNewProductName] = useState('')
   const [newProductSoll, setNewProductSoll] = useState('')
 
   const t = translations[lang]
 
+  // Fetch products from Supabase
+  const fetchProducts = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('collini_products')
+      .select('*')
+      .order('name', { ascending: true })
+    
+    if (data) setProducts(data)
+    setLoading(false)
+  }
+
   useEffect(() => {
-    localStorage.setItem('collini_products', JSON.stringify(products))
-  }, [products])
+    fetchProducts()
+  }, [])
 
   useEffect(() => {
     const t1 = parseFloat(currentTime)
@@ -81,16 +94,27 @@ function App() {
     }
   }, [currentTime, currentThickness, targetThickness])
 
-  const addProduct = () => {
+  const addProduct = async () => {
     if (newProductName && newProductSoll) {
-      setProducts([...products, { name: newProductName, soll: newProductSoll }])
-      setNewProductName('')
-      setNewProductSoll('')
+      const { error } = await supabase
+        .from('collini_products')
+        .insert([{ name: newProductName, target_thickness: parseFloat(newProductSoll) }])
+      
+      if (!error) {
+        setNewProductName('')
+        setNewProductSoll('')
+        fetchProducts()
+      }
     }
   }
 
-  const deleteProduct = (index) => {
-    setProducts(products.filter((_, i) => i !== index))
+  const deleteProduct = async (id) => {
+    const { error } = await supabase
+      .from('collini_products')
+      .delete()
+      .eq('id', id)
+    
+    if (!error) fetchProducts()
   }
 
   const handleProductSelect = (e) => {
@@ -135,14 +159,16 @@ function App() {
               />
               <button className="add-btn" onClick={addProduct}>{t.saveProduct}</button>
             </div>
-            <div className="product-list">
-              {products.map((p, i) => (
-                <div key={i} className="product-item">
-                  <span>{p.name} ({p.soll} µm)</span>
-                  <button onClick={() => deleteProduct(i)}>{t.delete}</button>
-                </div>
-              ))}
-            </div>
+            {loading ? <p>{t.loading}</p> : (
+              <div className="product-list">
+                {products.map((p) => (
+                  <div key={p.id} className="product-item">
+                    <span>{p.name} ({p.target_thickness} µm)</span>
+                    <button onClick={() => deleteProduct(p.id)}>{t.delete}</button>
+                  </div>
+                ))}
+              </div>
+            )}
             <button className="close-btn" onClick={() => setShowManager(false)}>{t.close}</button>
           </div>
         </div>
@@ -166,8 +192,8 @@ function App() {
           <div className="input-wrapper">
             <select id="product-select" onChange={handleProductSelect} defaultValue="manual">
               <option value="manual">{t.manualEntry}</option>
-              {products.map((p, i) => (
-                <option key={i} value={p.soll}>{p.name}</option>
+              {products.map((p) => (
+                <option key={p.id} value={p.target_thickness}>{p.name}</option>
               ))}
             </select>
           </div>
