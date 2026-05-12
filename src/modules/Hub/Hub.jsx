@@ -8,7 +8,7 @@ import LanguageToggle from '../../components/LanguageToggle';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Hub = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setSelectedLine } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setSelectedLine, selectedLine } = useApp();
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const toggleFullscreen = () => {
