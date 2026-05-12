@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { WifiOff } from 'lucide-react'
 import { supabase } from './supabase'
 import { useApp } from './context/AppContext'
 
@@ -25,7 +26,9 @@ function App() {
     isAdmin,
     activeInfos,
     selectedLine,
-    isLoading 
+    isLoading,
+    isOffline,
+    t
   } = useApp();
 
   const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
@@ -112,6 +115,16 @@ function App() {
       {showManager && isAdmin && <AdminManager />}
       
       {isLoading && <LoadingOverlay />}
+
+      {isOffline && (
+        <div className="offline-banner">
+          <WifiOff className="offline-icon" size={24} />
+          <div className="offline-text">
+            <strong>{t.offlineTitle}</strong>
+            <span>{t.offlineMsg}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

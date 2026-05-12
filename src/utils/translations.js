@@ -85,7 +85,9 @@ export const translations = {
     mechs: 'Werksunterhalt (WU)',
     ops: 'Anlagenführerek',
     short: 'Rövidítés',
-    desc: 'Megnevezés'
+    desc: 'Megnevezés',
+    offlineTitle: 'NINCS INTERNETKAPCSOLAT',
+    offlineMsg: 'Az alkalmazás korlátozottan működhet. Ellenőrizze a kapcsolatot!'
   },
   de: {
     title: 'INDUSTRIAL SUITE',
@@ -173,6 +175,8 @@ export const translations = {
     mechs: 'Werksunterhalt (WU)',
     ops: 'Anlagenführer',
     short: 'Kürzel',
-    desc: 'Bezeichnung'
+    desc: 'Bezeichnung',
+    offlineTitle: 'KEINE INTERNETVERBINDUNG',
+    offlineMsg: 'Die Anwendung kann eingeschränkt sein. Bitte Verbindung prüfen!'
   }
 }

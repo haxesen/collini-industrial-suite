@@ -22,6 +22,20 @@ export const AppProvider = ({ children }) => {
   const [activeInfos, setActiveInfos] = useState([]);
   const [staff, setStaff] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const fetchMachines = async () => {
     setIsLoading(true);
@@ -138,7 +152,8 @@ export const AppProvider = ({ children }) => {
       staff, fetchStaff,
       selectedLine, setSelectedLine,
       machines, fetchMachines,
-      isLoading, setIsLoading
+      isLoading, setIsLoading,
+      isOffline
     }}>
       {children}
     </AppContext.Provider>

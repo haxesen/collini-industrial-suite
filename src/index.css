@@ -3877,4 +3877,57 @@ body.wide-layout .header-top-classic {
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
+/* Offline Banner */
+.offline-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 68, 68, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  padding: 15px 30px;
+  border-radius: 12px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 10px 40px rgba(255, 68, 68, 0.2);
+  animation: bannerSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.offline-icon {
+  color: #ff4444;
+  animation: blink 1.5s infinite ease-in-out;
+}
+
+.offline-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.offline-text strong {
+  font-size: 0.9rem;
+  color: #ff4444;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.offline-text span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes bannerSlideUp {
+  from { transform: translate(-50%, 50px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes blink {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+
 
