@@ -31,8 +31,8 @@ const Calculator = () => {
           </div>
         </div>
         <div className="logo-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={colliniLogo} alt="Collini" className="header-logo" style={{ marginBottom: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+            <img src={colliniLogo} alt="Collini" className="header-logo" style={{ marginBottom: 0, marginLeft: 0 }} />
             {selectedLine && <span className="line-badge">{selectedLine}</span>}
           </div>
           <h2 className="classic-title">{t.title}</h2>

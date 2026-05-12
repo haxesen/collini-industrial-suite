@@ -38,9 +38,9 @@ const Logbook = () => {
             </button>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-          <img src={colliniLogo} alt="Collini Logo" className="header-logo" style={{ marginBottom: 0 }} />
-          {selectedLine && <span className="line-badge" style={{ marginLeft: '15px' }}>{selectedLine}</span>}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: '10px' }}>
+          <img src={colliniLogo} alt="Collini Logo" className="header-logo" style={{ marginBottom: 0, marginLeft: 0 }} />
+          {selectedLine && <span className="line-badge">{selectedLine}</span>}
         </div>
         <div className="subtitle">{t.logbook}</div>
       </header>
