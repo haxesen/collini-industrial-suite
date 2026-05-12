@@ -29,7 +29,7 @@ const CustomDropdown = ({ value, options, onChange, placeholder, type }) => {
 
       {isOpen && (
         <>
-          <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, z-index: 1999 }} />
+          <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1999 }} />
           <div className="custom-dropdown-list">
             {options.map((opt) => (
               <div 
