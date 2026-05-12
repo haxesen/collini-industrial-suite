@@ -2,8 +2,59 @@ import React, { useState } from 'react';
 import { 
   ChevronLeft, History, Lock, Unlock, 
   RotateCcw, Save, FileText, Trash2, X,
-  Settings, Search, Plus, Edit3
+  Settings, Search, Plus, Edit3, ChevronDown
 } from 'lucide-react';
+
+const CustomDropdown = ({ value, options, onChange, placeholder, type }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(opt => opt.value === value);
+
+  return (
+    <div className="custom-dropdown">
+      <div 
+        className={`custom-dropdown-header ${isOpen ? 'active' : ''}`} 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {type === 'status' && selectedOption?.dot && (
+            <div className={`status-dot ${selectedOption.dot}`}></div>
+          )}
+          {type === 'prio' && selectedOption?.indicator && (
+            <div className={`prio-indicator ${selectedOption.indicator}`}></div>
+          )}
+          <span>{selectedOption?.label || placeholder}</span>
+        </div>
+        <ChevronDown size={16} className="chevron-icon" />
+      </div>
+
+      {isOpen && (
+        <>
+          <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, z-index: 1999 }} />
+          <div className="custom-dropdown-list">
+            {options.map((opt) => (
+              <div 
+                key={opt.value}
+                className={`custom-dropdown-item ${value === opt.value ? 'selected' : ''}`}
+                onClick={() => {
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+              >
+                {type === 'status' && opt.dot && (
+                  <div className={`status-dot ${opt.dot}`}></div>
+                )}
+                {type === 'prio' && opt.indicator && (
+                  <div className={`prio-indicator ${opt.indicator}`}></div>
+                )}
+                <span>{opt.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 import { useApp } from '../../context/AppContext';
 import { useLogbook } from './useLogbook';
 import { formatDate, getPrioLabel } from '../../utils/helpers';
@@ -15,6 +66,26 @@ const Logbook = () => {
   const log = useLogbook();
   const [finisherName, setFinisherName] = useState('');
   const [finisherMassnahme, setFinisherMassnahme] = useState('');
+
+  const statusOptions = [
+    { value: 'All', label: t.allStatus, dot: null },
+    { value: '1_Offen', label: t.open, dot: 'offen' },
+    { value: '2_In_Arbeit', label: t.inProgress, dot: 'in_arbeit' },
+    { value: '3_Erledigt', label: t.done, dot: 'erledigt' }
+  ];
+
+  const prioOptions = [
+    { value: 'All', label: t.allPrio, indicator: null },
+    { value: '0_kritisch', label: t.kritisch, indicator: 'kritisch' },
+    { value: '1_hoch', label: t.hoch, indicator: 'hoch' },
+    { value: '2_mittel', label: t.mittel, indicator: 'mittel' },
+    { value: '4_info', label: lang === 'hu' ? 'INFÓ' : 'INFO', indicator: 'info' }
+  ];
+
+  const deptOptions = [
+    { value: 'All', label: t.allDept },
+    ...log.logbookConfig.filter(c => c.type === 'dept').map(d => ({ value: d.value, label: d.label }))
+  ];
 
   return (
     <div className="app-container">
@@ -52,25 +123,27 @@ const Logbook = () => {
               <Search size={18} />
               <input type="text" placeholder={t.search} value={log.logSearch} onChange={(e) => log.setLogSearch(e.target.value)} />
             </div>
-            <select className="filter-select" value={log.logFilterStatus} onChange={(e) => log.setLogFilterStatus(e.target.value)}>
-              <option value="All">{t.allStatus}</option>
-              <option value="1_Offen">{t.open}</option>
-              <option value="2_In_Arbeit">{t.inProgress}</option>
-              <option value="3_Erledigt">{t.done}</option>
-            </select>
-            <select className="filter-select" value={log.logFilterPrio} onChange={(e) => log.setLogFilterPrio(e.target.value)}>
-              <option value="All">{t.allPrio}</option>
-              <option value="0_kritisch">{t.kritisch}</option>
-              <option value="1_hoch">{t.hoch}</option>
-              <option value="2_mittel">{t.mittel}</option>
-              <option value="4_info">{lang === 'hu' ? 'INFÓ' : 'INFO'}</option>
-            </select>
-            <select className="filter-select" value={log.logFilterDept} onChange={(e) => log.setLogFilterDept(e.target.value)}>
-              <option value="All">{t.allDept}</option>
-              {log.logbookConfig.filter(c => c.type === 'dept').map(d => (
-                <option key={d.id} value={d.value}>{d.label}</option>
-              ))}
-            </select>
+            
+            <CustomDropdown 
+              value={log.logFilterStatus} 
+              options={statusOptions} 
+              onChange={log.setLogFilterStatus}
+              type="status"
+            />
+
+            <CustomDropdown 
+              value={log.logFilterPrio} 
+              options={prioOptions} 
+              onChange={log.setLogFilterPrio}
+              type="prio"
+            />
+
+            <CustomDropdown 
+              value={log.logFilterDept} 
+              options={deptOptions} 
+              onChange={log.setLogFilterDept}
+            />
+
             <button className="reset-filters-btn" onClick={log.resetFilters}><RotateCcw size={16} /></button>
           </div>
           <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>

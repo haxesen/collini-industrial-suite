@@ -3537,3 +3537,113 @@ body.wide-layout .header-top-classic {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+/* Custom Dropdown Styles for Industrial Suite */
+.custom-dropdown {
+  position: relative;
+  min-width: 180px;
+  user-select: none;
+}
+
+.custom-dropdown-header {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  height: 42px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.custom-dropdown-header:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-color);
+}
+
+.custom-dropdown-header.active {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.custom-dropdown-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: #111827;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 2000;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-dropdown-item {
+  padding: 12px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.custom-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-dropdown-item.selected {
+  background: rgba(0, 102, 255, 0.15);
+  color: var(--accent-color);
+}
+
+/* Status dots for consistency */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.offen { background: #ff3b30; box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); }
+.status-dot.in_arbeit { background: #ffcc00; box-shadow: 0 0 8px rgba(255, 204, 0, 0.5); }
+.status-dot.erledigt { background: #34c759; box-shadow: 0 0 8px rgba(52, 199, 89, 0.5); }
+
+/* Priority indicators for consistency */
+.prio-indicator {
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.prio-indicator.kritisch { background: #ff3b30; }
+.prio-indicator.hoch { background: #ff9500; }
+.prio-indicator.mittel { background: #00f2fe; }
+.prio-indicator.info { background: #007aff; }
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+  opacity: 0.5;
+}
+
+.active .chevron-icon {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: var(--accent-color);
+}
