@@ -1,7 +1,7 @@
 # Collini Industrial Suite - Design & Dev Guide (Skills)
 
 ## 1. Core Philosophy
-The application follows a **Premium Industrial Dark** aesthetic. It must look professional, high-end, and optimized for factory floor visibility.
+The application follows a **Premium Industrial Dark** aesthetic. It must look professional, high-end, and optimized for factory floor visibility. The architecture is **Modular and Domain-Driven**, ensuring that each feature is isolated and independently scalable.
 
 ## 2. Color Palette (CSS Variables)
 - `--bg-color`: `#0f141c` (Deep dark blue/gray)
@@ -11,41 +11,43 @@ The application follows a **Premium Industrial Dark** aesthetic. It must look pr
 - `--text-secondary`: `rgba(255, 255, 255, 0.7)`
 - `--border-color`: `rgba(255, 255, 255, 0.1)`
 
-## 3. UI Components & Classes
+## 3. Architecture & Coding Patterns
+
+### Modular Structure
+- **Modules**: Every feature lives in `src/modules/[FeatureName]/`.
+  - `FeatureName.jsx`: The UI component.
+  - `useFeatureName.js`: The business logic (custom hook).
+- **Global Context**: Use `useApp()` from `src/context/AppContext` for global state (language, view, admin status).
+- **Utilities**: Shared logic (date formatting, priority labels) must reside in `src/utils/helpers.js`.
+- **Translations**: Text contents must be retrieved from `t` (from `AppContext`) and defined in `src/utils/translations.js`.
+
+### UI Components
+- **Global Ticker**: Rendered in the main shell (`App.jsx`), synchronized via Supabase.
+- **Modals**: Use the `.manager-overlay` class for consistent glassmorphism overlays.
+- **Buttons**:
+  - `.add-entry-btn-premium`: Neon accent background, dark text, strong glow.
+  - `.icon-btn-header`: Transparent background, subtle border, used for header actions.
+
+## 4. UI Components & Classes (CSS)
 
 ### Tables (Logbook)
-- `.logbook-table`: Must have `border-collapse: separate` and `border-spacing: 0 8px`.
-- `.logbook-table tr`: Rows must have a subtle background `rgba(255, 255, 255, 0.03)`.
-- **Status Indicators (Left Border)**:
-  - `.row-status-offen`: 4px solid `#ff3b30` (Piros)
-  - `.row-status-in_arbeit`: 4px solid `#ffcc00` (Sárga)
-  - `.row-status-erledigt`: 4px solid `#34c759` (Zöld)
+- `.logbook-table`: `border-collapse: separate` and `border-spacing: 0 8px`.
+- **Status Borders**:
+  - `.row-status-offen`: 4px solid `#ff3b30` (Red)
+  - `.row-status-in_arbeit`: 4px solid `#ffcc00` (Yellow)
+  - `.row-status-erledigt`: 4px solid `#34c759` (Green)
 
-### Badges
-- `.status-badge-container`: Rounded pill shape, semi-transparent background, solid border.
-  - `.offen`: Piros téma.
-  - `.in_arbeit`: Sárga téma.
-  - `.erledigt`: Zöld téma.
-
-### Buttons
-- `.add-entry-btn-premium`: Neon accent background, dark text, strong glow.
-- `.small-btn`: Minimalist, bordered, for table actions like "START" or "KÉSZ".
-
-## 4. Coding Patterns
-- **Multilingual Support**: Always update `translations` object in `App.jsx` for both `hu` and `de`.
-- **Date Formatting**: Use `formatDate` helper for consistent `YYYY.MM.DD HH:mm` display.
-- **Supabase Integration**: Real-time subscriptions are preferred for logbook synchronization.
+### Infotafel (Announcement Board)
+- `.info-card`: Glassmorphism effect (`backdrop-filter: blur(10px)`).
+- **Priority Themes**:
+  - `priority-normal`: Standard border.
+  - `priority-high`: Yellow border, golden glow.
+  - `priority-urgent`: Red border, pulsing red glow.
 
 ## 5. Industrial Requirements
-- **High Contrast**: Ensure labels are readable under factory lighting.
-- **Touch Friendly**: Buttons must be large enough for finger interaction (min 40px height).
-- **Responsive**: Layout must work on wall-mounted displays, tablets, and mobile phones.
+- **High Contrast**: Readable under factory lighting.
+- **Touch Friendly**: Interactive elements must have a minimum hit area of 44x44px.
+- **Responsive**: Layout must work on wall-mounted industrial monitors and mobile handhelds.
 
-### Infotafel (Info Board)
-- `.info-card`: Glassmorphism effect (`backdrop-filter: blur(10px)`), deep shadow.
-- **Priority Themes**:
-  - `priority-normal`: Standard border, subtle background.
-  - `priority-high`: Yellow left border (`#ffcc00`), golden gradient overlay.
-  - `priority-urgent`: Red left border (`#ff3b30`), red gradient overlay, pulse animation (`urgent-glow`).
-- **Typography**: Message text should be larger (`1.15rem`) and bold for long-distance readability.
-
+---
+*Last Updated: 2026-05-12*

@@ -1,0 +1,229 @@
+.custom-dt-container {
+  position: relative;
+  width: 100%;
+}
+
+.dt-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dt-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dt-input-wrapper:hover {
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dt-display-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 12px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.dt-icon {
+  margin-right: 12px;
+  color: var(--accent-color);
+  opacity: 0.7;
+}
+
+/* Modal Overlay Styles */
+.dt-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dt-picker-modal {
+  background: #1a1f2b;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.dt-picker-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.dt-picker-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--accent-color);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px;
+}
+
+.dt-picker-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dt-picker-nav button {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.current-month {
+  font-weight: bold;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 20px;
+}
+
+.weekday-label {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  padding-bottom: 8px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.calendar-day.selected {
+  background: var(--accent-color);
+  color: #0f141c;
+  font-weight: bold;
+}
+
+.calendar-day.today {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.time-section {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.time-picker-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.time-input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-input-group input {
+  width: 50px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.dt-picker-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.dt-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.dt-btn.clear {
+  background: rgba(255, 50, 50, 0.1);
+  color: #ff5555;
+}
+
+.dt-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.dt-btn.apply {
+  background: var(--accent-color);
+  color: #0f141c;
+}
