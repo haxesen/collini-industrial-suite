@@ -11,7 +11,7 @@ import LanguageToggle from '../../components/LanguageToggle';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine } = useApp();
   const log = useLogbook();
   const [finisherName, setFinisherName] = useState('');
   const [finisherMassnahme, setFinisherMassnahme] = useState('');
@@ -38,7 +38,10 @@ const Logbook = () => {
             </button>
           </div>
         </div>
-        <img src={colliniLogo} alt="Collini Logo" className="header-logo" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+          <img src={colliniLogo} alt="Collini Logo" className="header-logo" style={{ marginBottom: 0 }} />
+          {selectedLine && <span className="line-badge" style={{ marginLeft: '15px' }}>{selectedLine}</span>}
+        </div>
         <div className="subtitle">{t.logbook}</div>
       </header>
 

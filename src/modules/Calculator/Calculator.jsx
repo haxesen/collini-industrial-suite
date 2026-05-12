@@ -9,7 +9,7 @@ import LanguageToggle from '../../components/LanguageToggle';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Calculator = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, selectedLine } = useApp();
   const calc = useCalculator(t);
 
   const { val: formattedVal, unit: formattedUnit } = calc.formatResult(calc.remainingTime);
@@ -31,7 +31,10 @@ const Calculator = () => {
           </div>
         </div>
         <div className="logo-section">
-          <img src={colliniLogo} alt="Collini" className="header-logo" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src={colliniLogo} alt="Collini" className="header-logo" style={{ marginBottom: 0 }} />
+            {selectedLine && <span className="line-badge">{selectedLine}</span>}
+          </div>
           <h2 className="classic-title">{t.title}</h2>
         </div>
       </header>

@@ -3088,6 +3088,23 @@ body.wide-layout .header-top-classic {
   opacity: 0.8;
 }
 
+.line-badge {
+  background: var(--accent-blue);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-left: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  vertical-align: middle;
+  transform: translateY(-2px);
+  text-transform: uppercase;
+}
+
 .machine-grid {
   display: flex;
   flex-direction: column;

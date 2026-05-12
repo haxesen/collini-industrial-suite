@@ -37,7 +37,10 @@ const Hub = () => {
       <header className="hub-header">
         <div className="hub-title">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <img src={colliniLogo} alt="Collini" className="hub-logo" />
+            {selectedLine && <span className="line-badge">{selectedLine}</span>}
+          </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button 
                 className="hub-header-btn"
