@@ -7,6 +7,8 @@ export const useAdmin = () => {
   const [newProductSoll, setNewProductSoll] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [logbookConfig, setLogbookConfig] = useState([]);
+  const [newConfigLabel, setNewConfigLabel] = useState('');
+  const [newConfigValue, setNewConfigValue] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -65,6 +67,7 @@ export const useAdmin = () => {
   return {
     products, newProductName, setNewProductName, newProductSoll, setNewProductSoll,
     editingId, setEditingId, logbookConfig,
+    newConfigLabel, setNewConfigLabel, newConfigValue, setNewConfigValue,
     saveProduct, deleteProduct, saveConfigItem, deleteConfigItem, fetchProducts, fetchLogbookConfig
   };
 };

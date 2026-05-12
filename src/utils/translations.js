@@ -82,7 +82,7 @@ export const translations = {
     printSignature: 'Aláírás',
     print: 'Nyomtatás',
     depts: 'Részlegek',
-    mechs: 'Karbantartók',
+    mechs: 'Werksunterhalt (WU)',
     ops: 'Anlagenführerek',
     short: 'Rövidítés',
     desc: 'Megnevezés'
@@ -170,7 +170,7 @@ export const translations = {
     printTitle: 'Messprotokoll',
     printSignature: 'Unterschrift',
     depts: 'Abteilungen',
-    mechs: 'Instandhaltung',
+    mechs: 'Werksunterhalt (WU)',
     ops: 'Anlagenführer',
     short: 'Kürzel',
     desc: 'Bezeichnung'

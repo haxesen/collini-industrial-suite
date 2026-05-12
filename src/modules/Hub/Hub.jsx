@@ -8,7 +8,7 @@ import LanguageToggle from '../../components/LanguageToggle';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Hub = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setSelectedLine, selectedLine } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, setSelectedLine, selectedLine } = useApp();
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const toggleFullscreen = () => {
@@ -62,6 +62,16 @@ const Hub = () => {
               >
                 <Factory size={24} />
               </button>
+              {isAdmin && (
+                <button 
+                  className="hub-header-btn admin-settings-btn"
+                  onClick={() => setShowManager(true)}
+                  style={{ background: 'rgba(0, 242, 254, 0.1)', border: '1px solid rgba(0, 242, 254, 0.3)', padding: '10px', borderRadius: '12px', color: '#00f2fe' }}
+                  title="Admin Dashboard"
+                >
+                  <BarChart3 size={24} />
+                </button>
+              )}
               <button 
                 className={`hub-header-btn ${isAdmin ? 'admin-active' : ''}`} 
                 onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}

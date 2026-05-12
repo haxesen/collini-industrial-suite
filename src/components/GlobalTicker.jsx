@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getDeptDisplay, stripHtml } from '../utils/helpers';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../supabase';
-import { Check, User } from 'lucide-react';
+import { Check, User, AlertCircle, Bell, Info } from 'lucide-react';
 
 const GlobalTicker = ({ activeInfos = [] }) => {
   const { staff, fetchActiveInfos, lang } = useApp();
@@ -60,60 +60,66 @@ const GlobalTicker = ({ activeInfos = [] }) => {
   const currentItems = priorityInfos.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
   return (
-    <div className="global-ticker-container mcd-style">
-      <div className="ticker-header-info">
-        <span className="ticker-total-count">
-          {page * itemsPerPage + 1}-{Math.min((page + 1) * itemsPerPage, priorityInfos.length)} / {priorityInfos.length} INFOS
-        </span>
-        {priorityInfos.length > itemsPerPage && (
-          <div className="more-indicator-badge">
-             +{priorityInfos.length - itemsPerPage} {lang === 'hu' ? 'TOVÁBBI' : 'WEITERE'}
-          </div>
-        )}
-        {totalPages > 1 && (
-          <div className="ticker-pagination">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <div key={i} className={`pag-dot ${i === page ? 'active' : ''}`}></div>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="ticker-grid">
-        {currentItems.map((info) => {
-          const acks = info.acknowledgments || [];
-          const isUnacknowledged = acks.length === 0;
-          
-          return (
-            <div key={info.id} className={`ticker-card priority-${info.priority.split('_')[1]} ${isUnacknowledged ? 'ticker-new-blink' : ''}`}>
-              <div className="card-top">
-                <span className="card-dept">{getDeptDisplay(info.department)}</span>
-                <div className="card-acks">
-                  {acks.slice(0, 2).map((a, i) => (
-                    <span key={i} className="mini-ack-dot" title={a.name}></span>
-                  ))}
-                  {acks.length > 2 && <span className="extra-acks">+{acks.length - 2}</span>}
+    <>
+      <div className="global-ticker-container mcd-style">
+        <div className="ticker-header-info">
+          <span className="ticker-total-count">
+            {page * itemsPerPage + 1}-{Math.min((page + 1) * itemsPerPage, priorityInfos.length)} / {priorityInfos.length} INFOS
+          </span>
+          {priorityInfos.length > itemsPerPage && (
+            <div className="more-indicator-badge">
+               +{priorityInfos.length - itemsPerPage} {lang === 'hu' ? 'TOVÁBBI' : 'WEITERE'}
+            </div>
+          )}
+          {totalPages > 1 && (
+            <div className="ticker-pagination">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <div key={i} className={`pag-dot ${i === page ? 'active' : ''}`}></div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="ticker-grid">
+          {currentItems.map((info) => {
+            const acks = info.acknowledgments || [];
+            const isUnacknowledged = acks.length === 0;
+            const prioClass = info.priority.split('_')[1];
+            
+            return (
+              <div key={info.id} className={`ticker-card priority-${prioClass} ${isUnacknowledged ? 'ticker-new-blink' : ''}`}>
+                <div className="card-top">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {prioClass === 'urgent' ? <AlertCircle size={10} color="#ff3b30" /> : <Bell size={10} color="#ffcc00" />}
+                    <span className="card-dept">{getDeptDisplay(info.department)}</span>
+                  </div>
+                  <div className="card-acks">
+                    {acks.slice(0, 2).map((a, i) => (
+                      <span key={i} className="mini-ack-dot" title={a.name}></span>
+                    ))}
+                    {acks.length > 2 && <span className="extra-acks">+{acks.length - 2}</span>}
+                  </div>
                 </div>
+                <div className="card-body">
+                  <p>{stripHtml(info.message)}</p>
+                </div>
+                <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }} title={lang === 'hu' ? 'MEGÉRTETTEM' : 'GELESEN'}>
+                  <Check size={16} />
+                </button>
               </div>
-              <div className="card-body">
-                <p>{stripHtml(info.message)}</p>
-              </div>
-              <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }}>
-                OK
-              </button>
-            </div>
-          );
-        })}
+            );
+          })}
 
-        {/* Filler cards if less than 3 items on last page, and we have normal messages */}
-        {currentItems.length < itemsPerPage && normalCount > 0 && (
-          <div className="ticker-card status-card">
-            <div className="ticker-badge-more">+ WEITERE</div>
-            <div className="card-body centered">
-              <span className="status-label">INFOTAFEL</span>
-              <p>{normalCount} weitere Infos</p>
+          {/* Filler cards if less than 3 items on last page, and we have normal messages */}
+          {currentItems.length < itemsPerPage && normalCount > 0 && (
+            <div className="ticker-card status-card">
+              <div className="ticker-badge-more">+ WEITERE</div>
+              <div className="card-body centered">
+                <span className="status-label">INFOTAFEL</span>
+                <p>{normalCount} weitere Infos</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {showSelector && (
@@ -121,12 +127,15 @@ const GlobalTicker = ({ activeInfos = [] }) => {
           <div className="ticker-selector-content" onClick={e => e.stopPropagation()}>
             <h4>Wer bestätigt?</h4>
             <div className="staff-grid">
-              {staff.map(s => (
-                <button key={s.id} className="staff-ack-item" onClick={() => handleAcknowledge(s.label)}>
-                  <User size={14} />
-                  {s.label}
-                </button>
-              ))}
+              {staff
+                .filter(s => s.type === 'operator')
+                .map(s => (
+                  <button key={s.id} className="staff-ack-item" onClick={() => handleAcknowledge(s.label)}>
+                    <User size={14} />
+                    {s.label}
+                  </button>
+                ))
+              }
             </div>
             <button className="close-selector" onClick={() => setShowSelector(false)}>
               Abbrechen
@@ -134,7 +143,7 @@ const GlobalTicker = ({ activeInfos = [] }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -345,7 +345,7 @@ const Logbook = () => {
                 <label>{t.completedBy}</label>
                 <select value={finisherName} onChange={(e) => setFinisherName(e.target.value)}>
                   <option value="">---</option>
-                  {log.logbookConfig.filter(c => c.type === 'mech' || c.type === 'op').map(d => (
+                  {log.logbookConfig.filter(c => c.type === 'mech' || c.type === 'operator').map(d => (
                     <option key={d.id} value={d.value}>{d.label}</option>
                   ))}
                 </select>
@@ -356,12 +356,13 @@ const Logbook = () => {
                   <button type="button" className="btn-bold" onMouseDown={(e) => e.preventDefault()} onClick={() => document.execCommand('bold')} title="Bold">B</button>
                   <button type="button" className="btn-italic" onMouseDown={(e) => e.preventDefault()} onClick={() => document.execCommand('italic')} title="Italic">I</button>
                   <button type="button" className="btn-underline" onMouseDown={(e) => e.preventDefault()} onClick={() => document.execCommand('underline')} title="Underline">U</button>
-                  <input 
-                    type="color" 
-                    onMouseDown={(e) => e.preventDefault()}
-                    onChange={(e) => document.execCommand('foreColor', false, e.target.value)} 
-                    title="Text Color"
-                  />
+                  <div className="color-picker-wrapper" onMouseDown={(e) => e.preventDefault()}>
+                    <input 
+                      type="color" 
+                      onChange={(e) => document.execCommand('foreColor', false, e.target.value)} 
+                      title="Text Color"
+                    />
+                  </div>
                 </div>
                 <div 
                   className="rich-editor"
