@@ -3355,27 +3355,6 @@ body.wide-layout .header-top-classic {
   border-radius: 10px;
 }
 
-.selector-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.selector-logo {
-  height: 50px;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.2));
-}
-
-.selector-header h1 {
-  font-size: 2.5rem;
-  margin: 0;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 /* Loading Overlay Styles */
 .loading-overlay {
   position: fixed;
