@@ -24,17 +24,20 @@ export const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchMachines = async () => {
-    const { supabase } = await import('../supabase');
-    const { data } = await supabase
-      .from('collini_machines')
-      .select('*')
-      .eq('active', true)
-      .order('name', { ascending: true });
-    if (data) setMachines(data);
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../supabase');
+      const { data } = await supabase
+        .from('collini_machines')
+        .select('*')
+        .order('name', { ascending: true });
+      if (data) setMachines(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchActiveInfos = async () => {
-    // Determine which line to use (state or URL)
     let lineToFetch = selectedLine;
     if (!lineToFetch) {
        const hash = window.location.hash;
@@ -45,25 +48,36 @@ export const AppProvider = ({ children }) => {
       setActiveInfos([]);
       return;
     }
-    const { supabase } = await import('../supabase');
-    const { data } = await supabase
-      .from('collini_info_wall')
-      .select('*')
-      .eq('machine_line', lineToFetch)
-      .order('priority', { ascending: true })
-      .order('created_at', { ascending: false });
     
-    if (data) setActiveInfos(data);
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../supabase');
+      const { data } = await supabase
+        .from('collini_info_wall')
+        .select('*')
+        .eq('machine_line', lineToFetch)
+        .order('priority', { ascending: true })
+        .order('created_at', { ascending: false });
+      
+      if (data) setActiveInfos(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchStaff = async () => {
-    const { supabase } = await import('../supabase');
-    const { data } = await supabase
-      .from('collini_logbook_config')
-      .select('*')
-      .filter('type', 'in', '("mech","operator")')
-      .order('label', { ascending: true });
-    if (data) setStaff(data);
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../supabase');
+      const { data } = await supabase
+        .from('collini_logbook_config')
+        .select('*')
+        .filter('type', 'in', '("mech","operator")')
+        .order('label', { ascending: true });
+      if (data) setStaff(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

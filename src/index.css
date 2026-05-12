@@ -3359,3 +3359,168 @@ body.wide-layout .header-top-classic {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Loading Overlay Styles */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 25, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.loader-content {
+  text-align: center;
+  color: white;
+}
+
+.spinner-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+}
+
+.spinner-icon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: var(--collini-yellow);
+  animation: rotate 2s linear infinite;
+}
+
+.spinner-ring {
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--collini-yellow);
+  border-radius: 50%;
+  animation: rotate 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loading-message {
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Floating Fullscreen Button */
+.floating-fullscreen-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+
+.floating-fullscreen-btn:hover {
+  background: var(--collini-yellow);
+  color: black;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 184, 28, 0.3);
+}
+
+/* Fullscreen Prompt Overlay */
+.fullscreen-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 25, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(15px);
+}
+
+.prompt-card {
+  background: linear-gradient(145deg, rgba(30, 35, 45, 1), rgba(20, 25, 35, 1));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 450px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.5s ease-out;
+}
+
+.prompt-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 184, 28, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: var(--collini-yellow);
+}
+
+.prompt-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: white;
+}
+
+.prompt-card p {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.prompt-btn {
+  background: var(--collini-yellow);
+  color: black;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.prompt-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 184, 28, 0.3);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

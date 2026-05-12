@@ -3,7 +3,7 @@ import { supabase } from '../../supabase';
 import { useApp } from '../../context/AppContext';
 
 export const useInfoWall = () => {
-  const { activeInfos, fetchActiveInfos, lang, staff, fetchStaff, selectedLine } = useApp();
+  const { activeInfos, fetchActiveInfos, lang, staff, fetchStaff, selectedLine, setIsLoading } = useApp();
   const [logbookConfig, setLogbookConfig] = useState([]);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [editingInfoId, setEditingInfoId] = useState(null);
@@ -15,16 +15,21 @@ export const useInfoWall = () => {
   });
 
   const fetchLogbookConfig = async () => {
-    const { data } = await supabase
-      .from('collini_logbook_config')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (data) {
-      setLogbookConfig(data);
-      if (!newInfoEntry.department && data.length > 0) {
-        const firstDept = data.find(c => c.type === 'dept');
-        if (firstDept) setNewInfoEntry(prev => ({ ...prev, department: firstDept.value }));
+    setIsLoading(true);
+    try {
+      const { data } = await supabase
+        .from('collini_logbook_config')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (data) {
+        setLogbookConfig(data);
+        if (!newInfoEntry.department && data.length > 0) {
+          const firstDept = data.find(c => c.type === 'dept');
+          if (firstDept) setNewInfoEntry(prev => ({ ...prev, department: firstDept.value }));
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

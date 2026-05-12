@@ -6,7 +6,7 @@ import { formatDate } from '../../utils/helpers';
 import { useApp } from '../../context/AppContext';
 
 export const useCalculator = (t) => {
-  const { selectedLine } = useApp();
+  const { selectedLine, setIsLoading } = useApp();
   const [currentTime, setCurrentTime] = useState('120');
   const [currentThickness, setCurrentThickness] = useState('17.86');
   const [targetThickness, setTargetThickness] = useState('23');

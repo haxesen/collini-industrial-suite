@@ -35,20 +35,30 @@ export const useLogbook = () => {
 
   const fetchLogbook = async () => {
     if (!selectedLine) return;
-    const { data } = await supabase
-      .from('logbook')
-      .select('*')
-      .eq('machine_line', selectedLine)
-      .order('created_at', { ascending: false });
-    if (data) setLogEntries(data);
+    setIsLoading(true);
+    try {
+      const { data } = await supabase
+        .from('logbook')
+        .select('*')
+        .eq('machine_line', selectedLine)
+        .order('created_at', { ascending: false });
+      if (data) setLogEntries(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchLogbookConfig = async () => {
-    const { data } = await supabase
-      .from('collini_logbook_config')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (data) setLogbookConfig(data);
+    setIsLoading(true);
+    try {
+      const { data } = await supabase
+        .from('collini_logbook_config')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (data) setLogbookConfig(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const saveLogEntry = async () => {

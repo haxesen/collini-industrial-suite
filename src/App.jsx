@@ -15,6 +15,7 @@ import PublicInfoWall from './modules/InfoWall/PublicInfoWall'
 import AdminManager from './modules/Admin/AdminManager'
 import MachineSelector from './modules/MainHub/MachineSelector'
 import LoadingOverlay from './components/LoadingOverlay'
+import FullscreenPrompt from './components/FullscreenPrompt'
 import './index.css'
 
 function App() {
@@ -27,6 +28,23 @@ function App() {
     selectedLine,
     isLoading 
   } = useApp();
+
+  const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const enterFullscreen = () => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+    });
+  };
 
   // Handle hash-based routing for public display
   useEffect(() => {
@@ -48,12 +66,12 @@ function App() {
     }
   }, [view])
 
-  if (isLoading) {
+  // Loading state handling: If initial loading and no line selected, show full screen loader
+  // Otherwise, show as overlay above the content
+  const showFullLoader = isLoading && !selectedLine && view !== 'public_infowall';
+  
+  if (showFullLoader) {
     return <LoadingOverlay />;
-  }
-
-  if (!selectedLine && view !== 'public_infowall') {
-    return <MachineSelector />;
   }
 
   const renderView = () => {
@@ -81,6 +99,10 @@ function App() {
     );
   }
 
+  if (!selectedLine && view !== 'public_infowall') {
+    return <MachineSelector />;
+  }
+
   return (
     <div className="full-view-wrapper">
       <GlobalTicker activeInfos={activeInfos} />
@@ -89,6 +111,9 @@ function App() {
 
       {showAdminLogin && <AdminLogin />}
       {showManager && isAdmin && <AdminManager />}
+      
+      {isLoading && <LoadingOverlay />}
+      {!isFullscreen && <FullscreenPrompt onEnter={enterFullscreen} />}
     </div>
   );
 }

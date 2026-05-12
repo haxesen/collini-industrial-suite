@@ -4,17 +4,15 @@ Ein modulares, industrielles Dashboard für die Produktionsüberwachung und Schi
 
 ## ✨ Neue Funktionen & Updates
 
-- **Globales Ladesystem**: Elegantes Overlay für alle asynchronen Datenbankoperationen (Supabase), um dem Benutzer visuelles Feedback zu geben.
-- **Vollbildmodus**: Integrierte Schaltflächen für den Vollbildmodus (Header & InfoWall), optimiert für dedizierte Monitore und Terminals.
-- **Multi-Linien-Architektur**: Unterstützung für mehrere Produktionslinien (KS-01, KS-24, KS-39 usw.) mit aktivem/inaktivem Status und dynamischem Grid-Layout.
-- **Reines Deutsch (DE)**: Die gesamte Benutzeroberfläche wurde auf professionelles Deutsch umgestellt und alle ungarischen Fragmente wurden entfernt.
-- **Optimiertes Grid-Layout**: Ein modernes Kachel-Layout für die Maschinenauswahl mit automatischer Priorisierung aktiver Anlagen.
-
-## 🚀 Module
-
-- **Logbook**: Digitale Schichtprotokollierung mit Echtzeit-Synchronisierung.
-- **InfoWall**: Digitales Schwarzes Brett für wichtige Produktionsmitteilungen.
-- **Calculator**: Präziser Rechner für Schichtstärken und Prozessparameter.
+## Hauptfunktionen
+- **Collini Industrial Suite**: Eine modulare Plattform für Produktionslinien.
+- **Vollbild-Modus (Immersive Experience)**: Automatisierte Aufforderung zum Vollbildmodus für ein optimales Benutzererlebnis.
+- **Globales Ladesystem**: Visuelles Feedback bei allen Datenbankoperationen durch ein professionelles Overlay.
+- **Multi-Line Support**: Vorbereitet für mehrere Produktionslinien (KS-24, KS-01, etc.).
+- **Schichtstärke-Rechner**: Präzise Zeitberechnung für verschiedene Produkte.
+- **Digitales Logbuch**: Echtzeit-Protokollierung von Ereignissen und Reparaturen.
+- **Info-Wall**: Zentrale Informationsanzeige für Mitarbeiter und Management.
+- **Admin-Bereich**: Konfiguration von Produkten, Personal und Systemparametern.
 - **Admin**: Zentrales Management für Produkte, Personal und Anlagenkonfiguration.
 
 ## 🚀 Live Access
