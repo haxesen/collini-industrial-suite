@@ -3070,7 +3070,7 @@ body.wide-layout .header-top-classic {
 .selector-logo {
   height: 60px;
   margin-bottom: 20px;
-  filter: none;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.08));
 }
 
 .selector-header h1 {
