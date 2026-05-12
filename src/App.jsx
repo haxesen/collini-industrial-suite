@@ -15,7 +15,6 @@ import PublicInfoWall from './modules/InfoWall/PublicInfoWall'
 import AdminManager from './modules/Admin/AdminManager'
 import MachineSelector from './modules/MainHub/MachineSelector'
 import LoadingOverlay from './components/LoadingOverlay'
-import FullscreenPrompt from './components/FullscreenPrompt'
 import './index.css'
 
 function App() {
@@ -113,7 +112,6 @@ function App() {
       {showManager && isAdmin && <AdminManager />}
       
       {isLoading && <LoadingOverlay />}
-      {!isFullscreen && <FullscreenPrompt onEnter={enterFullscreen} />}
     </div>
   );
 }

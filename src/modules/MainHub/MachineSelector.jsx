@@ -33,6 +33,9 @@ const MachineSelector = () => {
           <img src={colliniLogo} alt="Collini" className="selector-logo" />
           <h1>Industrial Suite</h1>
           <p>Bitte wählen Sie eine Produktionslinie</p>
+          <div style={{ marginTop: '15px', fontSize: '0.8rem', opacity: 0.4, fontStyle: 'italic' }}>
+            * Für das beste Erlebnis wird die Verwendung im Vollbildmodus empfohlen.
+          </div>
         </header>
 
         <div className="machine-grid">
