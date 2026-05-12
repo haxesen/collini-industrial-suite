@@ -214,9 +214,7 @@ const Logbook = () => {
                   </td>
                   <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
                   <td className="col-edit">
-                    {isAdmin && (
-                      <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
-                    )}
+                    <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
                   </td>
                 </tr>
               ))}

@@ -44,15 +44,13 @@ const InfoWall = () => {
             >
               <Monitor size={20} />
             </button>
-            {isAdmin && (
-              <button className="add-entry-btn-premium" onClick={() => {
-                info.setEditingInfoId(null); 
-                info.setNewInfoEntry({message: '', department: 'PRODUKTION', priority: '2_normal', author: ''}); 
-                info.setShowInfoModal(true);
-              }}>
-                <Plus size={20} /> {lang === 'hu' ? 'ÚJ HÍRDETÉS' : 'NEUE INFO'}
-              </button>
-            )}
+            <button className="add-entry-btn-premium" onClick={() => {
+              info.setEditingInfoId(null); 
+              info.setNewInfoEntry({message: '', department: 'PRODUKTION', priority: '2_normal', author: ''}); 
+              info.setShowInfoModal(true);
+            }}>
+              <Plus size={20} /> {lang === 'hu' ? 'ÚJ HÍRDETÉS' : 'NEUE INFO'}
+            </button>
             <button 
               className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
               onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}
@@ -84,12 +82,12 @@ const InfoWall = () => {
                 </div>
                 <div className="info-card-footer">
                    <span className="info-author">{getDeptDisplay(item.department)}</span>
-                  {isAdmin && (
                     <div className="info-card-actions">
                       <button className="info-action-btn" onClick={() => info.startEditInfo(item)}><Edit3 size={16} /></button>
-                      <button className="info-action-btn delete" onClick={() => info.deleteInfoEntry(item.id)}><Trash2 size={16} /></button>
+                      {isAdmin && (
+                        <button className="info-action-btn delete" onClick={() => info.deleteInfoEntry(item.id)}><Trash2 size={16} /></button>
+                      )}
                     </div>
-                  )}
                 </div>
               </div>
             ))
