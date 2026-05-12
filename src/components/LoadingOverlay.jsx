@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 
-const LoadingOverlay = ({ message = 'Laden / Betöltés...' }) => {
+const LoadingOverlay = ({ message = 'BITTE WARTEN...' }) => {
   return (
     <div className="loading-overlay">
       <div className="loader-content">

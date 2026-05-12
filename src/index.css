@@ -3070,6 +3070,7 @@ body.wide-layout .header-top-classic {
 .selector-logo {
   height: 60px;
   margin-bottom: 20px;
+  filter: none;
 }
 
 .machine-grid {
