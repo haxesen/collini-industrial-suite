@@ -1,0 +1,17 @@
+{
+  "name": "Collini Schichtstärke Rechner",
+  "short_name": "Collini Calc",
+  "description": "Industrial layer thickness calculator for Collini Wien",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

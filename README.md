@@ -1,4 +1,4 @@
-# Project: Collini Schichtstärke Rechner
+# Project: Collini Industrial Suite
 
 Professional, mobile-first web application for industrial coating thickness calculation, tailored for the Collini Wien facility.
 

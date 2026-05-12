@@ -1,6 +1,6 @@
 {
-  "name": "Collini Schichtstärke Rechner",
-  "short_name": "Collini Calc",
+  "name": "Collini Industrial Suite",
+  "short_name": "Collini Suite",
   "description": "Industrial layer thickness calculator for Collini Wien",
   "start_url": "/",
   "display": "standalone",
