@@ -2,13 +2,19 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import colliniLogo from './assets/Collini_Logo.svg'
-import { Settings, RefreshCw, Save, Trash2, Edit2, X, CheckCircle2, History, Calendar, Clock } from 'lucide-react'
+import { 
+  Settings, RefreshCw, Save, Trash2, Edit2, X, 
+  CheckCircle2, History, Calendar, Clock, FileText, 
+  Lock, Unlock, AlertCircle, Printer 
+} from 'lucide-react'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import './index.css'
 
 const translations = {
   hu: {
     title: 'Rétegvastagság kalkulátor',
-    batch: 'Sarzsszám',
+    batch: 'Sorszám',
     currentTime: 'Köztes idő (Liegezeit)',
     currentThickness: 'Köztes mérés (Dicke)',
     targetThickness: 'Cél vastagság (Soll)',
@@ -35,7 +41,21 @@ const translations = {
     saved: 'Mentve!',
     history: 'Előzmények',
     noHistory: 'Még nincsenek mentett adatok.',
-    createdBy: 'Készítette: Horvát Tamás'
+    createdBy: 'Készítette: Horvát Tamás',
+    adminLogin: 'Admin belépés',
+    adminPass: 'Jelszó',
+    login: 'Belépés',
+    wrongPass: 'Hibás jelszó!',
+    exportPdf: 'PDF Letöltés',
+    print: 'Nyomtatás',
+    printTitle: 'Számítási Jegyzőkönyv',
+    pdfTitle: 'Mérési Jegyzökönyv',
+    pdfBatch: 'Sorszám',
+    pdfProduct: 'Termék',
+    pdfResult: 'Hátralevő idö',
+    pdfDate: 'Dátum',
+    printDate: 'Dátum',
+    printSignature: 'Aláírás'
   },
   de: {
     title: 'Schichtstärke Rechner',
@@ -66,7 +86,21 @@ const translations = {
     saved: 'Gespeichert!',
     history: 'Verlauf',
     noHistory: 'Noch keine Daten gespeichert.',
-    createdBy: 'Erstellt von Tamas Horvát'
+    createdBy: 'Erstellt von Tamas Horvát',
+    adminLogin: 'Admin Login',
+    adminPass: 'Passwort',
+    login: 'Anmelden',
+    wrongPass: 'Falsches Passwort!',
+    exportPdf: 'PDF Export',
+    print: 'Drucken',
+    printTitle: 'Berechnungsprotokoll',
+    pdfTitle: 'Messprotokoll',
+    pdfBatch: 'Chargennummer',
+    pdfProduct: 'Produkt',
+    pdfResult: 'Restzeit',
+    pdfDate: 'Datum',
+    printDate: 'Datum',
+    printSignature: 'Unterschrift'
   }
 }
 
@@ -85,6 +119,11 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [showManager, setShowManager] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [showAdminLogin, setShowAdminLogin] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [adminPassInput, setAdminPassInput] = useState('')
+  const [loginError, setLoginError] = useState(false)
+  
   const [newProductName, setNewProductName] = useState('')
   const [newProductSoll, setNewProductSoll] = useState('')
   const [editingId, setEditingId] = useState(null)
@@ -135,6 +174,13 @@ function App() {
     }
   }, [currentTime, currentThickness, targetThickness])
 
+  const getStatusColor = (minutes) => {
+    if (minutes <= 0) return 'gray'
+    if (minutes <= 15) return 'status-green'
+    if (minutes <= 45) return 'status-yellow'
+    return 'status-blue'
+  }
+
   const formatTime = (minutes) => {
     if (outputUnit === 'sec') {
       return { val: Math.round(minutes * 60), unit: t.unitSec }
@@ -145,6 +191,18 @@ function App() {
       return { val: `${h}:${m.toString().padStart(2, '0')}`, unit: t.unitHourMin }
     }
     return { val: Math.round(minutes), unit: t.unitMin }
+  }
+
+  const handleAdminLogin = () => {
+    if (adminPassInput === 'Admin') {
+      setIsAdmin(true)
+      setShowAdminLogin(false)
+      setAdminPassInput('')
+      setLoginError(false)
+    } else {
+      setLoginError(true)
+      setTimeout(() => setLoginError(false), 2000)
+    }
   }
 
   const saveProduct = async () => {
@@ -184,6 +242,57 @@ function App() {
     }
   }
 
+  const generatePDF = (item) => {
+    try {
+      console.log('PDF generálás indítása...', item)
+      const doc = new jsPDF()
+      
+      // Header
+      doc.setFillColor(10, 12, 16)
+      doc.rect(0, 0, 210, 40, 'F')
+      
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(22)
+      doc.text('COLLINI', 105, 20, { align: 'center' })
+      doc.setFontSize(10)
+      doc.text(t.pdfTitle, 105, 30, { align: 'center' })
+
+      // Content
+      doc.setTextColor(0, 0, 0)
+      doc.setFontSize(12)
+      
+      const tableData = [
+        [t.pdfBatch, item.batch_number || '---'],
+        [t.pdfProduct, item.product_name],
+        [t.pdfResult, `${Math.round(item.calculation_result)} min`],
+        [t.pdfDate, formatDate(item.created_at)]
+      ]
+
+      autoTable(doc, {
+        startY: 50,
+        head: [[t.pdfBatch, 'Adat']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 102, 255] }
+      })
+
+      // Footer
+      doc.setFontSize(10)
+      doc.text(`Generálva: ${new Date().toLocaleString()}`, 10, 280)
+      doc.text('Collini Wien GmbH - Quality Assurance', 200, 280, { align: 'right' })
+
+      console.log('PDF mentése...')
+      doc.save(`Collini_Protokoll_${item.batch_number || 'export'}.pdf`)
+    } catch (error) {
+      console.error('Hiba a PDF generálás során:', error)
+      alert('Hiba történt a PDF generálása közben. Kérlek nézd meg a konzolt!')
+    }
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
+
   const handleReset = () => {
     setCurrentTime(''); setCurrentThickness(''); setTargetThickness(''); setBatchNumber(''); setRemainingTime(0)
   }
@@ -194,6 +303,7 @@ function App() {
   }
 
   const { val: formattedVal, unit: formattedUnit } = formatTime(remainingTime)
+  const statusClass = getStatusColor(remainingTime)
 
   return (
     <div className="app-container">
@@ -207,8 +317,11 @@ function App() {
             <button className="icon-btn-header" onClick={() => setShowHistory(!showHistory)}>
               <History size={20} />
             </button>
-            <button className="icon-btn-header" onClick={() => setShowManager(!showManager)}>
-              <Settings size={20} />
+            <button 
+              className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
+              onClick={() => isAdmin ? setShowManager(!showManager) : setShowAdminLogin(true)}
+            >
+              {isAdmin ? <Unlock size={20} /> : <Lock size={20} />}
             </button>
           </div>
         </div>
@@ -217,7 +330,29 @@ function App() {
         <div className="creator-credit">{t.createdBy}</div>
       </header>
 
-      {showManager && (
+      {showAdminLogin && (
+        <div className="manager-overlay">
+          <div className="manager-content login-content">
+            <div className="manager-header">
+              <h3>{t.adminLogin}</h3>
+              <button className="icon-btn" onClick={() => setShowAdminLogin(false)}><X size={24} /></button>
+            </div>
+            <div className="product-form">
+              <input 
+                type="password" 
+                placeholder={t.adminPass} 
+                value={adminPassInput} 
+                onChange={(e) => setAdminPassInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+              />
+              {loginError && <div className="error-msg"><AlertCircle size={14} /> {t.wrongPass}</div>}
+              <button className="add-btn" onClick={handleAdminLogin}>{t.login}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showManager && isAdmin && (
         <div className="manager-overlay">
           <div className="manager-content">
             <div className="manager-header">
@@ -267,7 +402,10 @@ function App() {
                   </div>
                   <div className="history-footer">
                     <div className="history-date"><Calendar size={12} /> {formatDate(h.created_at)}</div>
-                    <button className="delete-btn-small" onClick={() => deleteHistory(h.id)}><Trash2 size={12} /></button>
+                    <div className="history-actions">
+                      <button className="pdf-btn-small" onClick={() => generatePDF(h)}><FileText size={12} /></button>
+                      {isAdmin && <button className="delete-btn-small" onClick={() => deleteHistory(h.id)}><Trash2 size={12} /></button>}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -291,7 +429,7 @@ function App() {
               setTargetThickness(val)
               setSelectedProductName(product ? product.name : '')
             } else { setTargetThickness(''); setSelectedProductName(t.manualEntry) }
-          }} defaultValue="manual">
+          }} value={targetThickness || 'manual'}>
             <option value="manual">{t.manualEntry}</option>
             {products.map((p) => <option key={p.id} value={p.target_thickness}>{p.name}</option>)}
           </select>
@@ -323,17 +461,46 @@ function App() {
 
         <button className="reset-btn" onClick={handleReset}><RefreshCw size={18} /> {t.reset}</button>
 
-        <div className="result-card">
+        <div className={`result-card ${statusClass}`}>
           <div className="unit-selector">
             <button className={outputUnit === 'min' ? 'active' : ''} onClick={() => setOutputUnit('min')}>{t.unitMin}</button>
             <button className={outputUnit === 'sec' ? 'active' : ''} onClick={() => setOutputUnit('sec')}>{t.unitSec}</button>
             <button className={outputUnit === 'hm' ? 'active' : ''} onClick={() => setOutputUnit('hm')}>{t.unitHourMin}</button>
           </div>
-          <div className="result-label">{t.remainingTime}</div>
+          <div className="result-label">
+            <Clock size={16} className="dynamic-icon" /> {t.remainingTime}
+          </div>
           <div className="result-value">{formattedVal}<span className="result-unit">{formattedUnit}</span></div>
-          <button className={`save-result-btn ${isSaved ? 'saved' : ''}`} onClick={saveCalculation} disabled={isSaved || !remainingTime}>
-            {isSaved ? <><CheckCircle2 size={18} /> {t.saved}</> : <><Save size={18} /> {t.saveResult}</>}
-          </button>
+          <div className="result-actions">
+            <button className={`save-result-btn ${isSaved ? 'saved' : ''}`} onClick={saveCalculation} disabled={isSaved || !remainingTime}>
+              {isSaved ? <><CheckCircle2 size={18} /> {t.saved}</> : <><Save size={18} /> {t.saveResult}</>}
+            </button>
+            <button className="print-btn" onClick={handlePrint} disabled={!remainingTime}>
+              <Printer size={18} /> {t.print}
+            </button>
+          </div>
+
+          {/* Printable Area - Hidden on Screen */}
+          <div className="printable-content">
+            <div className="print-header">
+              <img src={colliniLogo} alt="Collini" style={{height: '40px'}} />
+              <h2>{t.printTitle}</h2>
+            </div>
+            <div className="print-grid">
+              <div className="print-item"><strong>{t.batch}:</strong> {batchNumber}</div>
+              <div className="print-item"><strong>{t.productName}:</strong> {selectedProductName || t.manualEntry}</div>
+              <div className="print-item"><strong>{t.currentTime}:</strong> {currentTime} min</div>
+              <div className="print-item"><strong>{t.currentThickness}:</strong> {currentThickness} µm</div>
+              <div className="print-item"><strong>{t.targetThickness}:</strong> {targetThickness} µm</div>
+            </div>
+            <div className="print-result">
+              <h3>{t.remainingTime}: {formattedVal} {formattedUnit}</h3>
+            </div>
+            <div className="print-footer">
+              <p>{t.printDate}: {new Date().toLocaleString(lang === 'hu' ? 'hu-HU' : 'de-DE')}</p>
+              <p>{t.printSignature}: ___________________________</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
