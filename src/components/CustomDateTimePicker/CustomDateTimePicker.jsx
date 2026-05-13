@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import './CustomDateTimePicker.css';
 
-const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
+const CustomDateTimePicker = ({ value, onChange, label }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -45,15 +45,8 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
     setIsOpen(false);
   };
 
-  const months = {
-    hu: ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'],
-    de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
-  };
-
-  const weekdays = {
-    hu: ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'],
-    de: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
-  };
+  const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+  const weekdays = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
   const renderCalendar = () => {
     const year = viewDate.getFullYear();
@@ -93,8 +86,8 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
     if (!val) return '';
     const d = new Date(val);
     if (!isValidDate(d)) return '';
-    const dateStr = d.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'de-DE');
-    const timeStr = d.toLocaleTimeString(lang === 'hu' ? 'hu-HU' : 'de-DE', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = d.toLocaleDateString('de-DE');
+    const timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     return `${dateStr} ${timeStr}`;
   };
 
@@ -102,7 +95,7 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
     <div className="dt-picker-overlay" onClick={() => setIsOpen(false)}>
       <div className="dt-picker-modal" onClick={(e) => e.stopPropagation()}>
         <div className="dt-picker-modal-header">
-          <h3>{lang === 'hu' ? 'Dátum és idő választása' : 'Datum & Zeit wählen'}</h3>
+          <h3>Datum & Zeit wählen</h3>
           <button className="close-btn" onClick={() => setIsOpen(false)}><X size={20} /></button>
         </div>
         
@@ -113,7 +106,7 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
                 <ChevronLeft size={20} />
               </button>
               <span className="current-month">
-                {months[lang][viewDate.getMonth()]} {viewDate.getFullYear()}
+                {months[viewDate.getMonth()]} {viewDate.getFullYear()}
               </span>
               <button onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1))}>
                 <ChevronRight size={20} />
@@ -121,14 +114,14 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
             </div>
 
             <div className="calendar-grid">
-              {weekdays[lang].map(w => <div key={w} className="weekday-label">{w}</div>)}
+              {weekdays.map(w => <div key={w} className="weekday-label">{w}</div>)}
               {renderCalendar()}
             </div>
           </div>
 
           <div className="time-section">
             <div className="time-picker-label">
-              <Clock size={16} /> {lang === 'hu' ? 'Időpont' : 'Uhrzeit'}
+              <Clock size={16} /> Uhrzeit
             </div>
             <div className="time-input-group">
               <input 
@@ -150,13 +143,13 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
 
         <div className="dt-picker-actions">
           <button className="dt-btn clear" onClick={() => { onChange(null); setIsOpen(false); }}>
-            {lang === 'hu' ? 'Törlés' : 'Löschen'}
+            Löschen
           </button>
           <button className="dt-btn cancel" onClick={() => setIsOpen(false)}>
-            {lang === 'hu' ? 'Mégse' : 'Abbrechen'}
+            Abbrechen
           </button>
           <button className="dt-btn apply" onClick={handleApply}>
-            {lang === 'hu' ? 'OK' : 'OK'}
+            OK
           </button>
         </div>
       </div>
@@ -171,7 +164,7 @@ const CustomDateTimePicker = ({ value, onChange, label, lang = 'de' }) => {
           type="text" 
           readOnly 
           value={formatDisplay(value)} 
-          placeholder={lang === 'hu' ? 'Válassz dátumot...' : 'Datum wählen...'}
+          placeholder="Datum wählen..."
           className="dt-display-input"
         />
         <CalendarIcon size={18} className="dt-icon" />

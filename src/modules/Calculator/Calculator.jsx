@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useCalculator } from './useCalculator';
-import LanguageToggle from '../../components/LanguageToggle';
+
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Calculator = () => {
@@ -22,7 +22,7 @@ const Calculator = () => {
           <button className="back-btn" onClick={() => setView('hub')}>
             <ChevronLeft size={20} /> {t.back}
           </button>
-          <LanguageToggle className="lang-toggle-header" />
+
           <div className="header-actions">
             <button className="icon-btn-header" onClick={() => calc.setShowHistory(true)}><History size={20} /></button>
             <button className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}>

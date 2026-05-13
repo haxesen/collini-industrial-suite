@@ -1,7 +1,7 @@
-export const formatDate = (dateStr, lang = 'de') => {
+export const formatDate = (dateStr) => {
   if (!dateStr) return '---'
   const d = new Date(dateStr)
-  return d.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'de-DE', { 
+  return d.toLocaleDateString('de-DE', { 
     month: 'short', 
     day: 'numeric', 
     hour: '2-digit', 
@@ -55,7 +55,5 @@ export const getPrioLabel = (prio, t) => {
   if (prio === '0_kritisch') return t.kritisch.toUpperCase()
   if (prio === '1_hoch') return t.hoch.toUpperCase()
   if (prio === '2_mittel') return t.mittel.toUpperCase()
-  // Detect language by checking a known translation
-  const isHu = t.kritisch === 'KRITIKUS';
-  return isHu ? 'INFÓ' : 'INFO'
+  return 'INFO'
 };

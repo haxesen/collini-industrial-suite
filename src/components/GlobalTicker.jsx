@@ -88,7 +88,7 @@ const GlobalTicker = ({ activeInfos = [] }) => {
           </span>
           {priorityInfos.length > itemsPerPage && (
             <div className="more-indicator-badge">
-               +{priorityInfos.length - itemsPerPage} {lang === 'hu' ? 'TOVÁBBI' : 'WEITERE'}
+               +{priorityInfos.length - itemsPerPage} WEITERE
             </div>
           )}
           {totalPages > 1 && (
@@ -122,7 +122,7 @@ const GlobalTicker = ({ activeInfos = [] }) => {
                 <div className="card-body">
                   <p>{stripHtml(info.message)}</p>
                 </div>
-                <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }} title={lang === 'hu' ? 'MEGÉRTETTEM' : 'GELESEN'}>
+                <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }} title="GELESEN">
                   <Check size={16} />
                 </button>
               </div>

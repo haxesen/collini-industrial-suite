@@ -4,7 +4,7 @@ import { translations } from '../utils/translations';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [lang, setLang] = useState(() => localStorage.getItem('collini_lang') || 'de');
+  const [lang] = useState('de');
   const [isAdmin, setIsAdmin] = useState(false);
   const [view, setView] = useState('hub');
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -24,6 +24,7 @@ export const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [confirmModal, setConfirmModal] = useState({ show: false, message: '', onConfirm: null });
+  const [moduleOrder, setModuleOrder] = useState(['wtAblauf', 'calculator', 'logbook', 'checklist', 'info_wall', 'prodPlan', 'wartungsplaner']);
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -94,10 +95,52 @@ export const AppProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+  
+  const fetchModuleOrder = async () => {
+    try {
+      const { supabase } = await import('../supabase');
+      const { data } = await supabase
+        .from('collini_logbook_config')
+        .select('*')
+        .eq('type', 'hub_order')
+        .maybeSingle();
+      
+      if (data && data.value) {
+        setModuleOrder(data.value.split(','));
+      }
+    } catch (err) {
+      console.error('Error fetching module order:', err);
+    }
+  };
+
+  const updateModuleOrder = async (newOrder) => {
+    setModuleOrder(newOrder);
+    try {
+      const { supabase } = await import('../supabase');
+      const { data: existing } = await supabase
+        .from('collini_logbook_config')
+        .select('id')
+        .eq('type', 'hub_order')
+        .maybeSingle();
+      
+      if (existing) {
+        await supabase
+          .from('collini_logbook_config')
+          .update({ value: newOrder.join(',') })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('collini_logbook_config')
+          .insert({ type: 'hub_order', value: newOrder.join(','), label: 'Hub Module Order' });
+      }
+    } catch (err) {
+      console.error('Error updating module order:', err);
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
-      await Promise.all([fetchMachines(), fetchStaff()]);
+      await Promise.all([fetchMachines(), fetchStaff(), fetchModuleOrder()]);
       setIsLoading(false);
     };
     init();
@@ -139,7 +182,7 @@ export const AppProvider = ({ children }) => {
     };
   }, [selectedLine]);
 
-  const t = translations[lang];
+  const t = translations['de'];
 
   const askConfirm = (message, onConfirm) => {
     setConfirmModal({ show: true, message, onConfirm });
@@ -147,7 +190,7 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{ 
-      lang, setLang, 
+      lang,
       isAdmin, setIsAdmin, 
       view, setView, 
       t,
@@ -159,8 +202,10 @@ export const AppProvider = ({ children }) => {
       machines, fetchMachines,
       isLoading, setIsLoading,
       isOffline,
-      confirmModal, setConfirmModal, askConfirm
+      confirmModal, setConfirmModal, askConfirm,
+      moduleOrder, updateModuleOrder
     }}>
+
       {children}
     </AppContext.Provider>
   );

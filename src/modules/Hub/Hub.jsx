@@ -1,14 +1,18 @@
 import React from 'react';
 import { 
   Calculator, Book, Megaphone, ClipboardCheck, 
-  BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize, Activity 
+  BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize, Activity,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import LanguageToggle from '../../components/LanguageToggle';
+
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Hub = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, setSelectedLine, selectedLine } = useApp();
+  const { 
+    t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, 
+    setSelectedLine, selectedLine, moduleOrder, updateModuleOrder 
+  } = useApp();
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const toggleFullscreen = () => {
@@ -23,15 +27,37 @@ const Hub = () => {
     }
   };
 
-  const modules = [
+  const allModules = [
+    { id: 'wtAblauf', icon: Activity, title: t.wtAblauf, desc: t.wtAblaufDesc, disabled: false },
     { id: 'calculator', icon: Calculator, title: t.calculator, desc: t.calcDesc, disabled: false },
     { id: 'logbook', icon: Book, title: t.logbook, desc: t.logbookDesc, disabled: false },
     { id: 'checklist', icon: ClipboardCheck, title: t.checklist, desc: t.checklistDesc, disabled: true },
     { id: 'info_wall', icon: Megaphone, title: t.infoWall, desc: t.infoWallDesc, disabled: false },
     { id: 'prodPlan', icon: BarChart3, title: t.prodPlan, desc: t.prodPlanDesc, disabled: true },
     { id: 'wartungsplaner', icon: Hammer, title: t.wartungsplaner, desc: t.wartungsplanerDesc, disabled: true },
-    { id: 'wtAblauf', icon: Activity, title: t.wtAblauf, desc: t.wtAblaufDesc, disabled: false },
   ];
+
+  const modules = moduleOrder
+    .map(id => allModules.find(m => m.id === id))
+    .filter(Boolean);
+
+  // Sync current modules with order state
+  allModules.forEach(m => {
+    if (!modules.find(om => om.id === m.id)) {
+      modules.push(m);
+    }
+  });
+
+  const moveModule = (e, index, direction) => {
+    e.stopPropagation();
+    const newOrder = modules.map(m => m.id);
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= newOrder.length) return;
+    
+    [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
+    updateModuleOrder(newOrder);
+  };
+
 
   return (
     <div className="hub-container">
@@ -99,13 +125,33 @@ const Hub = () => {
       </header>
       
       <div className="hub-grid">
-        {modules.map((m) => (
+        {modules.map((m, index) => (
           <div 
             key={m.id} 
-            className={`hub-card ${m.disabled ? 'disabled' : ''}`} 
+            className={`hub-card ${m.disabled ? 'disabled' : ''} ${isAdmin ? 'admin-editable' : ''}`} 
             onClick={() => !m.disabled && setView(m.id)}
           >
             {m.disabled && <div className="coming-soon-badge">{t.comingSoon}</div>}
+            
+            {isAdmin && (
+              <div className="hub-card-admin-controls" onClick={e => e.stopPropagation()}>
+                <button 
+                  className="reorder-btn" 
+                  disabled={index === 0}
+                  onClick={(e) => moveModule(e, index, -1)}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button 
+                  className="reorder-btn" 
+                  disabled={index === modules.length - 1}
+                  onClick={(e) => moveModule(e, index, 1)}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
+
             <div className="hub-card-icon"><m.icon size={60} /></div>
             <h2>{m.title}</h2>
             <p>{m.desc}</p>
@@ -113,7 +159,7 @@ const Hub = () => {
         ))}
       </div>
 
-      <LanguageToggle style={{ marginTop: '40px' }} />
+
       
     </div>
   );

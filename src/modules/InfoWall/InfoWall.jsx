@@ -7,7 +7,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { useInfoWall } from './useInfoWall';
 import { formatDate, getDeptDisplay } from '../../utils/helpers';
-import LanguageToggle from '../../components/LanguageToggle';
+
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 
@@ -31,7 +31,7 @@ const InfoWall = () => {
           <button className="back-btn" onClick={() => setView('hub')}>
             <ChevronLeft size={20} /> {t.back}
           </button>
-          <LanguageToggle className="lang-toggle-header" />
+
           <div className="header-actions">
             <button 
               className="icon-btn-header" 
@@ -40,7 +40,7 @@ const InfoWall = () => {
                 if (selectedLine) url.hash += `?line=${selectedLine}`;
                 window.open(url.href, '_blank');
               }}
-              title={lang === 'hu' ? 'Kivetítés másik monitorra' : 'Auf anderem Monitor anzeigen'}
+              title="Auf anderem Monitor anzeigen"
             >
               <Monitor size={20} />
             </button>
@@ -49,7 +49,7 @@ const InfoWall = () => {
               info.setNewInfoEntry({message: '', department: 'PRODUKTION', priority: '2_normal', author: ''}); 
               info.setShowInfoModal(true);
             }}>
-              <Plus size={20} /> {lang === 'hu' ? 'ÚJ HÍRDETÉS' : 'NEUE INFO'}
+              <Plus size={20} /> NEUE INFO
             </button>
             <button 
               className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
@@ -87,7 +87,7 @@ const InfoWall = () => {
                         className="info-action-btn delete" 
                         onClick={() => {
                           askConfirm(
-                            lang === 'hu' ? 'Biztosan törlöd ezt a hirdetést?' : 'Sicher löschen?',
+                            'Sicher löschen?',
                             () => info.deleteInfoEntry(item.id)
                           );
                         }}
@@ -157,15 +157,15 @@ const InfoWall = () => {
                     value={info.newInfoEntry.priority}
                     onChange={(e) => info.setNewInfoEntry({...info.newInfoEntry, priority: e.target.value})}
                   >
-                    <option value="2_normal" style={{color: '#3b82f6'}}>{lang === 'hu' ? 'Normál (Kék)' : 'Normal (Blau)'}</option>
-                    <option value="1_high" style={{color: '#ffcc00'}}>{lang === 'hu' ? 'Fontos (Sárga)' : 'Wichtig (Gelb)'}</option>
-                    <option value="0_urgent" style={{color: '#ff3b30'}}>{lang === 'hu' ? 'Sürgős (Piros)' : 'Dringend (Rot)'}</option>
+                    <option value="2_normal" style={{color: '#3b82f6'}}>Normal (Blau)</option>
+                    <option value="1_high" style={{color: '#ffcc00'}}>Wichtig (Gelb)</option>
+                    <option value="0_urgent" style={{color: '#ff3b30'}}>Dringend (Rot)</option>
                   </select>
                 </div>
               </div>
               <div style={{marginTop: '15px'}}>
                 <div className="input-group">
-                <label>{lang === 'hu' ? 'Szerző' : 'Autor'}</label>
+                <label>Autor</label>
                 <select 
                   className="log-input"
                   value={info.newInfoEntry.author} 
@@ -184,7 +184,7 @@ const InfoWall = () => {
                   className="delete-btn-premium" 
                   onClick={() => {
                     askConfirm(
-                      lang === 'hu' ? 'Biztosan törlöd ezt a hirdetést?' : 'Sicher löschen?',
+                      'Sicher löschen?',
                       () => {
                         info.deleteInfoEntry(info.editingInfoId);
                         info.setShowInfoModal(false);

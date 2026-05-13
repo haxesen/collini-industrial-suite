@@ -1250,9 +1250,44 @@ textarea:focus {
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
   color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Admin Reordering Styles */
+.hub-card.admin-editable {
+  border-color: rgba(0, 242, 254, 0.3);
+}
+
+.hub-card-admin-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 10;
+}
+
+.reorder-btn {
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  color: #00f2fe;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reorder-btn:hover:not(:disabled) {
+  background: rgba(0, 242, 254, 0.2);
+  transform: scale(1.1);
+}
+
+.reorder-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .global-ticker-container.mcd-style {
@@ -1975,11 +2010,11 @@ body.wide-layout .app-container,
 }
 
 .logbook-table th {
-  padding: 15px 20px;
+  padding: 18px 20px;
   background: rgba(255, 255, 255, 0.02);
   color: var(--accent-color);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   border-bottom: 1px solid var(--border-color);
@@ -1995,9 +2030,9 @@ body.wide-layout .app-container,
 }
 
 .logbook-table td {
-  padding: 18px 20px;
+  padding: 22px 20px;
   vertical-align: middle;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .col-date { width: 140px; color: var(--text-secondary); }
@@ -2062,14 +2097,14 @@ body.wide-layout .app-container,
 .row-status-erledigt { border-left: 4px solid #34c759 !important; opacity: 0.7; }
 
 .prio-badge {
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   display: inline-block;
-  min-width: 65px;
+  min-width: 80px;
   text-align: center;
 }
 
@@ -2146,21 +2181,21 @@ body.wide-layout .app-container,
 .prio-info { background: rgba(0, 122, 255, 0.2); color: #007aff; }
 
 .status-badge {
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
   gap: 5px;
 }
 
 .status-badge-container {
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
   letter-spacing: 0.5px;
@@ -4157,4 +4192,47 @@ body.wide-layout .header-top-classic {
 @keyframes loading-glow-move {
   from { transform: translateX(-100%); }
   to { transform: translateX(100%); }
+}
+/* --- PRINT UTILITIES --- */
+/* .no-print { */
+/*   display: none !important; */
+/* } */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  :root {
+    --bg-color: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #4a5568;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    background-image: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .app-container, 
+  body.wide-layout .app-container,
+  .app-container.wide-container {
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 }

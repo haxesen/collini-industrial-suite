@@ -37,7 +37,7 @@ const AdminManager = () => {
                     }}><Edit2 size={14} /></button>
                     <button className="delete-btn" onClick={() => {
                       askConfirm(
-                        lang === 'hu' ? `Biztosan törlöd a(z) "${p.name}" terméket?` : `Produkt "${p.name}" wirklich löschen?`,
+                        `Produkt "${p.name}" wirklich löschen?`,
                         () => admin.deleteProduct(p.id)
                       );
                     }}><Trash2 size={14} /></button>
@@ -65,7 +65,7 @@ const AdminManager = () => {
                     <span>{item.label} <small>({item.value})</small></span>
                     <button className="delete-btn" onClick={() => {
                       askConfirm(
-                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" kategóriát?` : `Kategorie "${item.label}" wirklich löschen?`,
+                        `Kategorie "${item.label}" wirklich löschen?`,
                         () => admin.deleteConfigItem(item.id)
                       );
                     }}><Trash2 size={12} /></button>
@@ -87,7 +87,7 @@ const AdminManager = () => {
                     <span>{item.label}</span>
                     <button className="delete-btn" onClick={() => {
                       askConfirm(
-                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" kezelőt?` : `Bediener "${item.label}" wirklich löschen?`,
+                        `Bediener "${item.label}" wirklich löschen?`,
                         () => admin.deleteConfigItem(item.id)
                       );
                     }}><Trash2 size={12} /></button>
@@ -109,7 +109,7 @@ const AdminManager = () => {
                     <span>{item.label}</span>
                     <button className="delete-btn" onClick={() => {
                       askConfirm(
-                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" karbantartót?` : `Instandhalter "${item.label}" wirklich löschen?`,
+                        `Instandhalter "${item.label}" wirklich löschen?`,
                         () => admin.deleteConfigItem(item.id)
                       );
                     }}><Trash2 size={12} /></button>

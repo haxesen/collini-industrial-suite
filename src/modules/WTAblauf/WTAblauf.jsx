@@ -174,7 +174,7 @@ const WTAblauf = () => {
         const dayRecords = dbData.filter(r => r.created_at && r.created_at.startsWith(dateStr));
         return {
           date: dateStr,
-          displayDate: format(date, 'MM. dd.'),
+          displayDate: format(date, 'dd.MM.'),
           dayName: format(date, 'EEEE', { locale: de }),
           ist: dayRecords.reduce((sum, r) => sum + (r.count || 0), 0),
           ziel: dayRecords.reduce((sum, r) => sum + (r.target_count || 0), 0),
@@ -377,6 +377,19 @@ const WTAblauf = () => {
 
   return (
     <div className="wt-container">
+      <div className="print-only-header">
+        <div className="print-header-top">
+          <span className="print-app-name">Collini Industrial Suite</span>
+          <span className="print-date">{format(new Date(), 'dd.MM.yyyy HH:mm')}</span>
+        </div>
+        <div className="print-module-title">
+          <h1>WT-ABLAUF SCHICHTBERICHT</h1>
+          {selectedLine && <span className="line-badge">{selectedLine}</span>}
+        </div>
+      </div>
+
+
+
       <div className="wt-header no-print">
         <div className="header-left">
           <button onClick={() => setView('hub')} className="back-btn">
@@ -412,7 +425,7 @@ const WTAblauf = () => {
         </button>
         <div className="current-date">
           <Calendar size={20} />
-          <span>{format(selectedDate, 'yyyy. MM. dd.')}</span>
+          <span>{format(selectedDate, 'dd.MM.yyyy')}</span>
         </div>
         <button onClick={() => setSelectedDate(prev => addDays(prev, 1))} className="date-nav">
           <ChevronRight size={24} />
@@ -422,7 +435,7 @@ const WTAblauf = () => {
       {loading ? (
         <div className="wt-loader-container animate-fade-in">
           <Loader2 className="spinner" size={48} />
-          <p>Adatok betöltése folyamatban...</p>
+          <p>Daten werden geladen...</p>
         </div>
       ) : mode === 'tracking' ? (
         <div className="wt-content-grid animate-fade-in">
@@ -599,7 +612,7 @@ const WTAblauf = () => {
 
               <div className="info-box-compact">
                 <AlertCircle size={20} className="text-accent" />
-                <p>Az adatok automatikusan mentésre kerülnek minden módosítás után.</p>
+                <p>Daten werden nach jeder Änderung automatisch gespeichert.</p>
               </div>
               
               <button onClick={handleExportPDF} className="action-btn pdf" style={{ width: '100%' }}>
@@ -611,6 +624,71 @@ const WTAblauf = () => {
       ) : renderStats()}
 
       <style jsx>{`
+        /* --- PRINT ONLY ELEMENTS --- */
+        .print-only-header { display: none; }
+
+        @media print {
+          .print-only-header { 
+            display: block !important; 
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+          }
+          .print-header-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 10px; }
+          .print-module-title { display: flex; align-items: center; gap: 15px; }
+          .print-module-title h1 { margin: 0; font-size: 1.5rem; color: #000; }
+          
+          .wt-container { padding: 0 !important; color: #000 !important; }
+          .glass-panel, .main-table-card, .stats-sidebar, .daily-hero-card, .mini-pill-card, .main-chart-card, .actions-card {
+            background: #fff !important;
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            color: #000 !important;
+            margin-bottom: 15px !important;
+          }
+          
+          .wt-content-grid, .daily-stats-grid, .weekly-charts-grid {
+            display: block !important;
+          }
+          
+          .stats-sidebar, .daily-side-pills, .actions-card {
+            width: 100% !important;
+            margin-top: 20px !important;
+          }
+
+          .actions-card { display: none !important; } /* Hide quick actions in print */
+
+          h1, h2, h3, .val, .p-value, .percent, .ist, .day { color: #000 !important; text-shadow: none !important; }
+          .text-secondary, .val-label, .p-label, .column-label .date { color: #555 !important; }
+          
+          .gauge-bg { stroke: #eee !important; }
+          .gauge-fill { stroke: #0099ff !important; }
+
+          .efficiency-progress-bg { background: #eee !important; border: 1px solid #ddd !important; }
+          .efficiency-progress-fill { background: #0099ff !important; }
+
+          .bullet-bar-bg { background: #f9f9f9 !important; border: 1px solid #eee !important; }
+          .bullet-target-line { background: #000 !important; box-shadow: none !important; height: 2px !important; }
+          .bullet-bar-actual { background: #0099ff !important; }
+          .bullet-bar-actual.goal-met { background: #2ecc71 !important; }
+          
+          .wt-row.totals-row {
+            background: #f0f0f0 !important;
+            border: 1px solid #000 !important;
+            color: #000 !important;
+          }
+          .totals-row .actual-display { background: #fff !important; border: 1px solid #000 !important; box-shadow: none !important; }
+          .totals-row .actual-display .val { color: #000 !important; text-shadow: none !important; }
+          
+          .status-badge { border: 1px solid #000 !important; }
+          .status-badge.met { background: #e8f8f0 !important; color: #1e8449 !important; }
+          .status-badge.behind { background: #fdeded !important; color: #a94442 !important; }
+
+          .chart-column { transform: none !important; }
+          .bar-label-dual .ziel { color: #777 !important; }
+        }
+
         .wt-container {
           padding: 20px;
           max-width: 1850px;

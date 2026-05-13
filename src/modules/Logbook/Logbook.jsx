@@ -58,7 +58,7 @@ const CustomDropdown = ({ value, options, onChange, placeholder, type }) => {
 import { useApp } from '../../context/AppContext';
 import { useLogbook } from './useLogbook';
 import { formatDate, getPrioLabel } from '../../utils/helpers';
-import LanguageToggle from '../../components/LanguageToggle';
+
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
@@ -79,7 +79,7 @@ const Logbook = () => {
     { value: '0_kritisch', label: t.kritisch, indicator: 'kritisch' },
     { value: '1_hoch', label: t.hoch, indicator: 'hoch' },
     { value: '2_mittel', label: t.mittel, indicator: 'mittel' },
-    { value: '4_info', label: lang === 'hu' ? 'INFÓ' : 'INFO', indicator: 'info' }
+    { value: '4_info', label: 'INFO', indicator: 'info' }
   ];
 
   const deptOptions = [
@@ -94,7 +94,7 @@ const Logbook = () => {
           <button className="back-btn" onClick={() => setView('hub')}>
             <ChevronLeft size={20} /> {t.back}
           </button>
-          <LanguageToggle className="lang-toggle-header" />
+
           <div className="header-actions">
             {isAdmin && (
               <button className="icon-btn-header" onClick={() => setShowManager(true)}>
@@ -219,7 +219,7 @@ const Logbook = () => {
                         className="edit-icon-btn delete" 
                         onClick={() => {
                           askConfirm(
-                            lang === 'hu' ? 'Biztosan törlöd ezt a bejegyzést?' : 'Eintrag wirklich löschen?',
+                            'Eintrag wirklich löschen?',
                             () => log.deleteLogEntry(entry.id)
                           );
                         }}
@@ -290,7 +290,7 @@ const Logbook = () => {
                     <option value="0_kritisch">{t.kritisch}</option>
                     <option value="1_hoch">{t.hoch}</option>
                     <option value="2_mittel">{t.mittel}</option>
-                    <option value="4_info">{lang === 'hu' ? 'INFÓ' : 'INFO'}</option>
+                    <option value="4_info">INFO</option>
                   </select>
                 </div>
                 <div className="input-group">
@@ -345,7 +345,7 @@ const Logbook = () => {
                     className="delete-btn-premium" 
                     onClick={() => {
                       askConfirm(
-                        lang === 'hu' ? 'Biztosan törlöd ezt a bejegyzést?' : 'Eintrag wirklich löschen?',
+                        'Eintrag wirklich löschen?',
                         () => {
                           log.deleteLogEntry(log.editingLogId);
                           log.setShowLogEntryModal(false);
