@@ -270,8 +270,9 @@ const Logbook = () => {
             ))}
           </div>
         )}
-        </div>
-        <style jsx>{`
+      </div>
+
+      <style jsx>{`
         .logbook-mobile-list {
           display: flex;
           flex-direction: column;
