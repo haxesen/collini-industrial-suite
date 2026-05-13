@@ -225,7 +225,7 @@ const Logbook = () => {
                           );
                         }}
                       >
-                        <Trash2 size(14) />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
