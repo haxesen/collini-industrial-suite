@@ -1009,6 +1009,11 @@ const WTAblauf = () => {
         .pill-icon.cyan { background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); }
         .pill-icon.green { background: rgba(46, 204, 113, 0.1); color: #2ecc71; }
         
+        .pill-data { display: flex; flex-direction: column; gap: 4px; }
+        .p-label { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; }
+        .p-value { font-size: 1.8rem; font-weight: 900; color: #fff; line-height: 1; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .p-value.text-success { color: #2ecc71; text-shadow: 0 0 15px rgba(46, 204, 113, 0.4); }
+        
         .weekly-charts-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; margin-top: 20px; }
         .main-chart-card { padding: 35px; min-height: 550px; display: flex; flex-direction: column; background: rgba(255,255,255,0.02); border-radius: 24px; }
         .weekly-bar-chart { flex: 1; display: flex; justify-content: space-around; align-items: flex-end; padding: 40px 20px; gap: 15px; height: 500px; }
