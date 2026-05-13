@@ -315,14 +315,23 @@ const WTAblauf = () => {
                 const activeZiel = isSelectedDay ? totalZiel : day.ziel;
                 
                 const isGoalMet = activeIst >= activeZiel && activeZiel > 0;
-                // Calculate max value dynamically but always at least 100 to maintain chart scale
+
+                // Build correct per-day values for scale calculation
+                // Only substitute live counts for the SELECTED day
+                const dayIstForScale = isSelectedDay ? totalIst : day.ist;
+                const dayZielForScale = isSelectedDay ? totalZiel : day.ziel;
+
+                // Calculate max value from all days' correct values
                 const maxVal = Math.max(
-                  ...weeklyData.map(d => Math.max(d.date === format(selectedDate, 'yyyy-MM-dd') ? totalIst : d.ist, d.date === format(selectedDate, 'yyyy-MM-dd') ? totalZiel : d.ziel)), 
+                  ...weeklyData.map(d => {
+                    const isSel = d.date === format(selectedDate, 'yyyy-MM-dd');
+                    return Math.max(isSel ? totalIst : d.ist, isSel ? totalZiel : d.ziel);
+                  }),
                   100
                 );
                 
-                const hIst = (activeIst / maxVal) * 100;
-                const hZiel = (activeZiel / maxVal) * 100;
+                const hIst = (dayIstForScale / maxVal) * 100;
+                const hZiel = (dayZielForScale / maxVal) * 100;
 
                 return (
                   <div 
