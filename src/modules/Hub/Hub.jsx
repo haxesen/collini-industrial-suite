@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Calculator, Book, Megaphone, ClipboardCheck, 
   BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize, Activity,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Droplets
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -29,6 +29,7 @@ const Hub = () => {
 
   const allModules = [
     { id: 'wtAblauf', icon: Activity, title: t.wtAblauf, desc: t.wtAblaufDesc, disabled: false },
+    { id: 'chemNickel', icon: Droplets, title: t.chemNickel, desc: t.chemNickelDesc, disabled: false },
     { id: 'calculator', icon: Calculator, title: t.calculator, desc: t.calcDesc, disabled: false },
     { id: 'logbook', icon: Book, title: t.logbook, desc: t.logbookDesc, disabled: false },
     { id: 'checklist', icon: ClipboardCheck, title: t.checklist, desc: t.checklistDesc, disabled: true },
@@ -60,7 +61,7 @@ const Hub = () => {
 
 
   return (
-    <div className="hub-container">
+    <div className="full-view-wrapper">
       <header className="hub-header">
         <div className="hub-title">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>

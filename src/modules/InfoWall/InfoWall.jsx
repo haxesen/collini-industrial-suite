@@ -25,13 +25,19 @@ const InfoWall = () => {
   }, [info.newInfoEntry.message]);
 
   return (
-    <div>
-      <header>
-        <div className="header-top">
-          <button className="back-btn" onClick={() => setView('hub')}>
+    <div className="full-view-wrapper">
+      <div className="wt-header no-print">
+        <div className="header-left">
+          <button onClick={() => setView('hub')} className="back-btn">
             <ChevronLeft size={20} /> {t.back}
           </button>
-
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: 0, textTransform: 'uppercase' }}>
+            {t.infoWall}
+            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
+          </h1>
+        </div>
+        
+        <div className="header-right">
           <div className="header-actions">
             <button 
               className="icon-btn-header" 
@@ -59,11 +65,7 @@ const InfoWall = () => {
             </button>
           </div>
         </div>
-        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', textTransform: 'uppercase' }}>
-          {t.infoWall}
-          {selectedLine && <span className="line-badge" style={{ fontSize: '1rem' }}>{selectedLine}</span>}
-        </h1>
-      </header>
+      </div>
 
       <main>
         <div className="info-wall-grid">

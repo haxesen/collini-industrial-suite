@@ -16,13 +16,19 @@ const Calculator = () => {
   const statusClass = calc.getStatusColorClass(calc.remainingTime);
 
   return (
-    <div>
-      <header className="classic-header">
-        <div className="header-top-classic">
-          <button className="back-btn" onClick={() => setView('hub')}>
+    <div className="full-view-wrapper">
+      <div className="wt-header no-print">
+        <div className="header-left">
+          <button onClick={() => setView('hub')} className="back-btn">
             <ChevronLeft size={20} /> {t.back}
           </button>
-
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: 0, textTransform: 'uppercase' }}>
+            {t.calculator}
+            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
+          </h1>
+        </div>
+        
+        <div className="header-right">
           <div className="header-actions">
             <button className="icon-btn-header" onClick={() => calc.setShowHistory(true)}><History size={20} /></button>
             <button className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}>
@@ -30,13 +36,7 @@ const Calculator = () => {
             </button>
           </div>
         </div>
-        <div className="logo-section" style={{ paddingBottom: '10px' }}>
-          <h2 className="classic-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: 0 }}>
-            {t.title}
-            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem' }}>{selectedLine}</span>}
-          </h2>
-        </div>
-      </header>
+      </div>
 
       <main className="calculator-main">
         <div className="input-group">

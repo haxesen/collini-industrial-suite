@@ -17,6 +17,7 @@ import PublicInfoWall from './modules/InfoWall/PublicInfoWall'
 import AdminManager from './modules/Admin/AdminManager'
 import MachineSelector from './modules/MainHub/MachineSelector'
 import WTAblauf from './modules/WTAblauf/WTAblauf'
+import ChemNickel from './modules/ChemNickel/ChemNickel'
 import LoadingOverlay from './components/LoadingOverlay'
 import './index.css'
 
@@ -63,7 +64,7 @@ function App() {
       document.body.classList.add('public-view');
       return;
     }
-    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator' || view === 'wtAblauf') {
+    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator' || view === 'wtAblauf' || view === 'chemNickel') {
       document.body.classList.add('wide-layout')
     } else {
       document.body.classList.remove('wide-layout')
@@ -92,6 +93,8 @@ function App() {
         return <InfoWall />;
       case 'wtAblauf':
         return <WTAblauf />;
+      case 'chemNickel':
+        return <ChemNickel />;
       default:
         return <Hub />;
     }
@@ -113,7 +116,7 @@ function App() {
     <div className="full-view-wrapper">
       <GlobalTicker activeInfos={activeInfos} />
       
-      <main className={`app-container ${['hub', 'logbook', 'info_wall', 'calculator', 'wtAblauf'].includes(view) ? 'wide-container' : ''}`}>
+      <main className={`app-container ${['hub', 'logbook', 'info_wall', 'calculator', 'wtAblauf', 'chemNickel'].includes(view) ? 'wide-container' : ''}`}>
         {renderView()}
       </main>
 

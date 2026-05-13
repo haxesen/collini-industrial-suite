@@ -26,6 +26,16 @@ import { useApp } from '../../context/AppContext';
 
 const WTAblauf = () => {
   const { t, setView, selectedLine, isMobile } = useApp();
+  
+  // Production Day Logic: If before 6:00 AM, logically it's still "yesterday's" production day
+  const getProductionDate = (date = new Date()) => {
+    const d = new Date(date);
+    if (d.getHours() < 6) {
+      d.setDate(d.getDate() - 1);
+    }
+    return d;
+  };
+
   const [mode, setMode] = useState('tracking'); 
   const [counts, setCounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,8 +43,24 @@ const WTAblauf = () => {
   const updateTimeoutRef = useRef({});
   const [data, setData] = useState({});
   const [weeklyData, setWeeklyData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [activeShift, setActiveShift] = useState('1. Schicht');
+  const [selectedDate, setSelectedDate] = useState(getProductionDate());
+  
+  // Auto-detect current shift based on hour
+  const getCurrentShift = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 14) return '1. Schicht';
+    if (hour >= 14 && hour < 22) return '2. Schicht';
+    return '3. Schicht';
+  };
+
+  const [activeShift, setActiveShift] = useState(getCurrentShift());
+  const [, setTick] = useState(0);
+
+  // Update playhead every minute
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   const shifts = {
     '1. Schicht': [6, 7, 8, 9, 10, 11, 12, 13],
@@ -43,19 +69,36 @@ const WTAblauf = () => {
   };
 
   const handleCountChange = (line, field, value) => {
-    const numValue = parseInt(value) || 0;
+    // If it's a remark, we treat it as a string, otherwise as a number
+    const processedValue = field === 'remark' ? value : (parseInt(value) || 0);
     
-    // Find the specific date for this row to prevent save errors if user changes day before debounce fires
-    const currentRow = counts.find(c => c.line === line);
+    // Find the specific date for this row
+    const currentRow = counts.find(c => c.line === line) || { count: 0, magazin_count: 0, remark: '' };
     const dateStr = currentRow?.created_at || format(selectedDate, 'yyyy-MM-dd');
 
+    // LOGIC RULE: Magazin cannot be greater than WT IST (only for numeric fields)
+    let finalValue = processedValue;
+    if (field === 'magazin_count' && typeof finalValue === 'number' && finalValue > currentRow.count) {
+      finalValue = currentRow.count;
+    }
+    
     setCounts(prev => {
-      // If row doesn't exist locally yet (should be rare with new 24-row logic), create it
       const exists = prev.some(c => c.line === line);
       if (!exists) {
-        return [...prev, { line, count: 0, target_count: 0, magazin_count: 0, created_at: dateStr, [field]: numValue }];
+        return [...prev, { line, count: 0, target_count: 0, magazin_count: 0, remark: '', created_at: dateStr, [field]: finalValue }];
       }
-      return prev.map(c => c.line === line ? { ...c, [field]: numValue } : c);
+      
+      return prev.map(c => {
+        if (c.line === line) {
+          const updated = { ...c, [field]: finalValue };
+          // Enforce rule: if count was reduced, magazin must follow
+          if (field === 'count' && typeof updated.magazin_count === 'number' && updated.magazin_count > (updated.count || 0)) {
+            updated.magazin_count = updated.count;
+          }
+          return updated;
+        }
+        return c;
+      });
     });
 
     const timeoutKey = `${line}-${field}`;
@@ -67,28 +110,28 @@ const WTAblauf = () => {
 
     updateTimeoutRef.current[timeoutKey] = setTimeout(async () => {
       try {
-        // First try to update
         const { data: updatedData, error: updateError } = await supabase
           .from('wt_tracking')
-          .update({ [field]: numValue })
+          .update({ [field]: finalValue })
           .eq('line', line)
           .eq('created_at', dateStr)
           .select();
 
         if (updateError) throw updateError;
-        
-        // If 0 rows were updated, the row doesn't exist yet, so we insert it!
+
+        // If no rows were updated, we need to insert
         if (!updatedData || updatedData.length === 0) {
           const { error: insertError } = await supabase
             .from('wt_tracking')
-            .insert({
-              line: line,
-              count: field === 'count' ? numValue : 0,
-              target_count: field === 'target_count' ? numValue : 0,
-              magazin_count: field === 'magazin_count' ? numValue : 0,
-              created_at: dateStr
-            });
-            
+            .insert([{ 
+              line, 
+              created_at: dateStr, 
+              [field]: finalValue,
+              target_count: field === 'target_count' ? finalValue : 0,
+              count: field === 'count' ? finalValue : 0,
+              magazin_count: field === 'magazin_count' ? finalValue : 0,
+              remark: field === 'remark' ? finalValue : ''
+            }]);
           if (insertError) throw insertError;
         }
         
@@ -99,12 +142,12 @@ const WTAblauf = () => {
             delete newState[timeoutKey];
             return newState;
           });
-        }, 800); 
+        }, 800);
       } catch (err) {
-        console.error('Error updating count:', err);
+        console.error('Save error:', err);
         setSavingLines(prev => ({ ...prev, [timeoutKey]: 'error' }));
       }
-    }, 400); 
+    }, 1000);
   };
 
   const fetchDailyData = useCallback(async (showLoading = false) => {
@@ -271,14 +314,25 @@ const WTAblauf = () => {
                 <h3>Tagesübersicht</h3>
               </div>
               <div className="hero-values">
-                <div className="val-box">
-                  <span className="val-label">IST WT</span>
-                  <span className="val-number">{totalIst}</span>
+                <div className="hero-group">
+                  <div className="val-box">
+                    <span className="val-label">IST WT</span>
+                    <span className="val-number">{totalIst}</span>
+                  </div>
+                  <div className="val-separator">/</div>
+                  <div className="val-box">
+                    <span className="val-label">ZIEL WT</span>
+                    <span className="val-number muted">{totalZiel}</span>
+                  </div>
                 </div>
-                <div className="val-separator">/</div>
-                <div className="val-box">
-                  <span className="val-label">ZIEL WT</span>
-                  <span className="val-number muted">{totalZiel}</span>
+
+                <div className="hero-divider-vertical" />
+
+                <div className="hero-group magazine-group">
+                  <div className="val-box">
+                    <span className="val-label text-accent">MAGAZIN</span>
+                    <span className="val-number text-accent">{totalMagazin}</span>
+                  </div>
                 </div>
               </div>
               <div className="hero-footer">
@@ -373,7 +427,7 @@ const WTAblauf = () => {
   };
 
   return (
-    <div className="wt-container">
+    <div className="full-view-wrapper">
       <div className="print-only-header">
         <div className="print-header-top">
           <span className="print-app-name">Collini Industrial Suite</span>
@@ -388,11 +442,11 @@ const WTAblauf = () => {
       <div className="wt-header no-print">
         <div className="header-left">
           <button onClick={() => setView('hub')} className="back-btn">
-            <ArrowLeft size={20} /> Zurück
+            <ChevronLeft size={20} /> {t.back}
           </button>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '15px', margin: 0 }}>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: 0, textTransform: 'uppercase' }}>
             WT-ABLAUF
-            {selectedLine && <span className="line-badge" style={{ fontSize: '0.9rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
+            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
           </h1>
         </div>
         
@@ -422,16 +476,40 @@ const WTAblauf = () => {
           </button>
           
           <div className="days-container">
+            {/* Timeline Track & Playhead */}
+            <div className="timeline-track" />
+            
+            {(() => {
+              const now = new Date();
+              const startOfCurrentWeek = startOfWeek(now, { weekStartsOn: 1 });
+              const endOfCurrentWeek = endOfWeek(now, { weekStartsOn: 1 });
+              const startOfSelectedWeek = startOfWeek(selectedDate, { weekStartsOn: 1 });
+              
+              // Only show playhead if we are viewing the current week
+              if (isSameDay(startOfCurrentWeek, startOfSelectedWeek)) {
+                const totalMs = 7 * 24 * 60 * 60 * 1000;
+                const elapsedMs = now - startOfCurrentWeek;
+                const percent = (elapsedMs / totalMs) * 100;
+                return <div className="timeline-playhead" style={{ left: `${percent}%` }} />;
+              }
+              return null;
+            })()}
+
             {eachDayOfInterval({
               start: startOfWeek(selectedDate, { weekStartsOn: 1 }),
               end: endOfWeek(selectedDate, { weekStartsOn: 1 })
             }).map((date, idx) => {
               const isSelected = isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, new Date());
+              const isToday = isSameDay(date, getProductionDate());
+              
+              // Night Shift Transition Logic
+              const currentHour = new Date().getHours();
+              const isNightShift = currentHour >= 22 || currentHour < 6;
+              const isBridgeActive = isToday && isNightShift;
+
               const dateStr = format(date, 'yyyy-MM-dd');
               const dayData = weeklyData.find(d => d.date === dateStr);
               
-              // Determine status for the dot
               let statusClass = 'pending';
               if (dayData && dayData.ziel > 0) {
                 statusClass = dayData.ist >= dayData.ziel ? 'met' : 'behind';
@@ -440,7 +518,7 @@ const WTAblauf = () => {
               return (
                 <button 
                   key={idx} 
-                  className={`calendar-day-item ${isSelected ? 'active' : ''} ${isToday ? 'is-today' : ''}`}
+                  className={`calendar-day-item ${isSelected ? 'active' : ''} ${isBridgeActive ? 'night-shift-bridge' : ''}`}
                   onClick={() => setSelectedDate(date)}
                 >
                   <span className="day-name">{format(date, 'EEE', { locale: de }).toUpperCase()}</span>
@@ -496,6 +574,7 @@ const WTAblauf = () => {
               <span>WT IST</span>
               <span>davon Magazin</span>
               <span>STATUS</span>
+              <span>BEMERKUNG</span>
             </div>
 
             <div className="wt-table-body">
@@ -559,10 +638,20 @@ const WTAblauf = () => {
 
                     <div className="col-status">
                       {rowData.target_count > 0 ? (
-                        <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
-                          {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
+                        <span className={`status-badge ${rowData.count > rowData.target_count ? 'over-met' : isMet ? 'met' : 'behind'}`}>
+                          {rowData.count > rowData.target_count ? 'ÜBERERFÜLLT' : isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
                         </span>
                       ) : '-'}
+                    </div>
+
+                    <div className="col-remark">
+                      <input 
+                        type="text"
+                        className="remark-input"
+                        placeholder={t.remark}
+                        value={rowData.remark || ''}
+                        onChange={(e) => handleCountChange(line, 'remark', e.target.value)}
+                      />
                     </div>
                   </div>
                 );
@@ -612,20 +701,21 @@ const WTAblauf = () => {
                       const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
                       return sum + (counts.find(c => c.line === line)?.target_count || 0);
                     }, 0);
-                    const totalIst = shifts[activeShift].reduce((sum, h, idx) => {
+                    const totalCount = shifts[activeShift].reduce((sum, h, idx) => {
                       const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
                       return sum + (counts.find(c => c.line === line)?.count || 0);
                     }, 0);
                     
-                    if (totalTarget === 0) return <span>-</span>;
-                    const isMet = totalIst >= totalTarget;
+                    if (totalTarget === 0) return '-';
                     return (
-                      <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
-                        {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
+                      <span className={`status-badge ${totalCount > totalTarget ? 'over-met' : totalCount >= totalTarget ? 'met' : 'behind'}`}>
+                        {totalCount > totalTarget ? 'ÜBERERFÜLLT' : totalCount >= totalTarget ? 'ERFÜLLT' : 'RÜCKSTAND'}
                       </span>
                     );
                   })()}
                 </div>
+
+                <div className="col-remark"></div>
               </div>
             </div>
           </div>

@@ -89,12 +89,18 @@ const Logbook = () => {
 
   return (
     <div className="full-view-wrapper">
-      <header style={{ width: '100%' }}>
-        <div className="header-top" style={{ width: '100%' }}>
-          <button className="back-btn" onClick={() => setView('hub')}>
+      <div className="wt-header no-print">
+        <div className="header-left">
+          <button onClick={() => setView('hub')} className="back-btn">
             <ChevronLeft size={20} /> {t.back}
           </button>
-
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: 0, textTransform: 'uppercase' }}>
+            {t.logbook}
+            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
+          </h1>
+        </div>
+        
+        <div className="header-right">
           <div className="header-actions">
             {!isMobile && isAdmin && (
               <button className="icon-btn-header" onClick={() => setShowManager(true)}>
@@ -111,11 +117,7 @@ const Logbook = () => {
             )}
           </div>
         </div>
-        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', textTransform: 'uppercase' }}>
-          {t.logbook}
-          {selectedLine && <span className="line-badge" style={{ fontSize: '1rem' }}>{selectedLine}</span>}
-        </h1>
-      </header>
+      </div>
 
       <div className="logbook-main">
         <div className="logbook-header">

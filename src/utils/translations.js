@@ -17,6 +17,8 @@ export const translations = {
     wartungsplanerDesc: 'Maschinenwartungsplan',
     wtAblauf: 'WT-ABLAUF',
     wtAblaufDesc: 'Stündliche Verfolgung der Warenträger',
+    chemNickel: 'CHEM-NICKEL UMPUMPEN',
+    chemNickelDesc: 'Ablaufverfolgung des Umpumpvorgangs',
     wtZiel: 'WT ZIEL',
     wtIst: 'WT IST',
     davonMagazin: 'davon Magazin',
@@ -106,6 +108,7 @@ export const translations = {
     cancel: 'Abbrechen',
     show: 'Einblenden',
     hide: 'Ausblenden',
-    confirmDelete: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?'
+    confirmDelete: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?',
+    remark: 'Bemerkung...'
   }
 }
