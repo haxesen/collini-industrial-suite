@@ -69,7 +69,8 @@ body.wide-layout #root {
   transition: all 0.3s ease;
 }
 
-body.wide-layout .app-container {
+body.wide-layout .app-container,
+.app-container.wide-container {
   max-width: 100%;
   width: 100%;
   padding: clamp(15px, 3vw, 40px);
@@ -1889,7 +1890,8 @@ textarea:focus {
   animation: slideIn 0.5s ease-out;
 }
 
-body.wide-layout .app-container {
+body.wide-layout .app-container,
+.app-container.wide-container {
   padding: 20px;
   border-radius: 12px;
 }

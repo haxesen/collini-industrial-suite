@@ -113,7 +113,7 @@ function App() {
     <div className="full-view-wrapper">
       <GlobalTicker activeInfos={activeInfos} />
       
-      <main className="app-container">
+      <main className={`app-container ${['hub', 'logbook', 'info_wall', 'calculator', 'wtAblauf'].includes(view) ? 'wide-container' : ''}`}>
         {renderView()}
       </main>
 

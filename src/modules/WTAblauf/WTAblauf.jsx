@@ -154,8 +154,8 @@ const WTAblauf = () => {
   }, [selectedDate]);
 
   const fetchWeeklyData = useCallback(async () => {
-    const end = selectedDate;
-    const start = subDays(end, 6);
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
     const dateRange = eachDayOfInterval({ start, end });
     
     try {
@@ -374,7 +374,7 @@ const WTAblauf = () => {
     <div className="wt-container">
       <div className="wt-header no-print">
         <div className="header-left">
-          <button onClick={() => setView('dashboard')} className="back-btn">
+          <button onClick={() => setView('hub')} className="back-btn">
             <ArrowLeft size={20} /> Zurück
           </button>
           <div>
