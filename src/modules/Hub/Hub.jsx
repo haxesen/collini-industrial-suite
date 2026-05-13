@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Calculator, Book, Megaphone, ClipboardCheck, 
-  BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize 
+  BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize, Activity 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import LanguageToggle from '../../components/LanguageToggle';
@@ -30,6 +30,7 @@ const Hub = () => {
     { id: 'info_wall', icon: Megaphone, title: t.infoWall, desc: t.infoWallDesc, disabled: false },
     { id: 'prodPlan', icon: BarChart3, title: t.prodPlan, desc: t.prodPlanDesc, disabled: true },
     { id: 'wartungsplaner', icon: Hammer, title: t.wartungsplaner, desc: t.wartungsplanerDesc, disabled: true },
+    { id: 'wtAblauf', icon: Activity, title: t.wtAblauf, desc: t.wtAblaufDesc, disabled: false },
   ];
 
   return (

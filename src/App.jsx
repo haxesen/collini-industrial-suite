@@ -16,6 +16,7 @@ import InfoWall from './modules/InfoWall/InfoWall'
 import PublicInfoWall from './modules/InfoWall/PublicInfoWall'
 import AdminManager from './modules/Admin/AdminManager'
 import MachineSelector from './modules/MainHub/MachineSelector'
+import WTAblauf from './modules/WTAblauf/WTAblauf'
 import LoadingOverlay from './components/LoadingOverlay'
 import './index.css'
 
@@ -62,7 +63,7 @@ function App() {
       document.body.classList.add('public-view');
       return;
     }
-    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator') {
+    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator' || view === 'wtAblauf') {
       document.body.classList.add('wide-layout')
     } else {
       document.body.classList.remove('wide-layout')
@@ -89,6 +90,8 @@ function App() {
         return <Logbook />;
       case 'info_wall':
         return <InfoWall />;
+      case 'wtAblauf':
+        return <WTAblauf />;
       default:
         return <Hub />;
     }
