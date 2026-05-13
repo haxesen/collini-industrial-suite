@@ -15,7 +15,8 @@ import {
   Database,
   BarChart3,
   Calendar,
-  LayoutDashboard
+  LayoutDashboard,
+  Loader2
 } from 'lucide-react';
 import { supabase } from '../../supabase';
 import { format, subDays, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns';
@@ -414,7 +415,12 @@ const WTAblauf = () => {
         </button>
       </div>
 
-      {mode === 'tracking' ? (
+      {loading ? (
+        <div className="wt-loader-container animate-fade-in">
+          <Loader2 className="spinner" size={48} />
+          <p>Adatok betöltése folyamatban...</p>
+        </div>
+      ) : mode === 'tracking' ? (
         <div className="wt-content-grid animate-fade-in">
           <div className="main-table-card glass-panel">
             <div className="shift-tabs-container">
@@ -606,6 +612,30 @@ const WTAblauf = () => {
           max-width: 1850px;
           margin: 0 auto;
           color: #fff;
+        }
+
+        .wt-loader-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 400px;
+          color: var(--text-secondary);
+          background: rgba(255,255,255,0.02);
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.05);
+          margin-top: 20px;
+        }
+
+        .spinner {
+          animation: spin 1s linear infinite;
+          color: var(--accent-cyan);
+          margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         .wt-header {
