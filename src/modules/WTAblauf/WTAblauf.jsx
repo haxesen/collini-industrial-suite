@@ -324,7 +324,11 @@ const WTAblauf = () => {
                 const hZiel = (activeZiel / maxVal) * 100;
 
                 return (
-                  <div key={idx} className="chart-column">
+                  <div 
+                    key={idx} 
+                    className={`chart-column ${isSelectedDay ? 'active' : ''}`}
+                    onClick={() => setSelectedDate(new Date(day.date))}
+                  >
                     <div className="bar-label-dual">
                       <span className="ist">{activeIst}</span>
                       <span className="ziel">{activeZiel}</span>
@@ -1008,7 +1012,10 @@ const WTAblauf = () => {
         .weekly-charts-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; margin-top: 20px; }
         .main-chart-card { padding: 35px; min-height: 550px; display: flex; flex-direction: column; background: rgba(255,255,255,0.02); border-radius: 24px; }
         .weekly-bar-chart { flex: 1; display: flex; justify-content: space-around; align-items: flex-end; padding: 40px 20px; gap: 15px; height: 500px; }
-        .chart-column { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .chart-column { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; cursor: pointer; transition: transform 0.2s; }
+        .chart-column:hover { transform: translateY(-5px); }
+        .chart-column.active .bullet-bar-bg { border-color: rgba(0, 242, 254, 0.4); box-shadow: 0 0 20px rgba(0, 242, 254, 0.15); background: rgba(0, 242, 254, 0.05); }
+        .chart-column.active .day { color: var(--accent-cyan); }
         .bullet-chart-container { width: 90px; height: 380px; position: relative; flex-shrink: 0; }
         .bullet-bar-bg { width: 100%; height: 100%; background: rgba(255,255,255,0.02); border-radius: 12px; position: relative; border: 1px solid rgba(255,255,255,0.04); }
         .bullet-target-line { position: absolute; left: -8px; right: -8px; height: 4px; background: #fff; z-index: 10; box-shadow: 0 0 15px rgba(255,255,255,0.6); border-radius: 4px; }
