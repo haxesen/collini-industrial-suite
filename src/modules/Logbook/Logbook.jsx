@@ -89,8 +89,8 @@ const Logbook = () => {
 
   return (
     <div className="full-view-wrapper">
-      <header>
-        <div className="header-top">
+      <header style={{ width: '100%' }}>
+        <div className="header-top" style={{ width: '100%' }}>
           <button className="back-btn" onClick={() => setView('hub')}>
             <ChevronLeft size={20} /> {t.back}
           </button>
