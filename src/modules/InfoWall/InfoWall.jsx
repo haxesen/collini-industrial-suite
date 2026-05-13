@@ -49,7 +49,7 @@ const InfoWall = () => {
               info.setNewInfoEntry({message: '', department: 'PRODUKTION', priority: '2_normal', author: ''}); 
               info.setShowInfoModal(true);
             }}>
-              <Plus size(20) /> {lang === 'hu' ? 'ÚJ HÍRDETÉS' : 'NEUE INFO'}
+              <Plus size={20} /> {lang === 'hu' ? 'ÚJ HÍRDETÉS' : 'NEUE INFO'}
             </button>
             <button 
               className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
