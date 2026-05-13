@@ -109,7 +109,7 @@ export const translations = {
     confirmDelete: 'Biztosan törölni szeretné ezt a bejegyzést?'
   },
   de: {
-    title: 'INDUSTRIAL SUITE',
+    title: 'SCHICHTSTÄRKE RECHNER',
     hubTitle: 'Industrial Suite',
     hubSub: 'Wählen Sie ein Modul',
     calculator: 'SCHICHTSTÄRKE RECHNER',
