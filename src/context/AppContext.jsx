@@ -25,13 +25,6 @@ export const AppProvider = ({ children }) => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [confirmModal, setConfirmModal] = useState({ show: false, message: '', onConfirm: null });
   const [moduleOrder, setModuleOrder] = useState(['wtAblauf', 'calculator', 'logbook', 'checklist', 'info_wall', 'prodPlan', 'wartungsplaner']);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -210,8 +203,7 @@ export const AppProvider = ({ children }) => {
       isLoading, setIsLoading,
       isOffline,
       confirmModal, setConfirmModal, askConfirm,
-      moduleOrder, updateModuleOrder,
-      isMobile
+      moduleOrder, updateModuleOrder
     }}>
 
       {children}

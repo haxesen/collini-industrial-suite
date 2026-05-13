@@ -11,7 +11,7 @@ import colliniLogo from '../../assets/Collini_Logo.svg';
 const Hub = () => {
   const { 
     t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, 
-    setSelectedLine, selectedLine, moduleOrder, updateModuleOrder, isMobile
+    setSelectedLine, selectedLine, moduleOrder, updateModuleOrder 
   } = useApp();
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
@@ -133,7 +133,7 @@ const Hub = () => {
           >
             {m.disabled && <div className="coming-soon-badge">{t.comingSoon}</div>}
             
-            {!isMobile && isAdmin && (
+            {isAdmin && (
               <div className="hub-card-admin-controls" onClick={e => e.stopPropagation()}>
                 <button 
                   className="reorder-btn" 

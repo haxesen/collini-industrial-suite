@@ -24,7 +24,7 @@ import { de } from 'date-fns/locale';
 import { useApp } from '../../context/AppContext';
 
 const WTAblauf = () => {
-  const { t, setView, selectedLine, isMobile } = useApp();
+  const { t, setView, selectedLine } = useApp();
   const [mode, setMode] = useState('tracking'); 
   const [counts, setCounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -213,12 +213,7 @@ const WTAblauf = () => {
     return () => supabase.removeChannel(channel);
   }, [fetchDailyData, fetchWeeklyData, selectedDate]);
 
-  const handleExportPDF = () => { 
-    const printClass = mode === 'stats' ? 'print-mode-stats' : 'print-mode-report';
-    document.body.classList.add(printClass);
-    window.print();
-    setTimeout(() => document.body.classList.remove(printClass), 500);
-  };
+  const handleExportPDF = () => { window.print(); };
 
   const renderStats = () => {
     const totalIst = counts.reduce((sum, c) => sum + (c.count || 0), 0);
@@ -388,12 +383,7 @@ const WTAblauf = () => {
           <span className="print-date">{format(new Date(), 'dd.MM.yyyy HH:mm')}</span>
         </div>
         <div className="print-module-title">
-          <h1>
-            {mode === 'stats' 
-              ? 'WT-ABLAUF PRODUKTIONSSTATISTIK' 
-              : `WT-ABLAUF SCHICHTBERICHT - ${activeShift}`
-            }
-          </h1>
+          <h1>WT-ABLAUF SCHICHTBERICHT</h1>
           {selectedLine && <span className="line-badge">{selectedLine}</span>}
         </div>
       </div>
@@ -429,13 +419,6 @@ const WTAblauf = () => {
         </div>
       </div>
 
-      {isMobile && (
-        <div className="mobile-info-banner no-print">
-          <LayoutDashboard size={16} />
-          <span>Mobiler Lesemodus: Nur Anzeige, keine Bearbeitung</span>
-        </div>
-      )}
-
       <div className="wt-date-selector no-print">
         <button onClick={() => setSelectedDate(prev => subDays(prev, 1))} className="date-nav">
           <ChevronLeft size={24} />
@@ -454,485 +437,256 @@ const WTAblauf = () => {
           <Loader2 className="spinner" size={48} />
           <p>Daten werden geladen...</p>
         </div>
-      ) : (
-        <>
-          <div className={`wt-content-grid ${mode !== 'tracking' ? 'no-screen' : 'animate-fade-in'}`}>
-            <div className="main-table-card glass-panel">
-              <div className="shift-tabs-container no-print">
-                <div className="shift-tabs-pill">
-                  {Object.keys(shifts).map(s => (
-                    <button 
-                      key={s}
-                      className={`shift-tab-btn ${activeShift === s ? 'active' : ''}`}
-                      onClick={() => setActiveShift(s)}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-                <div className="auto-save-indicator">
-                  <Database size={14} className="text-success" />
-                  Synchronisiert
-                </div>
+      ) : mode === 'tracking' ? (
+        <div className="wt-content-grid animate-fade-in">
+          <div className="main-table-card glass-panel">
+            <div className="shift-tabs-container">
+              <div className="shift-tabs-pill">
+                {Object.keys(shifts).map(s => (
+                  <button 
+                    key={s}
+                    className={`shift-tab-btn ${activeShift === s ? 'active' : ''}`}
+                    onClick={() => setActiveShift(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
               </div>
-
-              <div className="wt-table-header">
-                <span>STUNDE</span>
-                <span>WT ZIEL</span>
-                <span>WT IST</span>
-                <span>davon Magazin</span>
-                <span>STATUS</span>
-              </div>
-
-              <div className="wt-table-body">
-                {shifts[activeShift].map((hour, idx) => {
-                  const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                  const rowData = counts.find(c => c.line === line) || { target_count: 0, count: 0, magazin_count: 0 };
-                  const isMet = rowData.count >= rowData.target_count && rowData.target_count > 0;
-
-                  return (
-                    <div key={line} className="wt-row">
-                      <div className="col-hour">
-                        <Clock size={16} className="text-secondary" />
-                        <span>{hour.toString().padStart(2, '0')}:00</span>
-                        {isMet && <div className="hour-dot" />}
-                      </div>
-                      
-                      <div className="col-target">
-                        {isMobile ? (
-                          <div className="mobile-val-display target">{rowData.target_count}</div>
-                        ) : (
-                          <input
-                            type="number"
-                            value={rowData.target_count}
-                            onChange={(e) => handleCountChange(line, 'target_count', e.target.value)}
-                            className={`count-input target ${savingLines[`${line}-target_count`] || ''}`}
-                          />
-                        )}
-                      </div>
-
-                      <div className="col-ist">
-                        {isMobile ? (
-                          <div className="mobile-val-display ist">{rowData.count}</div>
-                        ) : (
-                          <div className="actual-display">
-                            <input
-                              type="number"
-                              value={rowData.count}
-                              onChange={(e) => handleCountChange(line, 'count', e.target.value)}
-                              className={`count-input ist ${savingLines[`${line}-count`] || ''}`}
-                            />
-                            <div className="btn-group no-print">
-                              <button onClick={() => handleCountChange(line, 'count', rowData.count + 1)} className="adjust-btn plus">+</button>
-                              <button onClick={() => handleCountChange(line, 'count', Math.max(0, rowData.count - 1))} className="adjust-btn minus">-</button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="col-magazin">
-                        {isMobile ? (
-                          <div className="mobile-val-display magazin">{rowData.magazin_count}</div>
-                        ) : (
-                          <div className="actual-display">
-                            <input
-                              type="number"
-                              value={rowData.magazin_count}
-                              onChange={(e) => handleCountChange(line, 'magazin_count', e.target.value)}
-                              className={`count-input magazin ${savingLines[`${line}-magazin_count`] || ''}`}
-                            />
-                            <div className="btn-group no-print">
-                              <button onClick={() => handleCountChange(line, 'magazin_count', rowData.magazin_count + 1)} className="adjust-btn plus">+</button>
-                              <button onClick={() => handleCountChange(line, 'magazin_count', Math.max(0, rowData.magazin_count - 1))} className="adjust-btn minus">-</button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="col-status">
-                        {rowData.target_count > 0 ? (
-                          <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
-                            {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
-                          </span>
-                        ) : '-'}
-                      </div>
-                    </div>
-                  );
-                })}
-                
-                <div className="wt-row totals-row">
-                  <div className="col-hour">
-                    <span>Gesamt</span>
-                  </div>
-                  
-                  <div className="col-target">
-                    <div className="actual-display">
-                      <span className="val">
-                        {shifts[activeShift].reduce((sum, h, idx) => {
-                          const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                          return sum + (counts.find(c => c.line === line)?.target_count || 0);
-                        }, 0)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="col-ist">
-                    <div className="actual-display">
-                      <span className="val">
-                        {shifts[activeShift].reduce((sum, h, idx) => {
-                          const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                          return sum + (counts.find(c => c.line === line)?.count || 0);
-                        }, 0)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="col-magazin">
-                    <div className="actual-display">
-                      <span className="val">
-                        {shifts[activeShift].reduce((sum, h, idx) => {
-                          const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                          return sum + (counts.find(c => c.line === line)?.magazin_count || 0);
-                        }, 0)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="col-status">
-                    {(() => {
-                      const totalTarget = shifts[activeShift].reduce((sum, h, idx) => {
-                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                        return sum + (counts.find(c => c.line === line)?.target_count || 0);
-                      }, 0);
-                      const totalIst = shifts[activeShift].reduce((sum, h, idx) => {
-                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                        return sum + (counts.find(c => c.line === line)?.count || 0);
-                      }, 0);
-                      
-                      if (totalTarget === 0) return <span>-</span>;
-                      const isMet = totalIst >= totalTarget;
-                      return (
-                        <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
-                          {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                </div>
+              <div className="auto-save-indicator">
+                <Database size={14} className="text-success" />
+                Synchronisiert
               </div>
             </div>
 
-            <div className="stats-sidebar glass-panel no-print">
-              <div className="wt-stats-card">
-                <div className="card-title"><TrendingUp size={18} /> Schicht-Effizienz</div>
-                <div className="efficiency-box">
-                  <div className="efficiency-value">
-                    {Math.round((shifts[activeShift].reduce((sum, h, idx) => {
+            <div className="wt-table-header">
+              <span>STUNDE</span>
+              <span>WT ZIEL</span>
+              <span>WT IST</span>
+              <span>davon Magazin</span>
+              <span>STATUS</span>
+            </div>
+
+            <div className="wt-table-body">
+              {shifts[activeShift].map((hour, idx) => {
+                const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                const rowData = counts.find(c => c.line === line) || { target_count: 0, count: 0, magazin_count: 0 };
+                const isMet = rowData.count >= rowData.target_count && rowData.target_count > 0;
+
+                return (
+                  <div key={line} className="wt-row">
+                    <div className="col-hour">
+                      <Clock size={16} className="text-secondary" />
+                      <span>{hour.toString().padStart(2, '0')}:00</span>
+                      {isMet && <div className="hour-dot" />}
+                    </div>
+                    
+                    <div className="col-target">
+                      <input
+                        type="number"
+                        value={rowData.target_count}
+                        onChange={(e) => handleCountChange(line, 'target_count', e.target.value)}
+                        className={`count-input target ${savingLines[`${line}-target_count`] || ''}`}
+                      />
+                    </div>
+
+                    <div className="col-ist">
+                      <div className="actual-display">
+                        <span className="val">{rowData.count}</span>
+                        <div className="btn-group">
+                          <button onClick={() => handleCountChange(line, 'count', rowData.count + 1)} className="adjust-btn plus">+</button>
+                          <button onClick={() => handleCountChange(line, 'count', Math.max(0, rowData.count - 1))} className="adjust-btn minus">-</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-magazin">
+                      <div className="actual-display">
+                        <span className="val">{rowData.magazin_count}</span>
+                        <div className="btn-group">
+                          <button onClick={() => handleCountChange(line, 'magazin_count', rowData.magazin_count + 1)} className="adjust-btn plus">+</button>
+                          <button onClick={() => handleCountChange(line, 'magazin_count', Math.max(0, rowData.magazin_count - 1))} className="adjust-btn minus">-</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-status">
+                      {rowData.target_count > 0 ? (
+                        <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
+                          {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
+                        </span>
+                      ) : '-'}
+                    </div>
+                  </div>
+                );
+              })}
+              
+              <div className="wt-row totals-row">
+                <div className="col-hour">
+                  <span>Gesamt</span>
+                </div>
+                
+                <div className="col-target">
+                  <div className="actual-display">
+                    <span className="val">
+                      {shifts[activeShift].reduce((sum, h, idx) => {
+                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                        return sum + (counts.find(c => c.line === line)?.target_count || 0);
+                      }, 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-ist">
+                  <div className="actual-display">
+                    <span className="val">
+                      {shifts[activeShift].reduce((sum, h, idx) => {
+                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                        return sum + (counts.find(c => c.line === line)?.count || 0);
+                      }, 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-magazin">
+                  <div className="actual-display">
+                    <span className="val">
+                      {shifts[activeShift].reduce((sum, h, idx) => {
+                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                        return sum + (counts.find(c => c.line === line)?.magazin_count || 0);
+                      }, 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-status">
+                  {(() => {
+                    const totalTarget = shifts[activeShift].reduce((sum, h, idx) => {
+                      const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                      return sum + (counts.find(c => c.line === line)?.target_count || 0);
+                    }, 0);
+                    const totalIst = shifts[activeShift].reduce((sum, h, idx) => {
+                      const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                      return sum + (counts.find(c => c.line === line)?.count || 0);
+                    }, 0);
+                    
+                    if (totalTarget === 0) return <span>-</span>;
+                    const isMet = totalIst >= totalTarget;
+                    return (
+                      <span className={`status-badge ${isMet ? 'met' : 'behind'}`}>
+                        {isMet ? 'ERFÜLLT' : 'RÜCKSTAND'}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="stats-sidebar glass-panel">
+            <div className="wt-stats-card">
+              <div className="card-title"><TrendingUp size={18} /> Schicht-Effizienz</div>
+              <div className="efficiency-box">
+                <div className="efficiency-value">
+                  {Math.round((shifts[activeShift].reduce((sum, h, idx) => {
+                    const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                    return sum + (counts.find(c => c.line === line)?.count || 0);
+                  }, 0) / Math.max(1, shifts[activeShift].reduce((sum, h, idx) => {
+                    const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
+                    return sum + (counts.find(c => c.line === line)?.target_count || 0);
+                  }, 0))) * 100)}%
+                </div>
+                <div className="efficiency-label">Zielerreichung</div>
+                <div className="efficiency-progress-bg">
+                  <div className="efficiency-progress-fill" style={{ 
+                    width: `${Math.min(100, (shifts[activeShift].reduce((sum, h, idx) => {
                       const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
                       return sum + (counts.find(c => c.line === line)?.count || 0);
                     }, 0) / Math.max(1, shifts[activeShift].reduce((sum, h, idx) => {
                       const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
                       return sum + (counts.find(c => c.line === line)?.target_count || 0);
-                    }, 0))) * 100)}%
-                  </div>
-                  <div className="efficiency-label">Zielerreichung</div>
-                  <div className="efficiency-progress-bg">
-                    <div className="efficiency-progress-fill" style={{ 
-                      width: `${Math.min(100, (shifts[activeShift].reduce((sum, h, idx) => {
-                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                        return sum + (counts.find(c => c.line === line)?.count || 0);
-                      }, 0) / Math.max(1, shifts[activeShift].reduce((sum, h, idx) => {
-                        const line = idx + 1 + (activeShift === '2. Schicht' ? 8 : activeShift === '3. Schicht' ? 16 : 0);
-                        return sum + (counts.find(c => c.line === line)?.target_count || 0);
-                      }, 0))) * 100)}%`,
-                      background: 'linear-gradient(90deg, #00f2fe, #0099ff)',
-                      boxShadow: '0 0 15px rgba(0, 242, 254, 0.8)',
-                      display: 'block',
-                      borderRadius: 'inherit'
-                    }} />
-                  </div>
+                    }, 0))) * 100)}%`,
+                    background: 'var(--accent-gradient)'
+                  }} />
                 </div>
-
-                <div className="info-box-compact">
-                  <AlertCircle size={20} className="text-accent" />
-                  <p>Daten werden nach jeder Änderung automatisch gespeichert.</p>
-                </div>
-                
-                <button onClick={handleExportPDF} className="action-btn pdf" style={{ width: '100%' }}>
-                  <Printer size={18} /> Schichtbericht
-                </button>
               </div>
+
+              <div className="info-box-compact">
+                <AlertCircle size={20} className="text-accent" />
+                <p>Daten werden nach jeder Änderung automatisch gespeichert.</p>
+              </div>
+              
+              <button onClick={handleExportPDF} className="action-btn pdf" style={{ width: '100%' }}>
+                <Printer size={18} /> Schichtbericht
+              </button>
             </div>
           </div>
-          {mode === 'stats' && renderStats()}
-        </>
-      )}
-
-
+        </div>
+      ) : renderStats()}
 
       <style jsx>{`
         /* --- PRINT ONLY ELEMENTS --- */
         .print-only-header { display: none; }
-        .wt-content-grid.no-screen { display: none; }
-        
-        .mobile-info-banner {
-          background: rgba(0, 153, 255, 0.15);
-          color: #00f2fe;
-          padding: 10px 20px;
-          border-radius: 10px;
-          margin: 0 20px 15px 20px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 0.8rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          border: 1px solid rgba(0, 242, 254, 0.2);
-        }
-
-        .mobile-val-display {
-          background: rgba(255,255,255,0.05);
-          padding: 10px;
-          border-radius: 8px;
-          color: #fff;
-          font-weight: 700;
-          font-size: 1.1rem;
-          min-width: 60px;
-          text-align: center;
-        }
-        .mobile-val-display.target { border-left: 3px solid #666; }
-        .mobile-val-display.ist { border-left: 3px solid #00f2fe; background: rgba(0, 242, 254, 0.1); }
-
-        @media (max-width: 1024px) {
-          .wt-header { flex-direction: column; gap: 15px; padding: 20px; align-items: flex-start; }
-          .wt-content-grid { grid-template-columns: 1fr !important; gap: 15px; padding: 10px; }
-          .stats-sidebar { order: -1; }
-          .wt-table-header { grid-template-columns: 60px 1fr 1fr 1fr 0px !important; font-size: 0.6rem; padding: 10px; }
-          .wt-table-header span:last-child { display: none; }
-          .wt-row { grid-template-columns: 60px 1fr 1fr 1fr 0px !important; padding: 10px; gap: 5px; }
-          .col-status { display: none; }
-          .col-hour span { font-size: 0.8rem; }
-          .mobile-val-display { font-size: 0.9rem; padding: 6px; min-width: auto; width: 100%; }
-          .daily-stats-grid, .weekly-charts-grid { grid-template-columns: 1fr !important; }
-          .daily-hero-card { flex-direction: column; gap: 20px; padding: 20px; }
-          .val-number { font-size: 3.5rem !important; }
-          .val-number.muted { font-size: 2.5rem !important; }
-          .gauge-section { width: 140px; height: 140px; }
-          .main-chart-card { min-height: auto; padding: 15px; }
-          .weekly-bar-chart { height: 350px; padding: 20px 10px; }
-          .bullet-chart-container { width: 45px; height: 250px; }
-          .bar-label-dual .ist { font-size: 1.1rem; }
-          .bar-label-dual .ziel { font-size: 0.7rem; }
-          .column-label .day { font-size: 0.7rem; }
-          .daily-side-pills { grid-template-columns: 1fr; }
-        }
 
         @media print {
-          @page {
-            margin: 1cm;
-            size: portrait;
-          }
-
-          .no-print, 
-          .btn-group, 
-          .shift-tabs-pill, 
-          .auto-save-indicator, 
-          .wt-loader-container,
-          .wt-date-selector,
-          .stats-sidebar,
-          .mini-pill-card,
-          .action-btn,
-          .info-box-compact,
-          .back-btn,
-          .mode-toggle { 
-            display: none !important; 
-          }
-
           .print-only-header { 
             display: block !important; 
-            margin-bottom: 20px;
-            border-bottom: 3px solid #000;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
             padding-bottom: 10px;
           }
+          .print-header-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 10px; }
+          .print-module-title { display: flex; align-items: center; gap: 15px; }
+          .print-module-title h1 { margin: 0; font-size: 1.5rem; color: #000; }
           
-
-
-          .print-header-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: #000; margin-bottom: 10px; font-weight: 700; }
-          .print-module-title { display: flex; align-items: center; justify-content: space-between; }
-          .print-module-title h1 { margin: 0; font-size: 1.8rem; color: #000; font-weight: 900; }
-          .line-badge { 
-            background: #f0f0f0 !important; 
-            color: #000 !important; 
-            border: 2px solid #000 !important;
-            padding: 4px 12px !important;
-            border-radius: 4px !important;
-            font-weight: 900 !important;
-          }
-          
-          .wt-container { padding: 0 !important; color: #000 !important; background: #fff !important; width: 100% !important; }
-          
-          .glass-panel, .main-table-card {
+          .wt-container { padding: 0 !important; color: #000 !important; }
+          .glass-panel, .main-table-card, .stats-sidebar, .daily-hero-card, .mini-pill-card, .main-chart-card, .actions-card {
             background: #fff !important;
-            border: 2px solid #000 !important;
+            border: 1px solid #ddd !important;
             box-shadow: none !important;
             backdrop-filter: none !important;
             color: #000 !important;
-            margin: 0 !important;
-            width: 100% !important;
-            border-radius: 0 !important;
+            margin-bottom: 15px !important;
           }
-
-          .wt-content-grid {
+          
+          .wt-content-grid, .daily-stats-grid, .weekly-charts-grid {
             display: block !important;
+          }
+          
+          .stats-sidebar, .daily-side-pills, .actions-card {
             width: 100% !important;
+            margin-top: 20px !important;
           }
 
-          .wt-table-header {
-            display: grid !important;
-            grid-template-columns: 100px 150px 1fr 1fr 150px !important;
-            background: #f0f0f0 !important;
-            border-top: 2px solid #000 !important;
-            border-bottom: 2px solid #000 !important;
-            color: #000 !important;
-            text-transform: uppercase;
-            font-weight: 900 !important;
-          }
+          .actions-card { display: none !important; } /* Hide quick actions in print */
 
-          .wt-row {
-            display: grid !important;
-            grid-template-columns: 100px 150px 1fr 1fr 150px !important;
-            border-bottom: 1px solid #000 !important;
-            padding: 8px 20px !important;
-            page-break-inside: avoid;
-            align-items: center !important;
-          }
+          h1, h2, h3, .val, .p-value, .percent, .ist, .day { color: #000 !important; text-shadow: none !important; }
+          .text-secondary, .val-label, .p-label, .column-label .date { color: #555 !important; }
+          
+          .gauge-bg { stroke: #eee !important; }
+          .gauge-fill { stroke: #0099ff !important; }
 
-          .count-input {
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            font-size: 1.2rem !important;
-            color: #000 !important;
-            box-shadow: none !important;
-            text-align: center !important;
-            width: 100% !important;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-          }
+          .efficiency-progress-bg { background: #eee !important; border: 1px solid #ddd !important; }
+          .efficiency-progress-fill { background: #0099ff !important; }
 
-          .actual-display {
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            justify-content: center !important;
-          }
-
-          .actual-display .val {
-            color: #000 !important;
-            font-size: 1.2rem !important;
-            text-shadow: none !important;
-            font-weight: 700 !important;
-          }
-
-          .col-hour { color: #000 !important; font-weight: 700 !important; }
-          .col-hour svg, .hour-dot { display: none !important; }
-
+          .bullet-bar-bg { background: #f9f9f9 !important; border: 1px solid #eee !important; }
+          .bullet-target-line { background: #000 !important; box-shadow: none !important; height: 2px !important; }
+          .bullet-bar-actual { background: #0099ff !important; }
+          .bullet-bar-actual.goal-met { background: #2ecc71 !important; }
+          
           .wt-row.totals-row {
             background: #f0f0f0 !important;
-            border-top: 2px solid #000 !important;
-            border-bottom: 2px solid #000 !important;
-            margin-top: 0 !important;
-            border-radius: 0 !important;
-          }
-
-          .totals-row .col-hour span {
-            background: transparent !important;
-            color: #000 !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            font-size: 1.1rem !important;
-            font-weight: 900 !important;
-          }
-
-          .totals-row .actual-display { background: transparent !important; border: none !important; }
-          .totals-row .actual-display .val { font-size: 1.6rem !important; font-weight: 900 !important; }
-
-          .status-badge { 
-            border: 1px solid #000 !important; 
-            padding: 4px 8px !important; 
-            font-size: 0.75rem !important;
-            border-radius: 4px !important;
-            font-weight: 900 !important;
-          }
-          .status-badge.met { background: #fff !important; color: #000 !important; }
-          .status-badge.behind { background: #ddd !important; color: #000 !important; }
-
-          /* Stats page printing if active */
-          .daily-stats-grid, .weekly-charts-grid, .stats-container { display: none !important; }
-
-          body.print-mode-report .wt-content-grid { display: block !important; }
-          body.print-mode-report .stats-container { display: none !important; }
-
-          body.print-mode-stats .wt-content-grid { display: none !important; }
-          body.print-mode-stats .stats-container { 
-            display: block !important; 
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          body.print-mode-stats .daily-stats-grid { 
-            display: block !important;
-            margin-bottom: 20px !important;
-          }
-          body.print-mode-stats .weekly-charts-grid { display: block !important; }
-          body.print-mode-stats .actions-card, body.print-mode-stats .daily-side-pills { display: none !important; }
-          
-          body.print-mode-stats .main-chart-card, body.print-mode-stats .daily-hero-card { 
-            background: #fff !important;
             border: 1px solid #000 !important;
-            box-shadow: none !important;
-            margin-bottom: 20px !important;
-            padding: 20px !important;
             color: #000 !important;
-            border-radius: 0 !important;
           }
-
-          body.print-mode-stats .gauge-bg { stroke: #eee !important; stroke-width: 10px !important; }
-          body.print-mode-stats .gauge-fill { stroke: #000 !important; stroke-width: 10px !important; }
-          body.print-mode-stats .gauge-content .percent { color: #000 !important; font-weight: 900 !important; font-size: 2rem !important; }
-          body.print-mode-stats .gauge-content .label { color: #555 !important; font-weight: 700 !important; }
+          .totals-row .actual-display { background: #fff !important; border: 1px solid #000 !important; box-shadow: none !important; }
+          .totals-row .actual-display .val { color: #000 !important; text-shadow: none !important; }
           
-          body.print-mode-stats .hero-header h3 { color: #000 !important; font-weight: 900 !important; text-transform: uppercase; }
-          body.print-mode-stats .val-label { color: #555 !important; font-weight: 700 !important; }
-          body.print-mode-stats .val-number { color: #000 !important; font-weight: 900 !important; font-size: 2rem !important; }
-          body.print-mode-stats .val-number.muted { color: #777 !important; }
-          
-          body.print-mode-stats .bullet-bar-bg { background: #f9f9f9 !important; border: 1px solid #000 !important; }
-          body.print-mode-stats .bullet-bar-actual { background: #666 !important; }
-          body.print-mode-stats .bullet-bar-actual.goal-met { background: #000 !important; }
-          body.print-mode-stats .bullet-target-line { border-bottom: 3px solid #000 !important; background: transparent !important; }
-          body.print-mode-stats .column-label .day { color: #000 !important; font-weight: 900 !important; }
-          body.print-mode-stats .bar-label-dual .ist { color: #000 !important; font-weight: 900 !important; }
-          body.print-mode-stats .bar-label-dual .ziel { color: #777 !important; }
-          body.print-mode-stats svg { filter: none !important; }
-          body.print-mode-stats .print-footer { display: none !important; }
-          
-          /* Compact sizing to fit one page */
-          body.print-mode-stats .weekly-bar-chart { height: 320px !important; padding: 20px 10px !important; gap: 10px !important; }
-          body.print-mode-stats .bullet-chart-container { height: 220px !important; width: 70px !important; }
-          body.print-mode-stats .main-chart-card { min-height: auto !important; padding: 15px !important; }
-          body.print-mode-stats .bullet-bar-actual { left: 10px !important; right: 10px !important; }
-          body.print-mode-stats .bar-label-dual .ist { font-size: 1.4rem !important; }
-          body.print-mode-stats .bar-label-dual .ziel { font-size: 0.8rem !important; }
-        }
+          .status-badge { border: 1px solid #000 !important; }
+          .status-badge.met { background: #e8f8f0 !important; color: #1e8449 !important; }
+          .status-badge.behind { background: #fdeded !important; color: #a94442 !important; }
 
-        @media screen {
-          .no-screen { display: none !important; }
-        }
-
-        @media print {
-          .animate-fade-in { animation: none !important; opacity: 1 !important; transform: none !important; }
-          .no-screen { display: block !important; }
+          .chart-column { transform: none !important; }
+          .bar-label-dual .ziel { color: #777 !important; }
         }
 
         .wt-container {
