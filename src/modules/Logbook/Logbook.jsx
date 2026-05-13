@@ -109,7 +109,7 @@ const Logbook = () => {
             </button>
           </div>
         </div>
-        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', textTransform: 'uppercase' }}>
           {t.logbook}
           {selectedLine && <span className="line-badge" style={{ fontSize: '1rem' }}>{selectedLine}</span>}
         </h1>
