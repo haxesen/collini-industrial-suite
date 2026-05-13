@@ -96,6 +96,19 @@ export const useLogbook = () => {
     }
   };
 
+  const deleteLogEntry = async (id) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('logbook')
+        .delete()
+        .eq('id', id);
+      if (!error) fetchLogbook();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const startEditLog = (entry) => {
     setEditingLogId(entry.id);
     setNewLogEntry({
@@ -192,7 +205,7 @@ export const useLogbook = () => {
     logSearch, setLogSearch, logFilterStatus, setLogFilterStatus,
     logFilterPrio, setLogFilterPrio, logFilterDept, setLogFilterDept,
     logSortConfig, setLogSortConfig, editingLogId, newLogEntry, setNewLogEntry,
-    saveLogEntry, startEditLog, quickUpdateLog, finalizeRepair,
+    saveLogEntry, startEditLog, quickUpdateLog, finalizeRepair, deleteLogEntry,
     handleSort, resetFilters, filteredAndSortedEntries, fetchLogbook
   };
 };

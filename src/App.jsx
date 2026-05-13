@@ -6,6 +6,7 @@ import { useApp } from './context/AppContext'
 // Layout Components
 import GlobalTicker from './components/GlobalTicker'
 import AdminLogin from './components/AdminLogin'
+import ConfirmModal from './components/ConfirmModal'
 
 // Modules
 import Hub from './modules/Hub/Hub'
@@ -113,6 +114,7 @@ function App() {
 
       {showAdminLogin && <AdminLogin />}
       {showManager && isAdmin && <AdminManager />}
+      <ConfirmModal />
       
       {isLoading && <LoadingOverlay />}
 

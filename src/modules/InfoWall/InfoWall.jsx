@@ -13,7 +13,7 @@ import colliniLogo from '../../assets/Collini_Logo.svg';
 
 
 const InfoWall = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, lang, selectedLine } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, lang, selectedLine, askConfirm } = useApp();
   const info = useInfoWall();
   const editorRef = React.useRef(null);
 
@@ -83,10 +83,19 @@ const InfoWall = () => {
                 <div className="info-card-footer">
                    <span className="info-author">{getDeptDisplay(item.department)}</span>
                     <div className="info-card-actions">
-                      <button className="info-action-btn" onClick={() => info.startEditInfo(item)}><Edit3 size={16} /></button>
-                      {isAdmin && (
-                        <button className="info-action-btn delete" onClick={() => info.deleteInfoEntry(item.id)}><Trash2 size={16} /></button>
-                      )}
+                      <button className="info-action-btn" onClick={() => info.startEditInfo(item)} title={t.edit}><Edit3 size={16} /></button>
+                      <button 
+                        className="info-action-btn delete" 
+                        onClick={() => {
+                          askConfirm(
+                            lang === 'hu' ? 'Biztosan törlöd ezt a hirdetést?' : 'Sicher löschen?',
+                            () => info.deleteInfoEntry(item.id)
+                          );
+                        }}
+                        title={t.delete}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                 </div>
               </div>
@@ -170,9 +179,28 @@ const InfoWall = () => {
                 </select>
               </div>
             </div>
-            <button className="save-btn-premium" onClick={info.saveInfoEntry} style={{marginTop: '25px', width: '100%'}}>
-              {t.save}
-            </button>
+            <div style={{ display: 'flex', gap: '15px', marginTop: '25px' }}>
+              {info.editingInfoId && (
+                <button 
+                  className="delete-btn-premium" 
+                  onClick={() => {
+                    askConfirm(
+                      lang === 'hu' ? 'Biztosan törlöd ezt a hirdetést?' : 'Sicher löschen?',
+                      () => {
+                        info.deleteInfoEntry(info.editingInfoId);
+                        info.setShowInfoModal(false);
+                      }
+                    );
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  <Trash2 size={20} /> {t.delete}
+                </button>
+              )}
+              <button className="save-btn-premium" onClick={info.saveInfoEntry} style={{ flex: 2 }}>
+                {t.save}
+              </button>
+            </div>
           </div>
         </div>
       </div>

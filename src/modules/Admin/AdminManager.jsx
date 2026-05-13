@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { useAdmin } from './useAdmin';
 
 const AdminManager = () => {
-  const { t, lang, setShowManager } = useApp();
+  const { t, lang, setShowManager, askConfirm } = useApp();
   const admin = useAdmin();
 
   return (
@@ -35,7 +35,12 @@ const AdminManager = () => {
                       admin.setNewProductName(p.name); 
                       admin.setNewProductSoll(p.target_thickness.toString());
                     }}><Edit2 size={14} /></button>
-                    <button className="delete-btn" onClick={() => admin.deleteProduct(p.id)}><Trash2 size={14} /></button>
+                    <button className="delete-btn" onClick={() => {
+                      askConfirm(
+                        lang === 'hu' ? `Biztosan törlöd a(z) "${p.name}" terméket?` : `Produkt "${p.name}" wirklich löschen?`,
+                        () => admin.deleteProduct(p.id)
+                      );
+                    }}><Trash2 size={14} /></button>
                   </div>
                 </div>
               ))}
@@ -58,7 +63,12 @@ const AdminManager = () => {
                 {admin.logbookConfig.filter(c => c.type === 'dept').map(item => (
                   <div key={item.id} className="admin-data-item">
                     <span>{item.label} <small>({item.value})</small></span>
-                    <button className="delete-btn" onClick={() => admin.deleteConfigItem(item.id)}><Trash2 size={12} /></button>
+                    <button className="delete-btn" onClick={() => {
+                      askConfirm(
+                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" kategóriát?` : `Kategorie "${item.label}" wirklich löschen?`,
+                        () => admin.deleteConfigItem(item.id)
+                      );
+                    }}><Trash2 size={12} /></button>
                   </div>
                 ))}
               </div>
@@ -75,7 +85,12 @@ const AdminManager = () => {
                 {admin.logbookConfig.filter(c => c.type === 'operator').map(item => (
                   <div key={item.id} className="admin-data-item">
                     <span>{item.label}</span>
-                    <button className="delete-btn" onClick={() => admin.deleteConfigItem(item.id)}><Trash2 size={12} /></button>
+                    <button className="delete-btn" onClick={() => {
+                      askConfirm(
+                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" kezelőt?` : `Bediener "${item.label}" wirklich löschen?`,
+                        () => admin.deleteConfigItem(item.id)
+                      );
+                    }}><Trash2 size={12} /></button>
                   </div>
                 ))}
               </div>
@@ -92,7 +107,12 @@ const AdminManager = () => {
                 {admin.logbookConfig.filter(c => c.type === 'mech').map(item => (
                   <div key={item.id} className="admin-data-item">
                     <span>{item.label}</span>
-                    <button className="delete-btn" onClick={() => admin.deleteConfigItem(item.id)}><Trash2 size={12} /></button>
+                    <button className="delete-btn" onClick={() => {
+                      askConfirm(
+                        lang === 'hu' ? `Biztosan törlöd a(z) "${item.label}" karbantartót?` : `Instandhalter "${item.label}" wirklich löschen?`,
+                        () => admin.deleteConfigItem(item.id)
+                      );
+                    }}><Trash2 size={12} /></button>
                   </div>
                 ))}
               </div>

@@ -62,7 +62,7 @@ import LanguageToggle from '../../components/LanguageToggle';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm } = useApp();
   const log = useLogbook();
   const [finisherName, setFinisherName] = useState('');
   const [finisherMassnahme, setFinisherMassnahme] = useState('');
@@ -214,7 +214,20 @@ const Logbook = () => {
                   </td>
                   <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
                   <td className="col-edit">
-                    <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
+                      <button 
+                        className="edit-icon-btn delete" 
+                        onClick={() => {
+                          askConfirm(
+                            lang === 'hu' ? 'Biztosan törlöd ezt a bejegyzést?' : 'Eintrag wirklich löschen?',
+                            () => log.deleteLogEntry(entry.id)
+                          );
+                        }}
+                      >
+                        <Trash2 size(14) />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -327,7 +340,26 @@ const Logbook = () => {
                   style={{ minHeight: '100px' }}
                 />
               </div>
-              <button className="add-btn" onClick={log.saveLogEntry}>{t.save}</button>
+              <div style={{ display: 'flex', gap: '15px' }}>
+                {log.editingLogId && (
+                  <button 
+                    className="delete-btn-premium" 
+                    onClick={() => {
+                      askConfirm(
+                        lang === 'hu' ? 'Biztosan törlöd ezt a bejegyzést?' : 'Eintrag wirklich löschen?',
+                        () => {
+                          log.deleteLogEntry(log.editingLogId);
+                          log.setShowLogEntryModal(false);
+                        }
+                      );
+                    }}
+                    style={{ flex: 1 }}
+                  >
+                    <Trash2 size={20} /> {t.delete}
+                  </button>
+                )}
+                <button className="add-btn" onClick={log.saveLogEntry} style={{ flex: 2 }}>{t.save}</button>
+              </div>
             </div>
           </div>
         </div>

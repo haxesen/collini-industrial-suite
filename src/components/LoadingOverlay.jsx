@@ -1,15 +1,16 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 
-const LoadingOverlay = ({ message = 'BITTE WARTEN...' }) => {
+const LoadingOverlay = () => {
   return (
     <div className="loading-overlay">
-      <div className="loader-content">
-        <div className="spinner-wrapper">
-          <Loader2 className="spinner-icon" size={48} />
-          <div className="spinner-ring"></div>
+      <div className="elegant-loader-container">
+        <div className="loader-logo-placeholder">
+          {/* Logo can be added here if needed, but for now just the bar */}
         </div>
-        <p className="loading-message">{message}</p>
+        <div className="premium-loading-bar-wrapper">
+          <div className="premium-loading-bar-progress"></div>
+          <div className="premium-loading-bar-glow"></div>
+        </div>
       </div>
     </div>
   );

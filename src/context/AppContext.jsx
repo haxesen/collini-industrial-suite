@@ -23,6 +23,7 @@ export const AppProvider = ({ children }) => {
   const [staff, setStaff] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [confirmModal, setConfirmModal] = useState({ show: false, message: '', onConfirm: null });
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -140,6 +141,10 @@ export const AppProvider = ({ children }) => {
 
   const t = translations[lang];
 
+  const askConfirm = (message, onConfirm) => {
+    setConfirmModal({ show: true, message, onConfirm });
+  };
+
   return (
     <AppContext.Provider value={{ 
       lang, setLang, 
@@ -153,7 +158,8 @@ export const AppProvider = ({ children }) => {
       selectedLine, setSelectedLine,
       machines, fetchMachines,
       isLoading, setIsLoading,
-      isOffline
+      isOffline,
+      confirmModal, setConfirmModal, askConfirm
     }}>
       {children}
     </AppContext.Provider>

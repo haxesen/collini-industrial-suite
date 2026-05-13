@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { getDeptDisplay, stripHtml } from '../utils/helpers';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../supabase';
-import { Check, User, AlertCircle, Bell, Info } from 'lucide-react';
+import { Check, User, AlertCircle, Bell, Info, ChevronUp, ChevronDown } from 'lucide-react';
+import { translations } from '../utils/translations';
 
 const GlobalTicker = ({ activeInfos = [] }) => {
   const { staff, fetchActiveInfos, lang } = useApp();
+  const t = translations[lang];
   const [page, setPage] = useState(0);
   const [showSelector, setShowSelector] = useState(false);
   const [selectedInfoId, setSelectedInfoId] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return localStorage.getItem('collini_ticker_collapsed') === 'true';
+  });
   const [, setTick] = useState(0);
 
   const priorityInfos = activeInfos.filter(info => 
@@ -59,10 +64,25 @@ const GlobalTicker = ({ activeInfos = [] }) => {
   // Display current page items
   const currentItems = priorityInfos.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
+  const toggleTicker = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('collini_ticker_collapsed', newState);
+  };
+
   return (
     <>
-      <div className="global-ticker-container mcd-style">
-        <div className="ticker-header-info">
+      <div className={`global-ticker-container mcd-style ${isCollapsed ? 'collapsed' : ''}`}>
+        <button className="ticker-toggle-btn" onClick={toggleTicker} title={isCollapsed ? t.show : t.hide}>
+          {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+          {isCollapsed && priorityInfos.length > 0 && (
+            <span className="collapsed-count-badge">{priorityInfos.length}</span>
+          )}
+        </button>
+        
+        {!isCollapsed && (
+          <>
+            <div className="ticker-header-info">
           <span className="ticker-total-count">
             {page * itemsPerPage + 1}-{Math.min((page + 1) * itemsPerPage, priorityInfos.length)} / {priorityInfos.length} INFOS
           </span>
@@ -119,7 +139,9 @@ const GlobalTicker = ({ activeInfos = [] }) => {
               </div>
             </div>
           )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
       {showSelector && (

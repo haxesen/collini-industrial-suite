@@ -87,7 +87,10 @@ export const translations = {
     short: 'Rövidítés',
     desc: 'Megnevezés',
     offlineTitle: 'NINCS INTERNETKAPCSOLAT',
-    offlineMsg: 'Az alkalmazás korlátozottan működhet. Ellenőrizze a kapcsolatot!'
+    offlineMsg: 'Az alkalmazás korlátozottan működhet. Ellenőrizze a kapcsolatot!',
+    cancel: 'Mégse',
+    show: 'Megnyitás',
+    hide: 'Becsukás'
   },
   de: {
     title: 'INDUSTRIAL SUITE',
@@ -177,6 +180,9 @@ export const translations = {
     short: 'Kürzel',
     desc: 'Bezeichnung',
     offlineTitle: 'KEINE INTERNETVERBINDUNG',
-    offlineMsg: 'Die Anwendung kann eingeschränkt sein. Bitte Verbindung prüfen!'
+    offlineMsg: 'Die Anwendung kann eingeschränkt sein. Bitte Verbindung prüfen!',
+    cancel: 'Abbrechen',
+    show: 'Einblenden',
+    hide: 'Ausblenden'
   }
 }
