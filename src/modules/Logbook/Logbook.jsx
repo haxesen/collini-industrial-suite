@@ -62,7 +62,7 @@ import { formatDate, getPrioLabel } from '../../utils/helpers';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm, isMobile } = useApp();
   const log = useLogbook();
   const [finisherName, setFinisherName] = useState('');
   const [finisherMassnahme, setFinisherMassnahme] = useState('');
@@ -145,95 +145,202 @@ const Logbook = () => {
 
             <button className="reset-filters-btn" onClick={log.resetFilters}><RotateCcw size={16} /></button>
           </div>
-          <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>
-            <Plus size={18} /> {t.addEntry}
-          </button>
+          </div>
+          {!isMobile && (
+            <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>
+              <Plus size={18} /> {t.addEntry}
+            </button>
+          )}
         </div>
 
-        <div className="logbook-table-container">
-          <table className="logbook-table">
-            <thead>
-              <tr>
-                <th onClick={() => log.handleSort('created_at')} className="sortable">{t.printDate} {log.logSortConfig.key === 'created_at' && (log.logSortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th style={{ width: '40px' }}>{t.isNew}</th>
-                <th>{t.problem}</th>
-                <th>{t.erfasser}</th>
-                <th onClick={() => log.handleSort('prio')} className="sortable">{t.prio}</th>
-                <th>{t.dept}</th>
-                <th>{t.who}</th>
-                <th>{t.action}</th>
-                <th>{t.startWork}</th>
-                <th>{t.finishTime}</th>
-                <th>{t.status}</th>
-                <th>{t.completedBy}</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {log.filteredAndSortedEntries.map(entry => (
-                <tr key={entry.id} className={`row-prio-${entry.prio.split('_')[1] || entry.prio} row-status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-                  <td className="col-date">{formatDate(entry.created_at, t.lang)}</td>
-                  <td className="col-new">
-                    {entry.is_new && <span className="new-dot"></span>}
-                  </td>
-                  <td className="col-problem">
-                    <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
-                  </td>
-                  <td className="col-erfasser">{entry.erfasser}</td>
-                  <td className="col-prio">
-                    <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
-                      {getPrioLabel(entry.prio, t)}
-                    </span>
-                  </td>
-                  <td className="col-dept">{entry.abteilung}</td>
-                  <td className="col-who">
-                    <span className="worker-name">{entry.wer_ist_dran || '---'}</span>
-                  </td>
-                  <td className="col-action">
-                    {entry.massnahme || '---'}
-                  </td>
-                  <td className="col-start-time">
-                    {entry.status === '1_Offen' ? (
-                      <button className="small-btn start-btn" onClick={() => log.quickUpdateLog(entry.id, 'in_arbeit_ab', new Date().toISOString())}>{t.start}</button>
-                    ) : (
-                      formatDate(entry.in_arbeit_ab, t.lang)
-                    )}
-                  </td>
-                  <td className="col-end-time">
-                    {entry.status === '2_In_Arbeit' ? (
-                      <button className="small-btn done" onClick={() => log.quickUpdateLog(entry.id, 'erledigt_am', new Date().toISOString())}>{t.done}</button>
-                    ) : (
-                      formatDate(entry.erledigt_am, t.lang)
-                    )}
-                  </td>
-                  <td className="col-status">
-                    <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-                      {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
-                    </div>
-                  </td>
-                  <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
-                  <td className="col-edit">
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
-                      <button 
-                        className="edit-icon-btn delete" 
-                        onClick={() => {
-                          askConfirm(
-                            'Eintrag wirklich löschen?',
-                            () => log.deleteLogEntry(entry.id)
-                          );
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
+        {!isMobile ? (
+          <div className="logbook-table-container">
+            <table className="logbook-table">
+              <thead>
+                <tr>
+                  <th onClick={() => log.handleSort('created_at')} className="sortable">{t.printDate} {log.logSortConfig.key === 'created_at' && (log.logSortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                  <th style={{ width: '40px' }}>{t.isNew}</th>
+                  <th>{t.problem}</th>
+                  <th>{t.erfasser}</th>
+                  <th onClick={() => log.handleSort('prio')} className="sortable">{t.prio}</th>
+                  <th>{t.dept}</th>
+                  <th>{t.who}</th>
+                  <th>{t.action}</th>
+                  <th>{t.startWork}</th>
+                  <th>{t.finishTime}</th>
+                  <th>{t.status}</th>
+                  <th>{t.completedBy}</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {log.filteredAndSortedEntries.map(entry => (
+                  <tr key={entry.id} className={`row-prio-${entry.prio.split('_')[1] || entry.prio} row-status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                    <td className="col-date">{formatDate(entry.created_at, t.lang)}</td>
+                    <td className="col-new">
+                      {entry.is_new && <span className="new-dot"></span>}
+                    </td>
+                    <td className="col-problem">
+                      <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                    </td>
+                    <td className="col-erfasser">{entry.erfasser}</td>
+                    <td className="col-prio">
+                      <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                        {getPrioLabel(entry.prio, t)}
+                      </span>
+                    </td>
+                    <td className="col-dept">{entry.abteilung}</td>
+                    <td className="col-who">
+                      <span className="worker-name">{entry.wer_ist_dran || '---'}</span>
+                    </td>
+                    <td className="col-action">
+                      {entry.massnahme || '---'}
+                    </td>
+                    <td className="col-start-time">
+                      {entry.status === '1_Offen' ? (
+                        <button className="small-btn start-btn" onClick={() => log.quickUpdateLog(entry.id, 'in_arbeit_ab', new Date().toISOString())}>{t.start}</button>
+                      ) : (
+                        formatDate(entry.in_arbeit_ab, t.lang)
+                      )}
+                    </td>
+                    <td className="col-end-time">
+                      {entry.status === '2_In_Arbeit' ? (
+                        <button className="small-btn done" onClick={() => log.quickUpdateLog(entry.id, 'erledigt_am', new Date().toISOString())}>{t.done}</button>
+                      ) : (
+                        formatDate(entry.erledigt_am, t.lang)
+                      )}
+                    </td>
+                    <td className="col-status">
+                      <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                        {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                      </div>
+                    </td>
+                    <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
+                    <td className="col-edit">
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
+                        <button 
+                          className="edit-icon-btn delete" 
+                          onClick={() => {
+                            askConfirm(
+                              'Eintrag wirklich löschen?',
+                              () => log.deleteLogEntry(entry.id)
+                            );
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="logbook-mobile-list">
+            {log.filteredAndSortedEntries.map(entry => (
+              <div key={entry.id} className={`log-mobile-card prio-${entry.prio.split('_')[1] || entry.prio} status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                <div className="card-header">
+                  <span className="card-date">{formatDate(entry.created_at, t.lang)}</span>
+                  <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                    {getPrioLabel(entry.prio, t)}
+                  </span>
+                </div>
+                <div className="card-body">
+                  <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                  <div className="card-meta">
+                    <span><strong>Von:</strong> {entry.erfasser}</span>
+                    <span><strong>Abt:</strong> {entry.abteilung}</span>
+                  </div>
+                  {entry.massnahme && (
+                    <div className="card-action">
+                      <strong>Maßnahme:</strong>
+                      <div dangerouslySetInnerHTML={{ __html: entry.massnahme }} />
+                    </div>
+                  )}
+                </div>
+                <div className="card-footer">
+                  <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                    {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                  </div>
+                  <span className="worker">{entry.wer_ist_dran || '---'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        .logbook-mobile-list {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          padding: 10px;
+        }
+
+        .log-mobile-card {
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          overflow: hidden;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .log-mobile-card.prio-kritisch { border-left: 4px solid #ff4d4d; }
+        .log-mobile-card.prio-hoch { border-left: 4px solid #ffa500; }
+        .log-mobile-card.status-erledigt { opacity: 0.8; }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.8rem;
+        }
+
+        .card-date { color: var(--text-secondary); font-weight: 600; }
+
+        .card-body .problem-text {
+          font-size: 1rem;
+          margin-bottom: 10px;
+          color: #fff;
+        }
+
+        .card-meta {
+          display: flex;
+          gap: 15px;
+          font-size: 0.8rem;
+          color: var(--text-secondary);
+        }
+
+        .card-action {
+          margin-top: 10px;
+          padding: 10px;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+          font-size: 0.85rem;
+        }
+
+        .card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 5px;
+          padding-top: 10px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .worker { font-size: 0.8rem; color: #fff; font-weight: 700; }
+
+        @media (max-width: 1024px) {
+          .logbook-controls { grid-template-columns: 1fr !important; }
+          .logbook-header { flex-direction: column; gap: 15px; }
+        }
+      `}</style>
 
       {log.showLogEntryModal && (
         <div className="manager-overlay">

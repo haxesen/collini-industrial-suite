@@ -14,6 +14,8 @@
   --glass-border: rgba(255, 255, 255, 0.05);
   --font-main: 'IBM Plex Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+  --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #0099ff 100%);
+  --accent-cyan: #00f2fe;
 }
 
 * {
@@ -4234,5 +4236,84 @@ body.wide-layout .header-top-classic {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+  }
+}
+/* --- GLOBAL MOBILE RESPONSIVENESS --- */
+@media (max-width: 1024px) {
+  .full-view-wrapper {
+    overflow-x: hidden;
+  }
+
+  .app-container {
+    padding: 10px !important;
+    margin-top: 10px;
+  }
+
+  .wide-container {
+    max-width: 100% !important;
+  }
+
+  .hub-header {
+    padding: 20px !important;
+  }
+
+  .hub-header h1 {
+    font-size: 1.8rem !important;
+    line-height: 1.2;
+  }
+
+  .hub-logo {
+    height: 35px !important;
+  }
+
+  .hub-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+    padding: 0 10px 40px 10px !important;
+  }
+
+  .hub-card {
+    min-height: 180px !important;
+    padding: 25px !important;
+  }
+
+  .hub-card-icon svg {
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  .hub-card h2 {
+    font-size: 1.4rem !important;
+  }
+
+  /* Admin Buttons on Hub */
+  .hub-header-btn {
+    padding: 8px !important;
+  }
+  
+  .hub-header-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Modal Adjustments */
+  .manager-content {
+    width: 95% !important;
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-actions {
+    gap: 5px !important;
+  }
+  
+  .ticker-header-info {
+    font-size: 0.6rem !important;
+  }
+  
+  .line-badge {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
   }
 }

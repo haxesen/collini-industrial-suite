@@ -6,7 +6,7 @@ import { Check, User, AlertCircle, Bell, Info, ChevronUp, ChevronDown } from 'lu
 import { translations } from '../utils/translations';
 
 const GlobalTicker = ({ activeInfos = [] }) => {
-  const { staff, fetchActiveInfos, lang } = useApp();
+  const { staff, fetchActiveInfos, lang, isMobile } = useApp();
   const t = translations[lang];
   const [page, setPage] = useState(0);
   const [showSelector, setShowSelector] = useState(false);
@@ -21,7 +21,7 @@ const GlobalTicker = ({ activeInfos = [] }) => {
   );
   const normalCount = activeInfos.filter(info => info.priority === '2_normal').length;
 
-  const itemsPerPage = 3;
+  const itemsPerPage = isMobile ? 1 : 3;
   const totalPages = Math.ceil(priorityInfos.length / itemsPerPage);
 
   useEffect(() => {
