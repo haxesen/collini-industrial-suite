@@ -116,7 +116,7 @@ const Logbook = () => {
         <div className="subtitle">{t.logbook}</div>
       </header>
 
-      <main className="logbook-main">
+      <div className="logbook-main">
         <div className="logbook-header">
           <div className="logbook-controls">
             <div className="search-box">
