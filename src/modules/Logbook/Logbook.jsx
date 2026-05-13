@@ -62,7 +62,7 @@ import { formatDate, getPrioLabel } from '../../utils/helpers';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
-  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm } = useApp();
+  const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm, isMobile } = useApp();
   const log = useLogbook();
   const [finisherName, setFinisherName] = useState('');
   const [finisherMassnahme, setFinisherMassnahme] = useState('');
@@ -88,7 +88,7 @@ const Logbook = () => {
   ];
 
   return (
-    <div>
+    <div className="full-view-wrapper">
       <header>
         <div className="header-top">
           <button className="back-btn" onClick={() => setView('hub')}>
@@ -96,17 +96,19 @@ const Logbook = () => {
           </button>
 
           <div className="header-actions">
-            {isAdmin && (
+            {!isMobile && isAdmin && (
               <button className="icon-btn-header" onClick={() => setShowManager(true)}>
                 <Settings size={20} />
               </button>
             )}
-            <button 
-              className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
-              onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}
-            >
-              {isAdmin ? <Unlock size={20} /> : <Lock size={20} />}
-            </button>
+            {!isMobile && (
+              <button 
+                className={`icon-btn-header ${isAdmin ? 'admin-active' : ''}`} 
+                onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}
+              >
+                {isAdmin ? <Unlock size={20} /> : <Lock size={20} />}
+              </button>
+            )}
           </div>
         </div>
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', textTransform: 'uppercase' }}>
@@ -145,12 +147,15 @@ const Logbook = () => {
 
             <button className="reset-filters-btn" onClick={log.resetFilters}><RotateCcw size={16} /></button>
           </div>
-          <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>
-            <Plus size={18} /> {t.addEntry}
-          </button>
+          {!isMobile && (
+            <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>
+              <Plus size={18} /> {t.addEntry}
+            </button>
+          )}
         </div>
 
-        <div className="logbook-table-container">
+        {!isMobile ? (
+          <div className="logbook-table-container">
           <table className="logbook-table">
             <thead>
               <tr>
@@ -233,7 +238,40 @@ const Logbook = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      ) : (
+        <div className="logbook-mobile-list">
+          {log.filteredAndSortedEntries.map(entry => (
+            <div key={entry.id} className={`log-mobile-card prio-${entry.prio.split('_')[1] || entry.prio} status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+              <div className="card-header">
+                <span className="card-date">{formatDate(entry.created_at, t.lang)}</span>
+                <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                  {getPrioLabel(entry.prio, t)}
+                </span>
+              </div>
+              <div className="card-body">
+                <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                <div className="card-meta">
+                  <span><strong>Von:</strong> {entry.erfasser}</span>
+                  <span><strong>Abt:</strong> {entry.abteilung}</span>
+                </div>
+                {entry.massnahme && (
+                  <div className="card-action">
+                    <strong>Maßnahme:</strong>
+                    {entry.massnahme}
+                  </div>
+                )}
+              </div>
+              <div className="card-footer">
+                <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                  {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                </div>
+                <span className="worker">{entry.wer_ist_dran || '---'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
       {log.showLogEntryModal && (
         <div className="manager-overlay">

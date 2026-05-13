@@ -24,7 +24,7 @@ import { de } from 'date-fns/locale';
 import { useApp } from '../../context/AppContext';
 
 const WTAblauf = () => {
-  const { t, setView, selectedLine } = useApp();
+  const { t, setView, selectedLine, isMobile } = useApp();
   const [mode, setMode] = useState('tracking'); 
   const [counts, setCounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -432,13 +432,19 @@ const WTAblauf = () => {
         </button>
       </div>
 
+      {isMobile && (
+        <div className="mobile-info-banner">
+          <Info size={16} /> <span>{t.viewerMode || 'Anzeigemodus'}</span>
+        </div>
+      )}
+
       {loading ? (
         <div className="wt-loader-container animate-fade-in">
           <Loader2 className="spinner" size={48} />
           <p>Daten werden geladen...</p>
         </div>
       ) : mode === 'tracking' ? (
-        <div className="wt-content-grid animate-fade-in">
+        <div className={`wt-content-grid ${isMobile ? 'wt-content-grid-mobile' : ''} animate-fade-in`}>
           <div className="main-table-card glass-panel">
             <div className="shift-tabs-container">
               <div className="shift-tabs-pill">
@@ -481,32 +487,44 @@ const WTAblauf = () => {
                     </div>
                     
                     <div className="col-target">
-                      <input
-                        type="number"
-                        value={rowData.target_count}
-                        onChange={(e) => handleCountChange(line, 'target_count', e.target.value)}
-                        className={`count-input target ${savingLines[`${line}-target_count`] || ''}`}
-                      />
+                      {!isMobile ? (
+                        <input
+                          type="number"
+                          value={rowData.target_count}
+                          onChange={(e) => handleCountChange(line, 'target_count', e.target.value)}
+                          className={`count-input target ${savingLines[`${line}-target_count`] || ''}`}
+                        />
+                      ) : (
+                        <div className="mobile-val-display target">{rowData.target_count}</div>
+                      )}
                     </div>
 
                     <div className="col-ist">
-                      <div className="actual-display">
-                        <span className="val">{rowData.count}</span>
-                        <div className="btn-group">
-                          <button onClick={() => handleCountChange(line, 'count', rowData.count + 1)} className="adjust-btn plus">+</button>
-                          <button onClick={() => handleCountChange(line, 'count', Math.max(0, rowData.count - 1))} className="adjust-btn minus">-</button>
+                      {!isMobile ? (
+                        <div className="actual-display">
+                          <span className="val">{rowData.count}</span>
+                          <div className="btn-group">
+                            <button onClick={() => handleCountChange(line, 'count', rowData.count + 1)} className="adjust-btn plus">+</button>
+                            <button onClick={() => handleCountChange(line, 'count', Math.max(0, rowData.count - 1))} className="adjust-btn minus">-</button>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="mobile-val-display ist">{rowData.count}</div>
+                      )}
                     </div>
 
                     <div className="col-magazin">
-                      <div className="actual-display">
-                        <span className="val">{rowData.magazin_count}</span>
-                        <div className="btn-group">
-                          <button onClick={() => handleCountChange(line, 'magazin_count', rowData.magazin_count + 1)} className="adjust-btn plus">+</button>
-                          <button onClick={() => handleCountChange(line, 'magazin_count', Math.max(0, rowData.magazin_count - 1))} className="adjust-btn minus">-</button>
+                      {!isMobile ? (
+                        <div className="actual-display">
+                          <span className="val">{rowData.magazin_count}</span>
+                          <div className="btn-group">
+                            <button onClick={() => handleCountChange(line, 'magazin_count', rowData.magazin_count + 1)} className="adjust-btn plus">+</button>
+                            <button onClick={() => handleCountChange(line, 'magazin_count', Math.max(0, rowData.magazin_count - 1))} className="adjust-btn minus">-</button>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="mobile-val-display">{rowData.magazin_count}</div>
+                      )}
                     </div>
 
                     <div className="col-status">

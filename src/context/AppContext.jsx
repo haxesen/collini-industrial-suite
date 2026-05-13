@@ -188,6 +188,14 @@ export const AppProvider = ({ children }) => {
     setConfirmModal({ show: true, message, onConfirm });
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <AppContext.Provider value={{ 
       lang,
@@ -203,7 +211,8 @@ export const AppProvider = ({ children }) => {
       isLoading, setIsLoading,
       isOffline,
       confirmModal, setConfirmModal, askConfirm,
-      moduleOrder, updateModuleOrder
+      moduleOrder, updateModuleOrder,
+      isMobile
     }}>
 
       {children}

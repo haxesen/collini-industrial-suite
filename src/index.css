@@ -4236,3 +4236,39 @@ body.wide-layout .header-top-classic {
     color-adjust: exact !important;
   }
 }
+
+/* --- GLOBAL MOBILE RESPONSIVENESS (SAFE OVERRIDES) --- */
+@media (max-width: 1024px) {
+  .full-view-wrapper { overflow-x: hidden; }
+  .app-container { padding: 10px !important; margin-top: 5px !important; }
+  .wide-container { max-width: 100% !important; padding: 5px !important; }
+  .hub-header { padding: 15px !important; flex-direction: column !important; gap: 15px !important; }
+  .hub-logo { height: 30px !important; }
+  .hub-grid { grid-template-columns: 1fr !important; gap: 12px !important; padding: 0 5px 30px 5px !important; }
+  .hub-card { min-height: auto !important; padding: 20px !important; }
+  .hub-card h2 { font-size: 1.2rem !important; }
+  .manager-content { width: 98% !important; padding: 15px !important; margin: 10px auto !important; }
+  .header-actions { gap: 10px !important; }
+}
+
+/* --- MODULE SPECIFIC MOBILE OVERRIDES --- */
+@media (max-width: 1024px) {
+  .logbook-mobile-list { display: flex; flex-direction: column; gap: 15px; padding: 10px; }
+  .log-mobile-card { background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); overflow: hidden; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+  .log-mobile-card.prio-kritisch { border-left: 4px solid #ff4d4d; }
+  .log-mobile-card.prio-hoch { border-left: 4px solid #ffa500; }
+  .log-mobile-card.status-erledigt { opacity: 0.8; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; }
+  .card-date { font-size: 0.75rem; color: var(--text-secondary); }
+  .problem-text { font-size: 1rem; color: #fff; line-height: 1.4; }
+  .card-meta { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-secondary); }
+  .card-action { background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 8px; font-size: 0.85rem; }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+  .worker { font-size: 0.8rem; color: #fff; font-weight: 700; }
+  .logbook-controls { grid-template-columns: 1fr !important; }
+  .logbook-header { flex-direction: column; gap: 15px; }
+  .mobile-info-banner { background: rgba(0, 153, 255, 0.15); color: #00f2fe; padding: 10px 20px; border-radius: 10px; margin: 0 20px 15px 20px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(0, 242, 254, 0.2); }
+  .mobile-val-display { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; color: #fff; font-weight: 700; font-size: 1.1rem; min-width: 60px; text-align: center; }
+  .mobile-val-display.target { border-left: 3px solid #666; }
+  .mobile-val-display.ist { border-left: 3px solid #00f2fe; background: rgba(0, 242, 254, 0.1); }
+}
