@@ -99,12 +99,12 @@ const WTAblauf = () => {
             delete newState[timeoutKey];
             return newState;
           });
-        }, 1500);
+        }, 800); 
       } catch (err) {
         console.error('Error updating count:', err);
         setSavingLines(prev => ({ ...prev, [timeoutKey]: 'error' }));
       }
-    }, 800); 
+    }, 400); 
   };
 
   const fetchDailyData = useCallback(async (showLoading = false) => {
@@ -217,11 +217,19 @@ const WTAblauf = () => {
   const handleExportPDF = () => { window.print(); };
 
   const renderStats = () => {
-    const totalIst = counts.reduce((sum, c) => sum + (c.count || 0), 0);
-    const totalZiel = counts.reduce((sum, c) => sum + (c.target_count || 0), 0);
-    const totalMagazin = counts.reduce((sum, c) => sum + (c.magazin_count || 0), 0);
+    // Calculate shift totals first for absolute consistency
+    const shiftData = Object.entries(shifts).map(([name, hours]) => {
+      const shiftLines = hours.map((h, i) => i + 1 + (name === '2. Schicht' ? 8 : name === '3. Schicht' ? 16 : 0));
+      const ist = shiftLines.reduce((sum, line) => sum + (counts.find(c => c.line === line)?.count || 0), 0);
+      const ziel = shiftLines.reduce((sum, line) => sum + (counts.find(c => c.line === line)?.target_count || 0), 0);
+      const magazin = shiftLines.reduce((sum, line) => sum + (counts.find(c => c.line === line)?.magazin_count || 0), 0);
+      return { name, ist, ziel, magazin, eff: ziel > 0 ? Math.round((ist / ziel) * 100) : 0 };
+    });
+
+    const totalIst = shiftData.reduce((sum, s) => sum + s.ist, 0);
+    const totalZiel = shiftData.reduce((sum, s) => sum + s.ziel, 0);
+    const totalMagazin = shiftData.reduce((sum, s) => sum + s.magazin, 0);
     
-    // Always use live local counts for today's daily efficiency, making it instantly responsive
     const dailyEfficiency = totalZiel > 0 ? Math.round((totalIst / totalZiel) * 100) : 0;
 
     const weeklyTotalIst = weeklyData.reduce((sum, d) => sum + (d.date === format(selectedDate, 'yyyy-MM-dd') ? totalIst : d.ist), 0);
@@ -303,65 +311,44 @@ const WTAblauf = () => {
         <div className="weekly-charts-grid">
           <div className="main-chart-card">
             <div className="hero-header">
-              <BarChart3 className="text-accent" size={24} />
-              <h3>Wöchentliche Produktion (Bullet Chart)</h3>
+              <Database className="text-accent" size={24} />
+              <h3>Schicht-Analyse ({format(selectedDate, 'dd.MM.')})</h3>
             </div>
             
-            <div className="weekly-bar-chart">
-              {weeklyData.map((day, idx) => {
-                // If it's the currently selected day, use the live data from 'counts' state
-                const isSelectedDay = day.date === format(selectedDate, 'yyyy-MM-dd');
-                const activeIst = isSelectedDay ? totalIst : day.ist;
-                const activeZiel = isSelectedDay ? totalZiel : day.ziel;
-                
-                const isGoalMet = activeIst >= activeZiel && activeZiel > 0;
-
-                // Build correct per-day values for scale calculation
-                // Only substitute live counts for the SELECTED day
-                const dayIstForScale = isSelectedDay ? totalIst : day.ist;
-                const dayZielForScale = isSelectedDay ? totalZiel : day.ziel;
-
-                // Calculate max value from all days' correct values
-                const maxVal = Math.max(
-                  ...weeklyData.map(d => {
-                    const isSel = d.date === format(selectedDate, 'yyyy-MM-dd');
-                    return Math.max(isSel ? totalIst : d.ist, isSel ? totalZiel : d.ziel);
-                  }),
-                  100
-                );
-                
-                const hIst = (dayIstForScale / maxVal) * 100;
-                const hZiel = (dayZielForScale / maxVal) * 100;
-
-                return (
-                  <div 
-                    key={idx} 
-                    className={`chart-column ${isSelectedDay ? 'active' : ''}`}
-                    onClick={() => setSelectedDate(new Date(day.date))}
-                  >
-                    <div className="bar-label-dual">
-                      <span className="ist">{activeIst}</span>
-                      <span className="ziel">{activeZiel}</span>
+            <div className="shift-analysis-grid">
+              {shiftData.map((shift, idx) => (
+                <div key={idx} className={`shift-perf-card ${shift.eff >= 100 ? 'met' : ''}`}>
+                  <div className="shift-card-header">
+                    <span className="shift-name">{shift.name}</span>
+                    <span className="shift-percent">{shift.eff}%</span>
+                  </div>
+                  
+                  <div className="shift-metrics">
+                    <div className="metric">
+                      <span className="m-label">IST WT</span>
+                      <span className="m-val">{shift.ist}</span>
                     </div>
-                    <div className="bullet-chart-container">
-                      <div className="bullet-bar-bg">
-                        <div 
-                          className="bullet-target-line" 
-                          style={{ bottom: `${hZiel}%` }}
-                        ></div>
-                        <div 
-                          className={`bullet-bar-actual ${isGoalMet ? 'goal-met' : ''}`} 
-                          style={{ height: `${hIst}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="column-label">
-                      <span className="day">{day.dayName.substring(0, 2).toUpperCase()}</span>
-                      <span className="date">{day.displayDate}</span>
+                    <div className="metric">
+                      <span className="m-label">ZIEL WT</span>
+                      <span className="m-val faded">{shift.ziel}</span>
                     </div>
                   </div>
-                );
-              })}
+
+                  <div className="shift-progress-track">
+                    <div 
+                      className="shift-progress-fill" 
+                      style={{ width: `${Math.min(100, shift.eff)}%` }} 
+                    />
+                  </div>
+
+                  <div className="shift-hours-preview">
+                    <Clock size={12} />
+                    <span>
+                      {shifts[shift.name][0]}:00 - {((shifts[shift.name][shifts[shift.name].length-1] + 1) % 24)}:00
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -398,8 +385,6 @@ const WTAblauf = () => {
         </div>
       </div>
 
-
-
       <div className="wt-header no-print">
         <div className="header-left">
           <button onClick={() => setView('hub')} className="back-btn">
@@ -429,17 +414,48 @@ const WTAblauf = () => {
         </div>
       </div>
 
-      <div className="wt-date-selector no-print">
-        <button onClick={() => setSelectedDate(prev => subDays(prev, 1))} className="date-nav">
-          <ChevronLeft size={24} />
-        </button>
-        <div className="current-date">
-          <Calendar size={20} />
-          <span>{format(selectedDate, 'dd.MM.yyyy')}</span>
+      <div className="wt-calendar-stripe no-print">
+        <div className="calendar-nav-wrapper">
+          <button onClick={() => setSelectedDate(prev => subDays(prev, 7))} className="week-nav-btn">
+            <ChevronLeft size={20} />
+            <span>Vorherige Woche</span>
+          </button>
+          
+          <div className="days-container">
+            {eachDayOfInterval({
+              start: startOfWeek(selectedDate, { weekStartsOn: 1 }),
+              end: endOfWeek(selectedDate, { weekStartsOn: 1 })
+            }).map((date, idx) => {
+              const isSelected = isSameDay(date, selectedDate);
+              const isToday = isSameDay(date, new Date());
+              const dateStr = format(date, 'yyyy-MM-dd');
+              const dayData = weeklyData.find(d => d.date === dateStr);
+              
+              // Determine status for the dot
+              let statusClass = 'pending';
+              if (dayData && dayData.ziel > 0) {
+                statusClass = dayData.ist >= dayData.ziel ? 'met' : 'behind';
+              }
+
+              return (
+                <button 
+                  key={idx} 
+                  className={`calendar-day-item ${isSelected ? 'active' : ''} ${isToday ? 'is-today' : ''}`}
+                  onClick={() => setSelectedDate(date)}
+                >
+                  <span className="day-name">{format(date, 'EEE', { locale: de }).toUpperCase()}</span>
+                  <span className="day-num">{format(date, 'dd')}</span>
+                  <div className={`status-dot ${statusClass}`} />
+                </button>
+              );
+            })}
+          </div>
+
+          <button onClick={() => setSelectedDate(prev => addDays(prev, 7))} className="week-nav-btn">
+            <span>Nächste Woche</span>
+            <ChevronRight size={20} />
+          </button>
         </div>
-        <button onClick={() => setSelectedDate(prev => addDays(prev, 1))} className="date-nav">
-          <ChevronRight size={24} />
-        </button>
       </div>
 
       {isMobile && (
@@ -492,7 +508,9 @@ const WTAblauf = () => {
                   <div key={line} className="wt-row">
                     <div className="col-hour">
                       <Clock size={16} className="text-secondary" />
-                      <span>{hour.toString().padStart(2, '0')}:00</span>
+                      <span>
+                        {hour.toString().padStart(2, '0')}:00 - {((hour + 1) % 24).toString().padStart(2, '0')}:00
+                      </span>
                       {isMet && <div className="hour-dot" />}
                     </div>
                     
@@ -517,6 +535,7 @@ const WTAblauf = () => {
                             <button onClick={() => handleCountChange(line, 'count', rowData.count + 1)} className="adjust-btn plus">+</button>
                             <button onClick={() => handleCountChange(line, 'count', Math.max(0, rowData.count - 1))} className="adjust-btn minus">-</button>
                           </div>
+                          <div className={`sync-stripe ${savingLines[`${line}-count`] || ''}`} />
                         </div>
                       ) : (
                         <div className="mobile-val-display ist">{rowData.count}</div>
@@ -531,6 +550,7 @@ const WTAblauf = () => {
                             <button onClick={() => handleCountChange(line, 'magazin_count', rowData.magazin_count + 1)} className="adjust-btn plus">+</button>
                             <button onClick={() => handleCountChange(line, 'magazin_count', Math.max(0, rowData.magazin_count - 1))} className="adjust-btn minus">-</button>
                           </div>
+                          <div className={`sync-stripe ${savingLines[`${line}-magazin_count`] || ''}`} />
                         </div>
                       ) : (
                         <div className="mobile-val-display">{rowData.magazin_count}</div>
@@ -650,9 +670,6 @@ const WTAblauf = () => {
           </div>
         </div>
       ) : renderStats()}
-
-      {/* styles moved to index.css */}
-
     </div>
   );
 };
