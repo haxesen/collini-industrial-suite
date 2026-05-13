@@ -4317,3 +4317,111 @@ body.wide-layout .header-top-classic {
     font-size: 0.7rem !important;
   }
 }
+/* --- LOGBOOK MOBILE STYLES --- */
+.logbook-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+}
+
+.log-mobile-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.log-mobile-card.prio-kritisch { border-left: 4px solid #ff4d4d; }
+.log-mobile-card.prio-hoch { border-left: 4px solid #ffa500; }
+.log-mobile-card.status-erledigt { opacity: 0.8; }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-date { font-size: 0.75rem; color: var(--text-secondary); }
+
+.problem-text { font-size: 1rem; color: #fff; line-height: 1.4; }
+.card-meta { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-secondary); }
+.card-action { 
+  background: rgba(0, 0, 0, 0.2); 
+  padding: 10px; 
+  border-radius: 8px; 
+  font-size: 0.85rem; 
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.worker { font-size: 0.8rem; color: #fff; font-weight: 700; }
+
+@media (max-width: 1024px) {
+  .logbook-controls { grid-template-columns: 1fr !important; }
+  .logbook-header { flex-direction: column; gap: 15px; }
+}
+
+/* --- WT ABLAUF MOBILE STYLES --- */
+.mobile-info-banner {
+  background: rgba(0, 153, 255, 0.15);
+  color: #00f2fe;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin: 0 20px 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.mobile-val-display {
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 60px;
+  text-align: center;
+}
+.mobile-val-display.target { border-left: 3px solid #666; }
+.mobile-val-display.ist { border-left: 3px solid #00f2fe; background: rgba(0, 242, 254, 0.1); }
+
+@media (max-width: 1024px) {
+  .wt-header { flex-direction: column !important; gap: 15px !important; padding: 20px !important; align-items: flex-start !important; }
+  .wt-content-grid { grid-template-columns: 1fr !important; gap: 15px !important; padding: 10px !important; }
+  .stats-sidebar { order: -1 !important; }
+  .wt-table-header { grid-template-columns: 60px 1fr 1fr 1fr 0px !important; font-size: 0.6rem !important; padding: 10px !important; }
+  .wt-table-header span:last-child { display: none !important; }
+  .wt-row { grid-template-columns: 60px 1fr 1fr 1fr 0px !important; padding: 10px !important; gap: 5px !important; }
+  .col-status { display: none !important; }
+  .col-hour span { font-size: 0.8rem !important; }
+  .mobile-val-display { font-size: 0.9rem !important; padding: 6px !important; min-width: auto !important; width: 100% !important; }
+  .daily-stats-grid, .weekly-charts-grid { grid-template-columns: 1fr !important; }
+  .daily-hero-card { flex-direction: column !important; gap: 20px !important; padding: 20px !important; }
+  .val-number { font-size: 3.5rem !important; }
+  .val-number.muted { font-size: 2.5rem !important; }
+  .gauge-section { width: 140px !important; height: 140px !important; }
+  .main-chart-card { min-height: auto !important; padding: 15px !important; }
+  .weekly-bar-chart { height: 350px !important; padding: 20px 10px !important; }
+  .bullet-chart-container { width: 45px !important; height: 250px !important; }
+  .bar-label-dual .ist { font-size: 1.1rem !important; }
+  .bar-label-dual .ziel { font-size: 0.7rem !important; }
+  .column-label .day { font-size: 0.7rem !important; }
+  .daily-side-pills { grid-template-columns: 1fr !important; }
+}
