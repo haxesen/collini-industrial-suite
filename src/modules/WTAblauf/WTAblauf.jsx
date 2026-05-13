@@ -382,10 +382,10 @@ const WTAblauf = () => {
           <button onClick={() => setView('hub')} className="back-btn">
             <ArrowLeft size={20} /> Zurück
           </button>
-          <div>
-            <h1>WT-ABLAUF</h1>
-            <p>Stündliche Verfolgung der Warenträger - KS-24</p>
-          </div>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '15px', margin: 0 }}>
+            WT-ABLAUF
+            {selectedLine && <span className="line-badge" style={{ fontSize: '0.9rem', verticalAlign: 'middle' }}>{selectedLine}</span>}
+          </h1>
         </div>
         
         <div className="header-right">

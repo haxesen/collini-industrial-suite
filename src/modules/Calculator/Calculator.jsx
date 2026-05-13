@@ -30,12 +30,11 @@ const Calculator = () => {
             </button>
           </div>
         </div>
-        <div className="logo-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={colliniLogo} alt="Collini" className="header-logo" style={{ marginBottom: 0 }} />
-            {selectedLine && <span className="line-badge" style={{ marginLeft: '15px' }}>{selectedLine}</span>}
-          </div>
-          <h2 className="classic-title">{t.title}</h2>
+        <div className="logo-section" style={{ paddingBottom: '10px' }}>
+          <h2 className="classic-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: 0 }}>
+            {t.title}
+            {selectedLine && <span className="line-badge" style={{ fontSize: '1rem' }}>{selectedLine}</span>}
+          </h2>
         </div>
       </header>
 
