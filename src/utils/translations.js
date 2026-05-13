@@ -90,7 +90,8 @@ export const translations = {
     offlineMsg: 'Az alkalmazás korlátozottan működhet. Ellenőrizze a kapcsolatot!',
     cancel: 'Mégse',
     show: 'Megnyitás',
-    hide: 'Becsukás'
+    hide: 'Becsukás',
+    confirmDelete: 'Biztosan törölni szeretné ezt a bejegyzést?'
   },
   de: {
     title: 'INDUSTRIAL SUITE',
@@ -183,6 +184,7 @@ export const translations = {
     offlineMsg: 'Die Anwendung kann eingeschränkt sein. Bitte Verbindung prüfen!',
     cancel: 'Abbrechen',
     show: 'Einblenden',
-    hide: 'Ausblenden'
+    hide: 'Ausblenden',
+    confirmDelete: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?'
   }
 }

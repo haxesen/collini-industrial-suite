@@ -110,7 +110,9 @@ function App() {
     <div className="full-view-wrapper">
       <GlobalTicker activeInfos={activeInfos} />
       
-      {renderView()}
+      <main className="app-container">
+        {renderView()}
+      </main>
 
       {showAdminLogin && <AdminLogin />}
       {showManager && isAdmin && <AdminManager />}

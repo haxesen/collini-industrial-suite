@@ -88,7 +88,7 @@ const Logbook = () => {
   ];
 
   return (
-    <div className="app-container">
+    <div>
       <header>
         <div className="header-top">
           <button className="back-btn" onClick={() => setView('hub')}>
@@ -234,7 +234,7 @@ const Logbook = () => {
             </tbody>
           </table>
         </div>
-      </main>
+      </div>
 
       {log.showLogEntryModal && (
         <div className="manager-overlay">

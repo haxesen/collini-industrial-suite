@@ -25,7 +25,7 @@ const InfoWall = () => {
   }, [info.newInfoEntry.message]);
 
   return (
-    <div className="app-container">
+    <div>
       <header>
         <div className="header-top">
           <button className="back-btn" onClick={() => setView('hub')}>

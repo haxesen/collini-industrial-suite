@@ -16,7 +16,7 @@ const Calculator = () => {
   const statusClass = calc.getStatusColorClass(calc.remainingTime);
 
   return (
-    <div className="app-container">
+    <div>
       <header className="classic-header">
         <div className="header-top-classic">
           <button className="back-btn" onClick={() => setView('hub')}>
