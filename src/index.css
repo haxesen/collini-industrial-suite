@@ -4432,37 +4432,64 @@ body.wide-layout .header-top-classic {
 .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+
 /* WT ABLAUF - MOBILE RESPONSIVE */
 @media (max-width: 1024px) {
   .wt-container { padding: 10px; }
-  .wt-header { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+
+  /* Header: keep back btn left, title center, badge right - but shrink font */
+  .wt-header { flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  .wt-header h1 { font-size: 1.3rem !important; letter-spacing: 0; }
+  .header-left { gap: 10px; }
   .wt-header .mode-toggle { width: 100%; }
-  .wt-header .mode-btn { flex: 1; justify-content: center; }
-  .wt-date-selector { gap: 15px; padding: 10px; margin-bottom: 15px; }
+  .wt-header .mode-btn { flex: 1; justify-content: center; font-size: 0.8rem; padding: 7px 10px; }
+
+  /* Date selector compact */
+  .wt-date-selector { gap: 10px; padding: 10px 15px; margin-bottom: 12px; }
   .current-date { font-size: 1rem; }
+
+  /* Grid: single column, sidebar goes BELOW table (no order trick) */
   .wt-content-grid { grid-template-columns: 1fr !important; gap: 15px; }
   .wt-content-grid-mobile { grid-template-columns: 1fr; }
-  .wt-table-header { grid-template-columns: 50px 1fr 1fr 1fr; font-size: 0.65rem; padding: 10px; }
+  .stats-sidebar { order: 2; }  /* always after main table */
+
+  /* Table columns: hide STATUS, compress widths */
+  .wt-table-header { grid-template-columns: 55px 1fr 1fr 1fr; font-size: 0.65rem; padding: 8px 10px; }
   .wt-table-header span:last-child { display: none; }
-  .wt-row { grid-template-columns: 50px 1fr 1fr 1fr; padding: 10px; gap: 4px; }
+  .wt-row { grid-template-columns: 55px 1fr 1fr 1fr; padding: 8px 10px; gap: 4px; }
   .col-status { display: none; }
+  .col-hour { gap: 5px; }
   .col-hour span { font-size: 0.75rem; }
-  .mobile-val-display { font-size: 0.9rem !important; padding: 6px 8px !important; }
+
+  /* Mobile value display pills */
+  .mobile-val-display { font-size: 0.95rem !important; padding: 7px 10px !important; min-width: 44px !important; }
+
+  /* Stats mode cards */
   .daily-stats-grid { grid-template-columns: 1fr !important; }
   .weekly-charts-grid { grid-template-columns: 1fr !important; }
   .daily-hero-card { flex-direction: column; gap: 20px; padding: 20px; }
   .val-number { font-size: 3.5rem !important; }
   .val-number.muted { font-size: 2.5rem !important; }
   .gauge-section { width: 130px !important; height: 130px !important; }
+
+  /* Weekly bullet chart */
   .main-chart-card { min-height: auto; padding: 15px; }
-  .weekly-bar-chart { height: 300px; padding: 15px 5px; gap: 8px; }
-  .bullet-chart-container { width: 45px !important; height: 200px !important; }
-  .bar-label-dual .ist { font-size: 1.1rem !important; }
-  .bar-label-dual .ziel { font-size: 0.65rem !important; }
-  .column-label .day { font-size: 0.65rem !important; }
-  .daily-side-pills { grid-template-columns: 1fr; }
-  .shift-tabs-pill { flex-wrap: wrap; }
+  .weekly-bar-chart { height: 280px; padding: 10px 2px; gap: 4px; }
+  .bullet-chart-container { width: 38px !important; height: 180px !important; }
+  .bar-label-dual .ist { font-size: 1rem !important; }
+  .bar-label-dual .ziel { font-size: 0.6rem !important; }
+  .column-label .day { font-size: 0.6rem !important; }
+  .column-label .date { font-size: 0.55rem; }
+
+  /* Misc */
+  .daily-side-pills { gap: 12px; }
+  .shift-tabs-pill { flex-wrap: wrap; gap: 4px; }
   .shift-tab-btn { padding: 6px 12px; font-size: 0.75rem; }
-  .stats-sidebar { order: -1; }
-  .mobile-info-banner { margin: 0 10px 15px 10px; }
+  .mobile-info-banner { margin: 0 10px 12px 10px; }
+
+  /* Sidebar on mobile: compact, no huge padding */
+  .wt-stats-card { padding: 15px; gap: 15px; }
+  .efficiency-box { padding: 15px; }
+  .efficiency-value { font-size: 2.8rem; }
+  .actions-card { padding: 15px; gap: 12px; }
 }
