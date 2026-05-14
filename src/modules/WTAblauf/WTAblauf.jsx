@@ -409,9 +409,6 @@ const WTAblauf = () => {
           <div className="actions-card glass-panel">
             <div className="card-title"><LayoutDashboard size={18} /> Schnell-Aktionen</div>
             <div className="action-btns">
-              <button onClick={handleExportPDF} className="action-btn pdf">
-                <Printer size={18} /> Schichtbericht drucken
-              </button>
               <button className="action-btn print">
                 <FileText size={18} /> Export CSV
               </button>
