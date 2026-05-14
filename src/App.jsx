@@ -71,6 +71,11 @@ function App() {
     }
   }, [view])
 
+  // Auto-scroll to top on view or line change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view, selectedLine]);
+
   // Loading state handling: If initial loading and no line selected, show full screen loader
   // Otherwise, show as overlay above the content
   const showFullLoader = isLoading && !selectedLine && view !== 'public_infowall';
