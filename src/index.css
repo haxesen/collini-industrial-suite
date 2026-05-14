@@ -5517,32 +5517,38 @@ body.wide-layout .header-top-classic {
 
   .wt-table-header { 
     display: grid !important; 
-    grid-template-columns: 65px 1fr 1fr 1fr !important; /* Tightened */
-    font-size: 0.65rem !important;
-    padding: 8px 2px !important;
-    gap: 4px !important;
+    grid-template-columns: 55px 1fr 1fr 1fr !important; /* Ultra tightened */
+    font-size: 0.6rem !important;
+    padding: 6px 2px !important;
+    gap: 2px !important;
   }
   .wt-table-header span:nth-child(5), .wt-table-header span:nth-child(6) { display: none !important; }
-  /* Shorten Magazin header text on mobile */
-  .wt-table-header span:nth-child(4)::after { content: "MAG"; }
+  
+  /* Shorten headers on mobile */
+  .wt-table-header span:nth-child(2) { visibility: hidden; position: relative; }
+  .wt-table-header span:nth-child(2)::after { content: "ZIEL"; visibility: visible; position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
+  
+  .wt-table-header span:nth-child(3) { visibility: hidden; position: relative; }
+  .wt-table-header span:nth-child(3)::after { content: "IST"; visibility: visible; position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
+
   .wt-table-header span:nth-child(4) { visibility: hidden; position: relative; }
-  .wt-table-header span:nth-child(4)::after { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
+  .wt-table-header span:nth-child(4)::after { content: "MAG"; visibility: visible; position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
 
   .wt-row { 
     display: grid !important; 
-    grid-template-columns: 65px 1fr 1fr 1fr !important;
-    gap: 4px !important;
-    padding: 8px 2px !important;
+    grid-template-columns: 55px 1fr 1fr 1fr !important;
+    gap: 2px !important;
+    padding: 6px 2px !important;
   }
-  .col-hour { font-size: 0.65rem !important; flex-direction: column !important; justify-content: center !important; }
-  .col-hour span { font-size: 0.6rem !important; line-height: 1.1 !important; text-align: center !important; }
+  .col-hour { font-size: 0.6rem !important; flex-direction: column !important; justify-content: center !important; }
+  .col-hour span { font-size: 0.55rem !important; line-height: 1 !important; text-align: center !important; }
   .col-hour svg { display: none !important; }
   .col-status, .col-remark { display: none !important; } 
   
   .mobile-val-display { 
-    font-size: 0.95rem !important; 
+    font-size: 0.85rem !important; 
     font-weight: 700 !important; 
-    padding: 6px 2px !important;
+    padding: 4px 2px !important;
     min-width: auto !important;
     width: 100% !important;
   }
