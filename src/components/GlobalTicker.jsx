@@ -6,13 +6,15 @@ import { Check, User, AlertCircle, Bell, Info, ChevronUp, ChevronDown } from 'lu
 import { translations } from '../utils/translations';
 
 const GlobalTicker = ({ activeInfos = [] }) => {
-  const { staff, fetchActiveInfos, lang } = useApp();
+  const { staff, fetchActiveInfos, lang, isMobile } = useApp();
   const t = translations[lang];
   const [page, setPage] = useState(0);
   const [showSelector, setShowSelector] = useState(false);
   const [selectedInfoId, setSelectedInfoId] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    return localStorage.getItem('collini_ticker_collapsed') === 'true';
+    const saved = localStorage.getItem('collini_ticker_collapsed');
+    if (saved !== null) return saved === 'true';
+    return isMobile; // Collapse by default on mobile
   });
   const [, setTick] = useState(0);
 
