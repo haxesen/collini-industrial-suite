@@ -52,7 +52,6 @@ export const getStatusColor = (remainingSeconds) => {
 };
 
 export const getPrioLabel = (prio, t) => {
-  if (prio === '0_kritisch') return t.kritisch.toUpperCase()
   if (prio === '1_hoch') return t.hoch.toUpperCase()
   if (prio === '2_mittel') return t.mittel.toUpperCase()
   return 'INFO'

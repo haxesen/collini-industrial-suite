@@ -7,12 +7,24 @@ export const useAdmin = () => {
   const [newProductSoll, setNewProductSoll] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [logbookConfig, setLogbookConfig] = useState([]);
-  const [newConfigLabel, setNewConfigLabel] = useState('');
-  const [newConfigValue, setNewConfigValue] = useState('');
+  const [editingConfigId, setEditingConfigId] = useState(null);
+  const [editingConfigType, setEditingConfigType] = useState(null);
+
+  // Form States
+  const [newDeptLabel, setNewDeptLabel] = useState('');
+  const [newDeptValue, setNewDeptValue] = useState('');
+  const [newOpName, setNewOpName] = useState('');
+  const [newMechName, setNewMechName] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchProducts();
-    fetchLogbookConfig();
+    const init = async () => {
+      setIsLoading(true);
+      await Promise.all([fetchProducts(), fetchLogbookConfig()]);
+      setIsLoading(false);
+    };
+    init();
   }, []);
 
   const fetchProducts = async () => {
@@ -50,10 +62,28 @@ export const useAdmin = () => {
   };
 
   const saveConfigItem = async (type, value, label = null) => {
-    const { error } = await supabase
-      .from('collini_logbook_config')
-      .insert([{ type, value, label }]);
-    if (!error) fetchLogbookConfig();
+    if (!value) return;
+    if (editingConfigId) {
+      const { error } = await supabase
+        .from('collini_logbook_config')
+        .update({ type, value, label })
+        .eq('id', editingConfigId);
+      if (!error) {
+        setEditingConfigId(null);
+        setEditingConfigType(null);
+        fetchLogbookConfig();
+      }
+    } else {
+      const { error } = await supabase
+        .from('collini_logbook_config')
+        .insert([{ type, value, label }]);
+      if (!error) fetchLogbookConfig();
+    }
+    setNewDeptLabel('');
+    setNewDeptValue('');
+    setNewOpName('');
+    setNewMechName('');
+    setEditingConfigType(null);
   };
 
   const deleteConfigItem = async (id) => {
@@ -66,8 +96,11 @@ export const useAdmin = () => {
 
   return {
     products, newProductName, setNewProductName, newProductSoll, setNewProductSoll,
-    editingId, setEditingId, logbookConfig,
-    newConfigLabel, setNewConfigLabel, newConfigValue, setNewConfigValue,
+    editingId, setEditingId, logbookConfig, isLoading,
+    editingConfigId, setEditingConfigId,
+    editingConfigType, setEditingConfigType,
+    newDeptLabel, setNewDeptLabel, newDeptValue, setNewDeptValue,
+    newOpName, setNewOpName, newMechName, setNewMechName,
     saveProduct, deleteProduct, saveConfigItem, deleteConfigItem, fetchProducts, fetchLogbookConfig
   };
 };

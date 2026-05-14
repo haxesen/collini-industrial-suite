@@ -70,15 +70,14 @@ export const translations = {
     open: 'OFFEN',
     done: 'ERLEDIGT',
     inProgress: 'IN ARBEIT',
-    kritisch: 'KRITISCH',
     hoch: 'HOCH',
     mittel: 'MITTEL',
     prio: 'PRIORITÄT',
-    dept: 'ABTEILUNG',
+    dept: 'BETREFFENDE ABTEILUNG',
     problem: 'PROBLEM / INFO',
     erfasser: 'ERSTELLER',
     action: 'MAßNAHME',
-    who: 'ZUSTÄNDIG',
+    who: 'ZUSTÄNDIGE PERSON',
     status: 'STATUS',
     isNew: 'NEU',
     start: 'START',
@@ -109,6 +108,8 @@ export const translations = {
     show: 'Einblenden',
     hide: 'Ausblenden',
     confirmDelete: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?',
-    remark: 'Bemerkung...'
+    remark: 'Bemerkung...',
+    activeEntries: 'Aktuelle Meldungen',
+    completedEntries: 'Archiv / Erledigt'
   }
 }

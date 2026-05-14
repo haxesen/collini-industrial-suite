@@ -4,6 +4,11 @@ import {
   RotateCcw, Save, FileText, Trash2, X,
   Settings, Search, Plus, Edit3, ChevronDown
 } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
+import { useLogbook } from './useLogbook';
+import { formatDate, getPrioLabel } from '../../utils/helpers';
+import colliniLogo from '../../assets/Collini_Logo.svg';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 const CustomDropdown = ({ value, options, onChange, placeholder, type }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,11 +60,6 @@ const CustomDropdown = ({ value, options, onChange, placeholder, type }) => {
     </div>
   );
 };
-import { useApp } from '../../context/AppContext';
-import { useLogbook } from './useLogbook';
-import { formatDate, getPrioLabel } from '../../utils/helpers';
-
-import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const Logbook = () => {
   const { t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, lang, selectedLine, askConfirm, isMobile } = useApp();
@@ -76,7 +76,6 @@ const Logbook = () => {
 
   const prioOptions = [
     { value: 'All', label: t.allPrio, indicator: null },
-    { value: '0_kritisch', label: t.kritisch, indicator: 'kritisch' },
     { value: '1_hoch', label: t.hoch, indicator: 'hoch' },
     { value: '2_mittel', label: t.mittel, indicator: 'mittel' },
     { value: '4_info', label: 'INFO', indicator: 'info' }
@@ -89,6 +88,7 @@ const Logbook = () => {
 
   return (
     <div className="full-view-wrapper">
+      {log.isLoading && <LoadingOverlay />}
       <div className="wt-header no-print">
         <div className="header-left">
           <button onClick={() => setView('hub')} className="back-btn">
@@ -150,137 +150,277 @@ const Logbook = () => {
             <button className="reset-filters-btn" onClick={log.resetFilters}><RotateCcw size={16} /></button>
           </div>
           {!isMobile && (
-            <button className="add-entry-btn-premium" onClick={() => { log.setShowLogEntryModal(true); }}>
+            <button className="add-entry-btn-premium" onClick={log.openAddModal}>
               <Plus size={18} /> {t.addEntry}
             </button>
           )}
         </div>
 
+        <div className="logbook-section-header">
+          <h2>{t.activeEntries}</h2>
+        </div>
+
         {!isMobile ? (
           <div className="logbook-table-container">
-          <table className="logbook-table">
-            <thead>
-              <tr>
-                <th onClick={() => log.handleSort('created_at')} className="sortable">{t.printDate} {log.logSortConfig.key === 'created_at' && (log.logSortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th style={{ width: '40px' }}>{t.isNew}</th>
-                <th>{t.problem}</th>
-                <th>{t.erfasser}</th>
-                <th onClick={() => log.handleSort('prio')} className="sortable">{t.prio}</th>
-                <th>{t.dept}</th>
-                <th>{t.who}</th>
-                <th>{t.action}</th>
-                <th>{t.startWork}</th>
-                <th>{t.finishTime}</th>
-                <th>{t.status}</th>
-                <th>{t.completedBy}</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {log.filteredAndSortedEntries.map(entry => (
-                <tr key={entry.id} className={`row-prio-${entry.prio.split('_')[1] || entry.prio} row-status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-                  <td className="col-date">{formatDate(entry.created_at, t.lang)}</td>
-                  <td className="col-new">
-                    {entry.is_new && <span className="new-dot"></span>}
-                  </td>
-                  <td className="col-problem">
-                    <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
-                  </td>
-                  <td className="col-erfasser">{entry.erfasser}</td>
-                  <td className="col-prio">
-                    <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
-                      {getPrioLabel(entry.prio, t)}
-                    </span>
-                  </td>
-                  <td className="col-dept">{entry.abteilung}</td>
-                  <td className="col-who">
-                    <span className="worker-name">{entry.wer_ist_dran || '---'}</span>
-                  </td>
-                  <td className="col-action">
-                    {entry.massnahme || '---'}
-                  </td>
-                  <td className="col-start-time">
-                    {entry.status === '1_Offen' ? (
-                      <button className="small-btn start-btn" onClick={() => log.quickUpdateLog(entry.id, 'in_arbeit_ab', new Date().toISOString())}>{t.start}</button>
-                    ) : (
-                      formatDate(entry.in_arbeit_ab, t.lang)
-                    )}
-                  </td>
-                  <td className="col-end-time">
-                    {entry.status === '2_In_Arbeit' ? (
-                      <button className="small-btn done" onClick={() => log.quickUpdateLog(entry.id, 'erledigt_am', new Date().toISOString())}>{t.done}</button>
-                    ) : (
-                      formatDate(entry.erledigt_am, t.lang)
-                    )}
-                  </td>
-                  <td className="col-status">
-                    <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-                      {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
-                    </div>
-                  </td>
-                  <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
-                  <td className="col-edit">
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button className="edit-icon-btn" onClick={() => log.startEditLog(entry)}><Edit3 size={14} /></button>
-                      <button 
-                        className="edit-icon-btn delete" 
-                        onClick={() => {
-                          askConfirm(
-                            'Eintrag wirklich löschen?',
-                            () => log.deleteLogEntry(entry.id)
-                          );
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
+            <table className="logbook-table">
+              <thead>
+                <tr>
+                  <th onClick={() => log.handleSort('created_at')} className="sortable">{t.printDate} {log.logSortConfig.key === 'created_at' && (log.logSortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                  <th style={{ width: '40px' }}>{t.isNew}</th>
+                  <th>{t.problem}</th>
+                  <th>{t.erfasser}</th>
+                  <th onClick={() => log.handleSort('prio')} className="sortable">{t.prio}</th>
+                  <th>{t.dept}</th>
+                  <th>{t.action}</th>
+                  <th>{t.startWork}</th>
+                  <th>{t.finishTime}</th>
+                  <th>{t.status}</th>
+                  <th>{t.completedBy}</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="logbook-mobile-list">
-          {log.filteredAndSortedEntries.map(entry => (
-            <div key={entry.id} className={`log-mobile-card prio-${entry.prio.split('_')[1] || entry.prio} status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-              <div className="card-header">
-                <span className="card-date">{formatDate(entry.created_at, t.lang)}</span>
-                <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
-                  {getPrioLabel(entry.prio, t)}
-                </span>
-              </div>
-              <div className="card-body">
-                <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
-                <div className="card-meta">
-                  <span><strong>Von:</strong> {entry.erfasser}</span>
-                  <span><strong>Abt:</strong> {entry.abteilung}</span>
+              </thead>
+              <tbody>
+                {log.activeEntries.map(entry => (
+                  <tr 
+                    key={entry.id} 
+                    className={`row-prio-${entry.prio.split('_')[1] || entry.prio} row-status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}
+                    onClick={() => log.startEditLog(entry)}
+                  >
+                    <td className="col-date">{formatDate(entry.created_at, t.lang)}</td>
+                    <td className="col-new">
+                      {entry.is_new && <span className="new-dot"></span>}
+                    </td>
+                    <td className="col-problem">
+                      <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                    </td>
+                    <td className="col-erfasser">{entry.erfasser}</td>
+                    <td className="col-prio">
+                      <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                        {getPrioLabel(entry.prio, t)}
+                      </span>
+                    </td>
+                    <td className="col-dept">{entry.abteilung}</td>
+                    <td className="col-action">
+                      {entry.massnahme || '---'}
+                    </td>
+                    <td className="col-start-time">
+                      {entry.status === '1_Offen' ? (
+                        <button 
+                          className="small-btn start-btn" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            log.quickUpdateLog(entry.id, 'in_arbeit_ab', new Date().toISOString());
+                          }}
+                        >
+                          {t.start}
+                        </button>
+                      ) : (
+                        formatDate(entry.in_arbeit_ab, t.lang)
+                      )}
+                    </td>
+                    <td className="col-end-time">
+                      {entry.status === '2_In_Arbeit' ? (
+                        <button 
+                          className="small-btn done" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            log.quickUpdateLog(entry.id, 'erledigt_am', new Date().toISOString());
+                          }}
+                        >
+                          {t.done}
+                        </button>
+                      ) : (
+                        formatDate(entry.erledigt_am, t.lang)
+                      )}
+                    </td>
+                    <td className="col-status">
+                      <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                        {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                      </div>
+                    </td>
+                    <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
+                    <td className="col-edit">
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="edit-icon-btn" onClick={(e) => { e.stopPropagation(); log.startEditLog(entry); }}><Edit3 size={14} /></button>
+                        <button 
+                          className="edit-icon-btn delete" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            askConfirm(
+                              'Eintrag wirklich löschen?',
+                              () => log.deleteLogEntry(entry.id)
+                            );
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="logbook-mobile-list">
+            {log.activeEntries.map(entry => (
+              <div 
+                key={entry.id} 
+                className={`log-mobile-card prio-${entry.prio.split('_')[1] || entry.prio} status-${entry.status.split('_').slice(1).join('_').toLowerCase()}`}
+                onClick={() => log.startEditLog(entry)}
+              >
+                <div className="card-header">
+                  <span className="card-date">{formatDate(entry.created_at, t.lang)}</span>
+                  <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                    {getPrioLabel(entry.prio, t)}
+                  </span>
                 </div>
-                {entry.massnahme && (
-                  <div className="card-action">
-                    <strong>Maßnahme:</strong>
-                    {entry.massnahme}
+                <div className="card-body">
+                  <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                  <div className="card-meta">
+                    <span><strong>Von:</strong> {entry.erfasser}</span>
+                    <span><strong>Abt:</strong> {entry.abteilung}</span>
                   </div>
-                )}
-              </div>
-              <div className="card-footer">
-                <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
-                  {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                  {entry.massnahme && (
+                    <div className="card-action">
+                      <strong>Maßnahme:</strong>
+                      <div dangerouslySetInnerHTML={{ __html: entry.massnahme }} />
+                    </div>
+                  )}
                 </div>
-                <span className="worker">{entry.wer_ist_dran || '---'}</span>
+                <div className="card-footer">
+                  <div className={`status-badge-container ${entry.status.split('_').slice(1).join('_').toLowerCase()}`}>
+                    {entry.status === '1_Offen' ? t.open : entry.status === '2_In_Arbeit' ? t.inProgress : t.done}
+                  </div>
+                </div>
               </div>
+            ))}
+          </div>
+        )}
+
+        {log.completedEntries.length > 0 && (
+          <>
+            <div className="logbook-section-header archive-header">
+              <h2>{t.completedEntries}</h2>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+
+            {!isMobile ? (
+              <div className="logbook-table-container archive-section">
+                <table className="logbook-table">
+                  <thead>
+                    <tr>
+                      <th onClick={() => log.handleSort('created_at')} className="sortable">{t.printDate} {log.logSortConfig.key === 'created_at' && (log.logSortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                      <th style={{ width: '40px' }}>{t.isNew}</th>
+                      <th>{t.problem}</th>
+                      <th>{t.erfasser}</th>
+                      <th onClick={() => log.handleSort('prio')} className="sortable">{t.prio}</th>
+                      <th>{t.dept}</th>
+                      <th>{t.action}</th>
+                      <th>{t.startWork}</th>
+                      <th>{t.finishTime}</th>
+                      <th>{t.status}</th>
+                      <th>{t.completedBy}</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {log.completedEntries.map(entry => (
+                      <tr 
+                        key={entry.id} 
+                        className="row-status-erledigt"
+                        onClick={() => log.startEditLog(entry)}
+                      >
+                        <td className="col-date">{formatDate(entry.created_at, t.lang)}</td>
+                        <td className="col-new">
+                          {entry.is_new && <span className="new-dot"></span>}
+                        </td>
+                        <td className="col-problem">
+                          <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                        </td>
+                        <td className="col-erfasser">{entry.erfasser}</td>
+                        <td className="col-prio">
+                          <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                            {getPrioLabel(entry.prio, t)}
+                          </span>
+                        </td>
+                        <td className="col-dept">{entry.abteilung}</td>
+                        <td className="col-action">
+                          <div dangerouslySetInnerHTML={{ __html: entry.massnahme || '---' }} />
+                        </td>
+                        <td className="col-start-time">
+                          {formatDate(entry.in_arbeit_ab, t.lang)}
+                        </td>
+                        <td className="col-end-time">
+                          {formatDate(entry.erledigt_am, t.lang)}
+                        </td>
+                        <td className="col-status">
+                          <div className="status-badge-container erledigt">
+                            {t.done}
+                          </div>
+                        </td>
+                        <td className="col-completed-by">{entry.erledigt_von || '---'}</td>
+                        <td className="col-edit">
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button 
+                              className="edit-icon-btn" 
+                              onClick={(e) => { e.stopPropagation(); log.startEditLog(entry); }}
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="logbook-mobile-list archive-section">
+                {log.completedEntries.map(entry => (
+                  <div 
+                    key={entry.id} 
+                    className="log-mobile-card status-erledigt"
+                    onClick={() => log.startEditLog(entry)}
+                  >
+                    <div className="card-header">
+                      <span className="card-date">{formatDate(entry.created_at, t.lang)}</span>
+                      <span className={`prio-badge ${entry.prio.split('_')[1] || entry.prio}`}>
+                        {getPrioLabel(entry.prio, t)}
+                      </span>
+                    </div>
+                    <div className="card-body">
+                      <div className="problem-text" dangerouslySetInnerHTML={{ __html: entry.problem_info }} />
+                      <div className="card-meta">
+                        <span><strong>Von:</strong> {entry.erfasser}</span>
+                        <span><strong>Abt:</strong> {entry.abteilung}</span>
+                      </div>
+                      {entry.massnahme && (
+                        <div className="card-action">
+                          <strong>Maßnahme:</strong>
+                          <div dangerouslySetInnerHTML={{ __html: entry.massnahme }} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="card-footer">
+                      <div className="status-badge-container erledigt">
+                        {t.done}
+                      </div>
+                      <span className="worker">{entry.erledigt_von || '---'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {log.showLogEntryModal && (
         <div className="manager-overlay">
-          <div className="manager-content">
+          <div className={`manager-content prio-wrapper prio-${log.newLogEntry.prio?.split('_')[1] || log.newLogEntry.prio || 'info'}`}>
             <div className="manager-header">
               <h3>{log.editingLogId ? t.edit : t.newEntry}</h3>
-              <button className="icon-btn" onClick={() => log.setShowLogEntryModal(false)}><X size={24} /></button>
+              <button className="icon-btn" onClick={log.closeEntryModal}><X size={24} /></button>
             </div>
             <div className="product-form">
               <div className="input-group">
@@ -323,36 +463,14 @@ const Logbook = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid-2">
                 <div className="input-group">
                   <label>{t.prio}</label>
                   <select value={log.newLogEntry.prio} onChange={(e) => log.setNewLogEntry({...log.newLogEntry, prio: e.target.value})}>
-                    <option value="0_kritisch">{t.kritisch}</option>
                     <option value="1_hoch">{t.hoch}</option>
                     <option value="2_mittel">{t.mittel}</option>
                     <option value="4_info">INFO</option>
                   </select>
                 </div>
-                <div className="input-group">
-                  <label>{t.who}</label>
-                  <select 
-                    value={log.newLogEntry.wer_ist_dran} 
-                    onChange={(e) => log.setNewLogEntry({...log.newLogEntry, wer_ist_dran: e.target.value})}
-                  >
-                    <option value="">---</option>
-                    {log.logbookConfig
-                      .filter(c => {
-                        if (log.newLogEntry.abteilung === 'PR') return c.type === 'operator';
-                        if (log.newLogEntry.abteilung === 'WU') return c.type === 'mech';
-                        return c.type === 'operator' || c.type === 'mech';
-                      })
-                      .map(p => (
-                        <option key={p.id} value={p.value}>{p.label}</option>
-                      ))
-                    }
-                  </select>
-                </div>
-              </div>
               <div className="input-group">
                 <label>{t.action}</label>
                 <div className="rich-text-toolbar">
@@ -388,7 +506,7 @@ const Logbook = () => {
                         'Eintrag wirklich löschen?',
                         () => {
                           log.deleteLogEntry(log.editingLogId);
-                          log.setShowLogEntryModal(false);
+                          log.closeEntryModal();
                         }
                       );
                     }}
@@ -406,7 +524,7 @@ const Logbook = () => {
 
       {log.showFinishModal && (
         <div className="manager-overlay">
-          <div className="manager-content">
+          <div className="manager-content prio-wrapper prio-info">
             <div className="manager-header">
               <h3>{t.completedBy}</h3>
               <button className="icon-btn" onClick={() => { log.setShowFinishModal(false); setFinisherMassnahme(''); }}><X size={24} /></button>
@@ -433,6 +551,10 @@ const Logbook = () => {
                       onChange={(e) => document.execCommand('foreColor', false, e.target.value)} 
                       title="Text Color"
                     />
+                    <div className="color-btn-display">
+                      <span>A</span>
+                      <div className="color-stripe"></div>
+                    </div>
                   </div>
                 </div>
                 <div 
@@ -440,7 +562,7 @@ const Logbook = () => {
                   contentEditable
                   onBlur={(e) => setFinisherMassnahme(e.currentTarget.innerHTML)}
                   dangerouslySetInnerHTML={{ __html: finisherMassnahme }}
-                  style={{ minHeight: '120px' }}
+                  style={{ minHeight: '150px' }}
                 />
               </div>
               <button className="add-btn" onClick={() => { 

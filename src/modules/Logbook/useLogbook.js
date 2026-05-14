@@ -3,7 +3,7 @@ import { supabase } from '../../supabase';
 import { useApp } from '../../context/AppContext';
 
 export const useLogbook = () => {
-  const { selectedLine, setIsLoading } = useApp();
+  const { selectedLine, setIsLoading, isLoading } = useApp();
   const [logEntries, setLogEntries] = useState([]);
   const [logbookConfig, setLogbookConfig] = useState([]);
   const [showLogEntryModal, setShowLogEntryModal] = useState(false);
@@ -25,6 +25,20 @@ export const useLogbook = () => {
     wer_ist_dran: '',
     is_new: true
   });
+
+  const resetForm = () => {
+    setNewLogEntry({
+      problem_info: '',
+      erfasser: '',
+      prio: '4_info',
+      abteilung: 'PR',
+      massnahme: '',
+      status: '1_Offen',
+      wer_ist_dran: '',
+      is_new: true
+    });
+    setEditingLogId(null);
+  };
 
   useEffect(() => {
     if (selectedLine) {
@@ -80,7 +94,7 @@ export const useLogbook = () => {
           })
           .eq('id', editingLogId);
         if (!error) {
-          setEditingLogId(null); setShowLogEntryModal(false); fetchLogbook();
+          setShowLogEntryModal(false); resetForm(); fetchLogbook();
         }
       } else {
         const { error } = await supabase.from('logbook').insert([{
@@ -88,7 +102,7 @@ export const useLogbook = () => {
           machine_line: selectedLine
         }]);
         if (!error) {
-          setShowLogEntryModal(false); fetchLogbook();
+          setShowLogEntryModal(false); resetForm(); fetchLogbook();
         }
       }
     } finally {
@@ -122,6 +136,16 @@ export const useLogbook = () => {
       is_new: entry.is_new
     });
     setShowLogEntryModal(true);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowLogEntryModal(true);
+  };
+
+  const closeEntryModal = () => {
+    setShowLogEntryModal(false);
+    resetForm();
   };
 
   const quickUpdateLog = async (id, field, value) => {
@@ -198,14 +222,18 @@ export const useLogbook = () => {
       if (aVal > bVal) return logSortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-
+    
+  const activeEntries = filteredAndSortedEntries.filter(e => e.status !== '3_Erledigt');
+  const completedEntries = filteredAndSortedEntries.filter(e => e.status === '3_Erledigt');
+  
   return {
     logEntries, logbookConfig, showLogEntryModal, setShowLogEntryModal,
     showFinishModal, setShowFinishModal, finishingEntryId,
     logSearch, setLogSearch, logFilterStatus, setLogFilterStatus,
     logFilterPrio, setLogFilterPrio, logFilterDept, setLogFilterDept,
     logSortConfig, setLogSortConfig, editingLogId, newLogEntry, setNewLogEntry,
-    saveLogEntry, startEditLog, quickUpdateLog, finalizeRepair, deleteLogEntry,
-    handleSort, resetFilters, filteredAndSortedEntries, fetchLogbook
+    saveLogEntry, startEditLog, openAddModal, closeEntryModal, quickUpdateLog, finalizeRepair, deleteLogEntry,
+    handleSort, resetFilters, filteredAndSortedEntries, fetchLogbook,
+    activeEntries, completedEntries, isLoading
   };
 };
