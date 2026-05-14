@@ -5491,31 +5491,64 @@ body.wide-layout .header-top-classic {
   .calendar-day-item { min-width: 65px !important; flex-shrink: 0 !important; }
   
   .shift-tabs-container { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
-  .shift-tabs-pill { width: 100% !important; overflow-x: auto !important; }
-  .shift-tab-btn { white-space: nowrap !important; padding: 8px 15px !important; font-size: 0.8rem !important; }
+  .shift-tabs-pill { 
+    width: 100% !important; 
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .shift-tab-btn { 
+    flex: 1 1 30% !important;
+    white-space: nowrap !important; 
+    padding: 8px 10px !important; 
+    font-size: 0.75rem !important; 
+    border-radius: 8px !important;
+    background: rgba(255,255,255,0.05) !important;
+    text-align: center !important;
+  }
 
   .wt-table-header { 
     display: grid !important; 
-    grid-template-columns: 80px 1fr 1fr 1fr !important; /* Hide remark/status headers */
-    font-size: 0.7rem !important;
-    padding: 10px 5px !important;
+    grid-template-columns: 65px 1fr 1fr 1fr !important; /* Tightened */
+    font-size: 0.65rem !important;
+    padding: 8px 2px !important;
+    gap: 4px !important;
   }
   .wt-table-header span:nth-child(5), .wt-table-header span:nth-child(6) { display: none !important; }
+  /* Shorten Magazin header text on mobile */
+  .wt-table-header span:nth-child(4)::after { content: "MAG"; }
+  .wt-table-header span:nth-child(4) { visibility: hidden; position: relative; }
+  .wt-table-header span:nth-child(4)::after { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
 
   .wt-row { 
     display: grid !important; 
-    grid-template-columns: 80px 1fr 1fr 1fr !important;
-    gap: 5px !important;
-    padding: 10px 5px !important;
+    grid-template-columns: 65px 1fr 1fr 1fr !important;
+    gap: 4px !important;
+    padding: 8px 2px !important;
   }
-  .col-hour { font-size: 0.75rem !important; }
-  .col-hour span { font-size: 0.7rem !important; }
+  .col-hour { font-size: 0.65rem !important; flex-direction: column !important; justify-content: center !important; }
+  .col-hour span { font-size: 0.6rem !important; line-height: 1.1 !important; text-align: center !important; }
   .col-hour svg { display: none !important; }
-  .col-status, .col-remark { display: none !important; } /* Hide these in list view on mobile */
+  .col-status, .col-remark { display: none !important; } 
   
-  .mobile-val-display { font-size: 1rem !important; font-weight: 700 !important; }
-  .wt-content-grid { grid-template-columns: 1fr !important; }
-  .stats-sidebar { margin-top: 20px !important; }
+  .mobile-val-display { 
+    font-size: 0.95rem !important; 
+    font-weight: 700 !important; 
+    padding: 6px 2px !important;
+    min-width: auto !important;
+    width: 100% !important;
+  }
+  .wt-content-grid { grid-template-columns: 1fr !important; width: 100% !important; }
+  .stats-sidebar { margin-top: 20px !important; padding: 10px !important; }
+  
+  .totals-row { 
+    background: rgba(0, 242, 254, 0.1) !important;
+    margin-top: 5px !important;
+    border-radius: 4px !important;
+  }
+  .totals-row .val { font-size: 0.9rem !important; }
 
   /* Logbook Mobile Fixes */
   .logbook-controls { 
