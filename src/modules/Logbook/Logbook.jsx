@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   ChevronLeft, History, Lock, Unlock, 
   RotateCcw, Save, FileText, Trash2, X,
-  Settings, Search, Plus, Edit3, ChevronDown
+  Settings, Search, Plus, Edit3, ChevronDown, Info
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useLogbook } from './useLogbook';
@@ -118,6 +118,13 @@ const Logbook = () => {
           </div>
         </div>
       </div>
+      
+      {isMobile && (
+        <div className="mobile-info-banner no-print" style={{ margin: '10px 0' }}>
+          <Info size={18} />
+          <span>ANZEIGEMODUS</span>
+        </div>
+      )}
 
       <div className="logbook-main">
         <div className="logbook-header">
