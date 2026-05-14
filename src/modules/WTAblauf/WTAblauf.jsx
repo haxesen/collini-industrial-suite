@@ -259,6 +259,49 @@ const WTAblauf = () => {
 
   const handleExportPDF = () => { window.print(); };
 
+  const handleExportCSV = () => {
+    const headers = ['Stunde', 'Ziel', 'Ist', 'Magazin', 'Differenz', 'Bemerkung'];
+    const rows = counts.map(c => {
+      // Find the hour for this line
+      let hourStr = '';
+      Object.entries(shifts).forEach(([name, hours]) => {
+        const lineOffset = name === '2. Schicht' ? 8 : name === '3. Schicht' ? 16 : 0;
+        const localIdx = c.line - 1 - lineOffset;
+        if (localIdx >= 0 && localIdx < 8) {
+          const start = hours[localIdx];
+          const end = (start + 1) % 24;
+          hourStr = `${start.toString().padStart(2, '0')}:00-${end.toString().padStart(2, '0')}:00`;
+        }
+      });
+
+      return [
+        hourStr,
+        c.target_count,
+        c.count,
+        c.magazin_count,
+        (c.count - c.target_count),
+        `"${(c.remark || '').replace(/"/g, '""')}"`
+      ];
+    });
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map(r => r.join(';'))
+    ].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    const fileName = `WT_Ablauf_${format(selectedDate, 'yyyy-MM-dd')}_${selectedLine || 'KS24'}.csv`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderStats = () => {
     // Calculate shift totals first for absolute consistency
     const shiftData = Object.entries(shifts).map(([name, hours]) => {
@@ -409,7 +452,7 @@ const WTAblauf = () => {
           <div className="actions-card glass-panel">
             <div className="card-title"><LayoutDashboard size={18} /> Schnell-Aktionen</div>
             <div className="action-btns">
-              <button className="action-btn print">
+              <button onClick={handleExportCSV} className="action-btn print">
                 <FileText size={18} /> Export CSV
               </button>
             </div>
