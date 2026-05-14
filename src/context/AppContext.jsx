@@ -16,7 +16,8 @@ export const AppProvider = ({ children }) => {
       const line = hash.split('line=')[1];
       if (line) return line;
     }
-    return localStorage.getItem('collini_selected_line');
+    // Always start with Machine Selector by default on fresh load
+    return null;
   });
   const [machines, setMachines] = useState([]);
   const [activeInfos, setActiveInfos] = useState([]);
