@@ -11,7 +11,7 @@ import colliniLogo from '../../assets/Collini_Logo.svg';
 const Hub = () => {
   const { 
     t, setView, isAdmin, setIsAdmin, setShowAdminLogin, setShowManager, 
-    setSelectedLine, selectedLine, moduleOrder, updateModuleOrder 
+    setSelectedLine, selectedLine, moduleOrder, updateModuleOrder, isMobile 
   } = useApp();
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
@@ -70,7 +70,8 @@ const Hub = () => {
             {selectedLine && <span className="line-badge">{selectedLine}</span>}
           </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button 
+              {!isMobile && (
+                <button 
                 className="hub-header-btn"
                 onClick={toggleFullscreen}
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', color: '#fff' }}
@@ -78,6 +79,7 @@ const Hub = () => {
               >
                 {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
               </button>
+            )}
               
               <button 
                 className="hub-header-btn"
@@ -90,7 +92,7 @@ const Hub = () => {
               >
                 <Factory size={24} />
               </button>
-              {isAdmin && (
+              {!isMobile && isAdmin && (
                 <button 
                   className="hub-header-btn admin-settings-btn"
                   onClick={() => setShowManager(true)}
@@ -100,13 +102,15 @@ const Hub = () => {
                   <BarChart3 size={24} />
                 </button>
               )}
-              <button 
-                className={`hub-header-btn ${isAdmin ? 'admin-active' : ''}`} 
-                onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', color: '#fff' }}
-              >
-                {isAdmin ? <Unlock size={24} /> : <Lock size={24} />}
-              </button>
+              {!isMobile && (
+                <button 
+                  className={`hub-header-btn ${isAdmin ? 'admin-active' : ''}`} 
+                  onClick={() => isAdmin ? setIsAdmin(false) : setShowAdminLogin(true)}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', color: '#fff' }}
+                >
+                  {isAdmin ? <Unlock size={24} /> : <Lock size={24} />}
+                </button>
+              )}
             </div>
           </div>
           <h1 style={{ marginBottom: '5px' }}>{t.hubTitle}</h1>
