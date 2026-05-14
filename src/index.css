@@ -38,6 +38,11 @@ body {
   overflow-x: hidden;
 }
 
+body.wide-layout {
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
 #root {
   width: 100%;
   display: flex;
@@ -56,6 +61,16 @@ body.wide-layout #root {
   align-items: stretch;
   height: 100vh; overflow: hidden;
   color: #fff;
+}
+
+body.wide-layout .full-view-wrapper {
+  height: auto !important;
+  min-height: 100vh;
+  overflow-y: visible !important;
+}
+
+.print-only-header {
+  display: none;
 }
 
 .app-container {
