@@ -20,7 +20,7 @@ export const translations = {
     chemNickel: 'CHEM-NICKEL UMPUMPEN',
     chemNickelDesc: 'Ablaufverfolgung des Umpumpvorgangs',
     chemOrder: 'CHEMIE BESTELLUNG',
-    chemOrderDesc: 'Ausfolgeschein - In Entwicklung',
+    chemOrderDesc: 'Ausfolgeschein',
     wtZiel: 'WT ZIEL',
     wtIst: 'WT IST',
     davonMagazin: 'davon Magazin',
