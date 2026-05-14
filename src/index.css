@@ -5468,5 +5468,65 @@ body.wide-layout .header-top-classic {
     overflow: visible !important;
   }
   .hub-card { min-height: auto !important; padding: 20px !important; }
+
+  /* WTAblauf Mobile Fixes */
+  .wt-header { 
+    flex-direction: column !important; 
+    align-items: flex-start !important; 
+    gap: 15px !important; 
+    height: auto !important;
+    padding: 15px !important;
+  }
+  .header-left { width: 100% !important; justify-content: space-between !important; }
+  .header-left h1 { font-size: 1.2rem !important; gap: 10px !important; }
+  
+  .calendar-days { 
+    overflow-x: auto !important; 
+    justify-content: flex-start !important; 
+    padding-bottom: 10px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .calendar-days::-webkit-scrollbar { display: none !important; }
+  .calendar-day-item { min-width: 65px !important; flex-shrink: 0 !important; }
+  
+  .shift-tabs-container { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .shift-tabs-pill { width: 100% !important; overflow-x: auto !important; }
+  .shift-tab-btn { white-space: nowrap !important; padding: 8px 15px !important; font-size: 0.8rem !important; }
+
+  .wt-table-header { 
+    display: grid !important; 
+    grid-template-columns: 80px 1fr 1fr 1fr !important; /* Hide remark/status headers */
+    font-size: 0.7rem !important;
+    padding: 10px 5px !important;
+  }
+  .wt-table-header span:nth-child(5), .wt-table-header span:nth-child(6) { display: none !important; }
+
+  .wt-row { 
+    display: grid !important; 
+    grid-template-columns: 80px 1fr 1fr 1fr !important;
+    gap: 5px !important;
+    padding: 10px 5px !important;
+  }
+  .col-hour { font-size: 0.75rem !important; }
+  .col-hour span { font-size: 0.7rem !important; }
+  .col-hour svg { display: none !important; }
+  .col-status, .col-remark { display: none !important; } /* Hide these in list view on mobile */
+  
+  .mobile-val-display { font-size: 1rem !important; font-weight: 700 !important; }
+  .wt-content-grid { grid-template-columns: 1fr !important; }
+  .stats-sidebar { margin-top: 20px !important; }
+
+  /* Logbook Mobile Fixes */
+  .logbook-controls { 
+    flex-direction: column !important; 
+    gap: 12px !important; 
+    padding: 10px !important;
+  }
+  .search-box, .custom-dropdown, .reset-filters-btn { width: 100% !important; }
+  .custom-dropdown-header { width: 100% !important; }
+  
+  .log-mobile-card { margin-bottom: 12px !important; }
+  .logbook-table-container { overflow-x: auto !important; }
 }
 
