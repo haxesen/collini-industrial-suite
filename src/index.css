@@ -4450,36 +4450,101 @@ body.wide-layout .header-top-classic {
    WT ABLAUF MODULE STYLES
    ======================================== */
 
-.print-only-header { display: none; }
-
 @media print {
-  .print-only-header { display: block !important; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-  .print-header-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 10px; }
-  .print-module-title { display: flex; align-items: center; gap: 15px; }
-  .print-module-title h1 { margin: 0; font-size: 1.5rem; color: #000; }
-  .wt-container { padding: 0 !important; color: #000 !important; }
-  .glass-panel, .main-table-card, .stats-sidebar, .daily-hero-card, .mini-pill-card, .main-chart-card, .actions-card { background: #fff !important; border: 1px solid #ddd !important; box-shadow: none !important; backdrop-filter: none !important; color: #000 !important; margin-bottom: 15px !important; }
-  .wt-content-grid, .daily-stats-grid, .weekly-charts-grid { display: block !important; }
-  .stats-sidebar, .daily-side-pills, .actions-card { width: 100% !important; margin-top: 20px !important; }
-  .actions-card { display: none !important; }
-  h1, h2, h3, .val, .p-value, .percent, .ist, .day { color: #000 !important; text-shadow: none !important; }
-  .text-secondary, .val-label, .p-label, .column-label .date { color: #555 !important; }
-  .gauge-bg { stroke: #eee !important; }
-  .gauge-fill { stroke: #0099ff !important; }
-  .efficiency-progress-bg { background: #eee !important; border: 1px solid #ddd !important; }
-  .efficiency-progress-fill { background: #0099ff !important; }
-  .bullet-bar-bg { background: #f9f9f9 !important; border: 1px solid #eee !important; }
-  .bullet-target-line { background: #000 !important; box-shadow: none !important; height: 2px !important; }
-  .bullet-bar-actual { background: #0099ff !important; }
-  .bullet-bar-actual.goal-met { background: #2ecc71 !important; }
-  .wt-row.totals-row { background: #f0f0f0 !important; border: 1px solid #000 !important; color: #000 !important; }
-  .totals-row .actual-display { background: #fff !important; border: 1px solid #000 !important; box-shadow: none !important; }
-  .totals-row .actual-display .val { color: #000 !important; text-shadow: none !important; }
-  .status-badge { border: 1px solid #000 !important; }
-  .status-badge.met { background: #e8f8f0 !important; color: #1e8449 !important; }
-  .status-badge.behind { background: #fdeded !important; color: #a94442 !important; }
-  .chart-column { transform: none !important; }
-  .bar-label-dual .ziel { color: #777 !important; }
+  @page { size: portrait; margin: 1.5cm; }
+  body { background: #fff !important; color: #000 !important; font-size: 10pt !important; }
+  
+  /* Hide everything by default */
+  .no-print, .wt-header, .wt-calendar-stripe, .stats-sidebar, .daily-hero-card, 
+  .mini-pill-card, .main-chart-card, .actions-card, .stats-container,
+  .auto-save-indicator, .mode-toggle, .back-btn, .shift-tabs-pill, .mobile-info-banner {
+    display: none !important;
+  }
+
+  /* Structural fixes */
+  .full-view-wrapper, .wt-container, .wt-content-grid { 
+    display: block !important; 
+    padding: 0 !important; 
+    margin: 0 !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  .print-only-header { 
+    display: block !important; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid #000; 
+    padding-bottom: 10px; 
+  }
+  .print-header-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+  .print-module-title { display: flex; align-items: center; justify-content: space-between; }
+  .print-module-title h1 { margin: 0; font-size: 1.4rem; color: #000; font-weight: 800; }
+
+  /* Table styling */
+  .main-table-card { 
+    display: block !important; 
+    width: 100% !important; 
+    background: #fff !important; 
+    border: none !important; 
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  
+  .wt-table-header { 
+    display: grid !important;
+    grid-template-columns: 100px 80px 80px 80px 100px 1fr !important;
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    border-bottom: 2px solid #000 !important;
+    padding: 8px 5px !important;
+    font-size: 8pt !important;
+  }
+
+  .wt-row { 
+    display: grid !important;
+    grid-template-columns: 100px 80px 80px 80px 100px 1fr !important;
+    border-bottom: 1px solid #eee !important;
+    padding: 8px 5px !important;
+    page-break-inside: avoid;
+    color: #000 !important;
+  }
+
+  .wt-row.totals-row { 
+    background: #f0f0f0 !important; 
+    border-top: 2px solid #000 !important; 
+    font-weight: 800 !important;
+  }
+
+  .col-hour, .col-target, .col-ist, .col-magazin, .col-status, .col-remark { 
+    color: #000 !important; 
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .col-hour { justify-content: flex-start !important; }
+  .col-remark { justify-content: flex-start !important; padding-left: 10px !important; }
+
+  .status-badge { 
+    padding: 2px 6px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    font-size: 7pt !important;
+  }
+
+  .count-input, .remark-input { 
+    border: none !important; 
+    background: transparent !important; 
+    color: #000 !important;
+    text-align: center !important;
+    width: 100% !important;
+    font-size: 10pt !important;
+  }
+  .remark-input { text-align: left !important; }
+
+  /* Ensure inputs are visible in print */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 }
 
 .wt-container { padding: 10px 20px 20px; max-width: 1850px; margin: 0 auto; color: #fff; }
