@@ -5573,5 +5573,14 @@ body.wide-layout .header-top-classic {
   
   .log-mobile-card { margin-bottom: 12px !important; }
   .logbook-table-container { overflow-x: auto !important; }
+
+  /* Machine Selector Mobile */
+  .machine-selector-container { height: auto !important; min-height: 100vh !important; padding: 40px 20px !important; align-items: flex-start !important; }
+  .selector-header { margin-bottom: 30px !important; }
+  .selector-header h1 { font-size: 1.8rem !important; }
+  .selector-logo { height: 45px !important; }
+  .machine-card { padding: 15px !important; gap: 15px !important; }
+  .machine-icon { width: 45px !important; height: 45px !important; }
+  .machine-info h3 { font-size: 1.2rem !important; }
 }
 

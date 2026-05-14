@@ -4,7 +4,7 @@ import { Factory, ChevronRight } from 'lucide-react';
 import colliniLogo from '../../assets/Collini_Logo.svg';
 
 const MachineSelector = () => {
-  const { machines, setSelectedLine, t } = useApp();
+  const { machines, setSelectedLine, t, isMobile } = useApp();
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -18,15 +18,17 @@ const MachineSelector = () => {
 
   return (
     <div className="machine-selector-container">
-      <button 
-        className="floating-fullscreen-btn" 
-        onClick={toggleFullscreen}
-        title="Fullscreen"
-      >
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-        </svg>
-      </button>
+      {!isMobile && (
+        <button 
+          className="floating-fullscreen-btn" 
+          onClick={toggleFullscreen}
+          title="Fullscreen"
+        >
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+          </svg>
+        </button>
+      )}
 
       <div className="selector-content">
         <header className="selector-header">
