@@ -19,6 +19,8 @@ export const translations = {
     wtAblaufDesc: 'Stündliche Verfolgung der Warenträger',
     chemNickel: 'CHEM-NICKEL UMPUMPEN',
     chemNickelDesc: 'Ablaufverfolgung des Umpumpvorgangs',
+    chemOrder: 'CHEMIE BESTELLUNG',
+    chemOrderDesc: 'Ausfolgeschein - In Entwicklung',
     wtZiel: 'WT ZIEL',
     wtIst: 'WT IST',
     davonMagazin: 'davon Magazin',

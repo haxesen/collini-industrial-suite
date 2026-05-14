@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Calculator, Book, Megaphone, ClipboardCheck, 
   BarChart3, Hammer, Lock, Unlock, Factory, Maximize, Minimize, Activity,
-  ChevronLeft, ChevronRight, Droplets
+  ChevronLeft, ChevronRight, Droplets, FlaskConical
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -36,6 +36,7 @@ const Hub = () => {
     { id: 'info_wall', icon: Megaphone, title: t.infoWall, desc: t.infoWallDesc, disabled: false },
     { id: 'prodPlan', icon: BarChart3, title: t.prodPlan, desc: t.prodPlanDesc, disabled: true },
     { id: 'wartungsplaner', icon: Hammer, title: t.wartungsplaner, desc: t.wartungsplanerDesc, disabled: true },
+    { id: 'chemOrder', icon: FlaskConical, title: t.chemOrder, desc: t.chemOrderDesc, disabled: true },
   ];
 
   const modules = moduleOrder
