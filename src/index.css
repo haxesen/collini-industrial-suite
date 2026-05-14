@@ -2559,7 +2559,7 @@ body.wide-layout .app-container,
   .app-container {
     padding: 15px;
     border-radius: 0;
-    height: 100vh; overflow: hidden;
+    height: auto; min-height: 100vh; overflow: visible;
     width: 100%;
     margin: 0;
   }
@@ -4421,18 +4421,7 @@ body.wide-layout .header-top-classic {
 }
 
 /* --- GLOBAL MOBILE RESPONSIVENESS (SAFE OVERRIDES) --- */
-@media (max-width: 1024px) {
-  .full-view-wrapper { overflow-x: hidden; }
-  .app-container { padding: 10px !important; margin-top: 5px !important; }
-  .wide-container { max-width: 100% !important; padding: 5px !important; }
-  .hub-header { padding: 15px !important; flex-direction: column !important; gap: 15px !important; }
-  .hub-logo { height: 30px !important; }
-  .hub-grid { grid-template-columns: 1fr !important; gap: 12px !important; padding: 0 5px 30px 5px !important; }
-  .hub-card { min-height: auto !important; padding: 20px !important; }
-  .hub-card h2 { font-size: 1.2rem !important; }
-  .manager-content { width: 98% !important; padding: 15px !important; margin: 10px auto !important; }
-  .header-actions { gap: 10px !important; }
-}
+
 
 /* --- MODULE SPECIFIC MOBILE OVERRIDES --- */
 @media (max-width: 1024px) {
@@ -5434,5 +5423,50 @@ body.wide-layout .header-top-classic {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.5); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- CRITICAL MOBILE SCROLL FIX (FINAL OVERRIDE) --- */
+@media screen and (max-width: 1100px) {
+  html, 
+  body, 
+  #root, 
+  body.wide-layout, 
+  body.public-view {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    position: relative !important;
+  }
+  
+  .full-view-wrapper, 
+  .public-view-wrapper,
+  .hub-container,
+  .app-container,
+  .app-container.wide-container { 
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    padding: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .hub-header { padding: 15px !important; flex-direction: column !important; gap: 15px !important; }
+  .hub-logo { height: 30px !important; }
+  .hub-grid { 
+    grid-template-columns: 1fr !important; 
+    gap: 15px !important; 
+    padding: 0 5px 40px 5px !important; 
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .hub-card { min-height: auto !important; padding: 20px !important; }
 }
 
