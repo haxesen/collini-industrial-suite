@@ -5488,7 +5488,13 @@ body.wide-layout .header-top-classic {
     scrollbar-width: none !important;
   }
   .calendar-days::-webkit-scrollbar { display: none !important; }
-  .calendar-day-item { min-width: 65px !important; flex-shrink: 0 !important; }
+  .wt-calendar-stripe { padding: 5px !important; height: auto !important; }
+  .calendar-nav-wrapper { gap: 5px !important; }
+  .week-nav-btn { padding: 5px !important; min-width: 40px !important; flex-direction: column !important; gap: 2px !important; }
+  .week-nav-btn span { display: block !important; font-size: 0.6rem !important; white-space: nowrap !important; }
+  .calendar-days { gap: 5px !important; overflow: hidden !important; width: auto !important; }
+  .calendar-day-item { min-width: 60px !important; flex-shrink: 0 !important; padding: 5px !important; }
+  .timeline-track, .timeline-playhead { display: none !important; }
   
   .shift-tabs-container { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
   .shift-tabs-pill { 

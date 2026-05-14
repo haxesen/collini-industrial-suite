@@ -470,9 +470,9 @@ const WTAblauf = () => {
 
       <div className="wt-calendar-stripe no-print">
         <div className="calendar-nav-wrapper">
-          <button onClick={() => setSelectedDate(prev => subDays(prev, 7))} className="week-nav-btn">
+          <button onClick={() => setSelectedDate(prev => isMobile ? subDays(prev, 1) : subDays(prev, 7))} className="week-nav-btn">
             <ChevronLeft size={20} />
-            <span>Vorherige Woche</span>
+            <span>{isMobile ? t.prevDay : t.prevWeek}</span>
           </button>
           
           <div className="days-container">
@@ -495,12 +495,21 @@ const WTAblauf = () => {
               return null;
             })()}
 
-            {eachDayOfInterval({
-              start: startOfWeek(selectedDate, { weekStartsOn: 1 }),
-              end: endOfWeek(selectedDate, { weekStartsOn: 1 })
-            }).map((date, idx) => {
-              const isSelected = isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, getProductionDate());
+            {(() => {
+              const allDays = eachDayOfInterval({
+                start: startOfWeek(selectedDate, { weekStartsOn: 1 }),
+                end: endOfWeek(selectedDate, { weekStartsOn: 1 })
+              });
+
+              // On mobile, only show 2 days: selected date and the next one (or previous)
+              // to ensure zero overflow on real devices.
+              const visibleDays = isMobile 
+                ? [selectedDate, addDays(selectedDate, 1)]
+                : allDays;
+
+              return visibleDays.map((date, idx) => {
+                const isSelected = isSameDay(date, selectedDate);
+                const isToday = isSameDay(date, getProductionDate());
               
               // Night Shift Transition Logic
               const currentHour = new Date().getHours();
@@ -526,11 +535,11 @@ const WTAblauf = () => {
                   <div className={`status-dot ${statusClass}`} />
                 </button>
               );
-            })}
+            })})()}
           </div>
 
-          <button onClick={() => setSelectedDate(prev => addDays(prev, 7))} className="week-nav-btn">
-            <span>Nächste Woche</span>
+          <button onClick={() => setSelectedDate(prev => isMobile ? addDays(prev, 1) : addDays(prev, 7))} className="week-nav-btn">
+            <span>{isMobile ? t.nextDay : t.nextWeek}</span>
             <ChevronRight size={20} />
           </button>
         </div>
