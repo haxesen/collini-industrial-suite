@@ -35,7 +35,7 @@ const Hub = () => {
     { id: 'checklist', icon: ClipboardCheck, title: t.checklist, desc: t.checklistDesc, disabled: true },
     { id: 'info_wall', icon: Megaphone, title: t.infoWall, desc: t.infoWallDesc, disabled: false },
     { id: 'prodPlan', icon: BarChart3, title: t.prodPlan, desc: t.prodPlanDesc, disabled: true },
-    { id: 'wartungsplaner', icon: Hammer, title: t.wartungsplaner, desc: t.wartungsplanerDesc, disabled: true },
+    { id: 'wartungsplaner', icon: Hammer, title: t.wartungsplaner, desc: t.wartungsplanerDesc, disabled: false },
     { id: 'chemOrder', icon: FlaskConical, title: t.chemOrder, desc: t.chemOrderDesc, disabled: true },
   ];
 

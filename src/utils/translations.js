@@ -78,7 +78,7 @@ export const translations = {
     dept: 'BETREFFENDE ABTEILUNG',
     problem: 'PROBLEM / INFO',
     erfasser: 'ERSTELLER',
-    action: 'MAßNAHME',
+    action: 'AKTION',
     who: 'ZUSTÄNDIGE PERSON',
     status: 'STATUS',
     isNew: 'NEU',
@@ -116,6 +116,11 @@ export const translations = {
     confirmDelete: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?',
     remark: 'Bemerkung...',
     activeEntries: 'Aktuelle Meldungen',
-    completedEntries: 'Archiv / Erledigt'
+    completedEntries: 'Archiv / Erledigt',
+    pending: 'GEPLANT',
+    estFinish: 'Voraussichtliches Ende',
+    staffCount: 'Personalstärke',
+    bath: 'Bad',
+    expected: 'Erwartet'
   }
 }

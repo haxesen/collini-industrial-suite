@@ -15,6 +15,20 @@
 
 ## Frissítési Napló (Changelog)
 
+### [1.5.0] - 2026-05-16
+#### Hozzáadva
+- **Wartungsplaner Modul**: Teljes körű gépkarbantartási ütemterv modul, amely külön kezeli a kémiai (`Chemical`) és vizes (`Water`) pozíciókat.
+- **Teljes Kádadatbázis**: 26 hiányzó vizes kád és speciális zuhanypozíciók (`Duschposition`) hozzáadása. Vizuálisan valósághű színezések (pl. Ni-Strike: sötétzöld, Kupferbad: barna, Zinnbad: vanília).
+- **Ipari Terminológia**: Státuszok egységesítése a német üzemeltetési standardokra (`GEPLANT`, `IN ARBEIT`, `ERLEDIGT`). Időadatok percalapú (`min`) megadása.
+- **Valós Idejű Folyamatkövetés**: Dinamikus "Wartungsfortschritt" progress bar integrálása, amely az elvégzett feladatok arányát mutatja, és 100%-nál zöldre vált.
+- **Extra Feladatok Sidebar**: Külön panel a speciális feladatoknak (pl. Anódcsere, Síntisztítás) modern, 3 oszlopos grid elrendezésben.
+- **Dinamikus Tartomány Kijelölés**: A "Schienen" (síntisztítás) feladatnál kezdő- és végpont választható, amely a géprajzon azonnali, teljes fényerejű lila (`#a855f7`) pulzáló vizuális kiemelést (highlight) eredményez a kijelölt tartomány felett.
+- **UI/UX Fejlesztések**: A táblázatok 15 soros (750px max-height) nézetre lettek optimalizálva a görgetés minimalizálása érdekében. Húzásos (Drag-to-select) és Shift+Click kijelölés. Több kád állapotának és akciójának egyszerre történő (Bulk) módosítása.
+
+#### Javítva
+- **Header Branding**: A modul fejlécének konzisztensé tétele a Collini Industrial Suite stílusrendszerével.
+- **Gépterem-térkép Szinkron**: A táblázatos módosítások azonnali vizuális visszacsatolása a grafikus kád-elrendezésen.
+
 ### [1.4.0] - 2026-05-12
 #### Hozzáadva
 - **Modularizáció**: A monolitikus `App.jsx` szétbontása önálló modulokra a `src/modules/` könyvtárban.
@@ -46,7 +60,7 @@
 ---
 
 ## Jövőbeli tervek (Roadmap)
-- [ ] **Wartungsplaner**: Gépkarbantartási ütemterv modul kidolgozása.
+- [x] **Wartungsplaner**: Gépkarbantartási ütemterv modul kidolgozása.
 - [ ] **Checklista**: Műszakátvételi ellenőrző lista implementálása.
 - [ ] **Produkciós Terv**: Vizuális produkciós ütemező modul.
 - [ ] **Barcode/QR**: Dokumentumok és termékek gyors beolvasása.

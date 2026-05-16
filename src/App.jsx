@@ -18,6 +18,7 @@ import AdminManager from './modules/Admin/AdminManager'
 import MachineSelector from './modules/MainHub/MachineSelector'
 import WTAblauf from './modules/WTAblauf/WTAblauf'
 import ChemNickel from './modules/ChemNickel/ChemNickel'
+import Wartungsplaner from './modules/Wartungsplaner/Wartungsplaner'
 import LoadingOverlay from './components/LoadingOverlay'
 import './index.css'
 
@@ -64,7 +65,7 @@ function App() {
       document.body.classList.add('public-view');
       return;
     }
-    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator' || view === 'wtAblauf' || view === 'chemNickel') {
+    if (view === 'hub' || view === 'logbook' || view === 'info_wall' || view === 'calculator' || view === 'wtAblauf' || view === 'chemNickel' || view === 'wartungsplaner') {
       document.body.classList.add('wide-layout')
     } else {
       document.body.classList.remove('wide-layout')
@@ -100,6 +101,8 @@ function App() {
         return <WTAblauf />;
       case 'chemNickel':
         return <ChemNickel />;
+      case 'wartungsplaner':
+        return <Wartungsplaner />;
       default:
         return <Hub />;
     }
