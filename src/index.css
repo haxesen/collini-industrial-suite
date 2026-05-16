@@ -6347,8 +6347,8 @@ body.wide-layout .header-top-classic {
 
 .kw-controls button:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: var(--collini-cyan);
-  color: var(--collini-cyan);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
 }
 
 .kw-label {
@@ -6407,7 +6407,7 @@ body.wide-layout .header-top-classic {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--collini-cyan);
+  background: var(--accent-cyan);
   color: #000;
   border: none;
   padding: 0.5rem 1rem;
