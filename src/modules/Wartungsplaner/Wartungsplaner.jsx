@@ -3,66 +3,16 @@ import { Hammer, Users, Clock, CheckCircle2, Circle, PlayCircle, ChevronLeft, Ch
 import { useApp } from '../../context/AppContext';
 
 const Wartungsplaner = () => {
-  const { t, setView, selectedLine } = useApp();
-  const [staffCount, setStaffCount] = useState(3);
-  const [tasks, setTasks] = useState([
-    // Chemie-Bäder
-    { id: '2432', name: 'Kupferbad', action: 'Nur Analyse', status: 'pending', time: 30, type: 'chemical' },
-    { id: '2453', name: 'Zinnbad', action: 'Nur Analyse', status: 'pending', time: 48, type: 'chemical' },
-    { id: '2408', name: 'Abkochentfettung Stahl', action: 'Neuansatz', status: 'pending', time: 240, type: 'chemical' },
-    { id: '2410', name: 'Abkochentfettung ZnDG', action: 'Neuansatz', status: 'pending', time: 240, type: 'chemical' },
-    { id: '2421', name: 'El. Entfettung Stahl', action: 'Neuansatz', status: 'pending', time: 210, type: 'chemical' },
-    { id: '2422', name: 'El. Entfettung ZnDG', action: 'Neuansatz', status: 'pending', time: 210, type: 'chemical' },
-    { id: '2433', name: 'Ni-Strike', action: 'Nur Analyse', status: 'pending', time: 30, type: 'chemical' },
-    { id: '2437', name: 'NiP', action: 'Analyse & Korrektur', status: 'pending', time: 90, type: 'chemical' },
-    { id: '2439', name: 'NiP', action: 'Analyse & Korrektur', status: 'pending', time: 90, type: 'chemical' },
-    { id: '2442', name: 'NiP', action: 'Analyse & Korrektur', status: 'pending', time: 90, type: 'chemical' },
-    { id: '2444', name: 'NiP', action: 'Analyse & Korrektur', status: 'pending', time: 90, type: 'chemical' },
-    { id: '2447', name: 'NiP-PTFE', action: 'Neuansatz', status: 'in-progress', time: 150, type: 'chemical' },
-    { id: '2448', name: 'NiP-PTFE', action: 'Neuansatz', status: 'pending', time: 150, type: 'chemical' },
-    { id: '2407', name: 'Gestellbeize Salpetersäure', action: 'Neuansatz', status: 'pending', time: 180, type: 'chemical' },
-    { id: '2415', name: 'Salzsäure', action: 'Neuansatz', status: 'pending', time: 120, type: 'chemical' },
-    { id: '2417', name: 'Dekapierung ZnDG', action: 'Neuansatz', status: 'pending', time: 120, type: 'chemical' },
-    { id: '2426', name: 'Salzsäure', action: 'Neuansatz', status: 'pending', time: 120, type: 'chemical' },
-    { id: '2452', name: 'Dekapierung Schwefelsäure', action: 'Nur Analyse', status: 'pending', time: 30, type: 'chemical' },
+  const { 
+    t, setView, selectedLine,
+    maintenanceTasks: tasks, setMaintenanceTasks: setTasks,
+    maintenanceStaffCount: staffCount, setMaintenanceStaffCount: setStaffCount,
+    saveMaintenanceLog
+  } = useApp();
 
-    // Spülbäder
-    { id: '2405', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2412', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2413', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2414', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2418', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2419', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2420', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2423', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2424', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2425', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2427', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2429', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2430', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2431', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2434', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2435', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2436', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2441', name: 'Sparspüle NiP', action: 'Ablassen', status: 'pending', time: 30, type: 'water' },
-    { id: '2446', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2449', name: 'Duschposition', action: 'Ablassen', status: 'pending', time: 24, type: 'water' },
-    { id: '2450', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2451', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2454', name: 'Duschposition', action: 'Ablassen', status: 'pending', time: 24, type: 'water' },
-    { id: '2455', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2456', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2457', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2458', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2459', name: 'Spüle', action: 'Ablassen', status: 'pending', time: 18, type: 'water' },
-    { id: '2460', name: 'Heisspüle', action: 'Ablassen', status: 'pending', time: 30, type: 'water' },
-
-    // Extra Tasks
-    { id: 'E1', name: 'Ni-Strike Anoden', action: 'Tausch', status: 'pending', time: 60, type: 'extra' },
-    { id: 'E2', name: 'Zinn Anoden', action: 'Tausch', status: 'pending', time: 60, type: 'extra' },
-    { id: 'E3', name: 'Cu-Bad', action: 'Anoden befüllen', status: 'pending', time: 45, type: 'extra' },
-    { id: 'E4', name: 'Schienen', action: 'Reinigen', status: 'pending', time: 120, type: 'extra', startPos: '2400', endPos: '2482' },
-  ]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyLogs, setHistoryLogs] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const bathLayout = {
     top: [
@@ -111,6 +61,32 @@ const Wartungsplaner = () => {
 
   const updateExtraTask = (id, updates) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  };
+
+  const handleFinishMaintenance = async () => {
+    if (!window.confirm('Alle erledigten Aufgaben werden gespeichert und der Plan wird zurückgesetzt. Fortfahren?')) return;
+    
+    setIsSubmitting(true);
+    const success = await saveMaintenanceLog();
+    setIsSubmitting(false);
+    
+    if (success) {
+      alert('Wartung erfolgreich protokolliert!');
+    } else {
+      alert('Fehler beim Speichern der Wartung!');
+    }
+  };
+
+  const fetchHistory = async () => {
+    const { supabase } = await import('../../supabase');
+    const { data, error } = await supabase
+      .from('collini_maintenance_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    
+    if (data) setHistoryLogs(data);
+    setShowHistory(true);
   };
 
   const allBathIds = useMemo(() => {
@@ -363,29 +339,41 @@ const Wartungsplaner = () => {
             <span>{t.back}</span>
           </button>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: 0, textTransform: 'uppercase' }}>
-            {t.wartungsplaner}
+            {t.maintenancePlanner || 'WARTUNGSPLANER'}
             <span className="line-badge">{selectedLine || 'KS-24'}</span>
           </h1>
         </div>
 
-        <div className="header-right">
-          <div className="header-controls">
-            <div className="staff-selector">
-              <Users size={20} />
-              <button 
-                className={staffCount === 2 ? 'active' : ''} 
-                onClick={() => setStaffCount(2)}
-              >2</button>
-              <button 
-                className={staffCount === 3 ? 'active' : ''} 
-                onClick={() => setStaffCount(3)}
-              >3</button>
+        <div className="maintenance-header-actions">
+          <div className="staff-selector">
+            <span className="label">PERSONAL:</span>
+            <div className="staff-buttons">
+              {[2, 3, 4].map(num => (
+                <button 
+                  key={num}
+                  className={staffCount === num ? 'active' : ''} 
+                  onClick={() => setStaffCount(num)}
+                >
+                  {num}
+                </button>
+              ))}
             </div>
-            
-            <div className="time-estimate">
-              <Clock size={20} />
-              <span>{t.expected}: {estimatedTimeMinutes} min</span>
-            </div>
+          </div>
+          
+          <button 
+            className={`finish-btn ${isSubmitting ? 'loading' : ''}`}
+            onClick={handleFinishMaintenance}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'SPEICHERN...' : 'ABSCHLIESSEN'}
+          </button>
+
+          <button className="history-trigger-btn" onClick={fetchHistory}>
+            🕒
+          </button>
+          
+          <div className="time-estimate">
+            <span>{t.expected}: {estimatedTimeMinutes} min</span>
           </div>
         </div>
       </div>
@@ -498,6 +486,34 @@ const Wartungsplaner = () => {
         {renderTaskTable("Chemie-Bäder", tasks.filter(t => t.type === 'chemical'))}
         {renderTaskTable("Spülbäder", tasks.filter(t => t.type === 'water'))}
       </div>
+      {/* History Modal */}
+      {showHistory && (
+        <div className="maintenance-history-overlay" onClick={() => setShowHistory(false)}>
+          <div className="maintenance-history-modal" onClick={e => e.stopPropagation()}>
+            <div className="history-modal-header">
+              <h3>WARTUNGSPROTOKOLL</h3>
+              <button className="close-btn" onClick={() => setShowHistory(false)}>×</button>
+            </div>
+            <div className="history-list">
+              {historyLogs.map(log => (
+                <div key={log.id} className="history-item">
+                  <div className="item-main">
+                    <span className="date">{new Date(log.created_at).toLocaleDateString('de-DE')}</span>
+                    <span className="line">{log.machine_line}</span>
+                    <span className="stats">
+                      {log.completed_tasks}/{log.total_tasks} Aufgaben • {log.staff_count} Pers.
+                    </span>
+                  </div>
+                  <div className="item-meta">
+                    <span className="time">{log.duration_min} min</span>
+                  </div>
+                </div>
+              ))}
+              {historyLogs.length === 0 && <div className="no-history">Noch keine gespeicherten Wartungen.</div>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
