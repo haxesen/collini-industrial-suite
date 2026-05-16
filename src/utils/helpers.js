@@ -56,3 +56,21 @@ export const getPrioLabel = (prio, t) => {
   if (prio === '2_mittel') return t.mittel.toUpperCase()
   return 'INFO'
 };
+
+export const getWeekNumber = (d) => {
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+  return { year: d.getUTCFullYear(), week: weekNo };
+};
+
+export const getProductionDay = () => {
+  const now = new Date();
+  const hours = now.getHours();
+  const date = new Date(now);
+  if (hours < 6) {
+    date.setDate(date.getDate() - 1);
+  }
+  return date.toISOString().split('T')[0];
+};

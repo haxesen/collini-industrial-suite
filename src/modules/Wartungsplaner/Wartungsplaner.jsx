@@ -1,18 +1,122 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Hammer, Users, Clock, CheckCircle2, Circle, PlayCircle, ChevronLeft, Check } from 'lucide-react';
+import { Hammer, Users, Clock, CheckCircle2, Circle, PlayCircle, ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { getWeekNumber, getProductionDay } from '../../utils/helpers';
+import { DEFAULT_MAINTENANCE_TASKS } from '../../context/AppContext';
 
 const Wartungsplaner = () => {
   const { 
     t, setView, selectedLine,
-    maintenanceTasks: tasks, setMaintenanceTasks: setTasks,
     maintenanceStaffCount: staffCount, setMaintenanceStaffCount: setStaffCount,
-    saveMaintenanceLog
   } = useApp();
 
   const [showHistory, setShowHistory] = useState(false);
   const [historyLogs, setHistoryLogs] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const initDate = new Date();
+  const initWeekData = getWeekNumber(initDate);
+  const [currentYear, setCurrentYear] = useState(initWeekData.year);
+  const [currentWeek, setCurrentWeek] = useState(initWeekData.week);
+  const [sessions, setSessions] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState(null);
+  const [saveTimeout, setSaveTimeout] = useState(null);
+
+  const activeSession = useMemo(() => sessions.find(s => s.id === activeSessionId), [sessions, activeSessionId]);
+  const tasks = activeSession ? activeSession.tasks_data : [];
+  
+  const setTasks = (updater) => {
+    setSessions(prev => prev.map(s => {
+      if (s.id === activeSessionId) {
+        const newTasks = typeof updater === 'function' ? updater(s.tasks_data) : updater;
+        return { ...s, tasks_data: newTasks };
+      }
+      return s;
+    }));
+  };
+
+  const fetchSessions = async (year, week) => {
+    const { supabase } = await import('../../supabase');
+    const { data, error } = await supabase
+      .from('collini_maintenance_logs')
+      .select('*')
+      .eq('year', year)
+      .eq('calendar_week', week)
+      .eq('machine_line', selectedLine || 'KS-24')
+      .order('created_at', { ascending: false });
+      
+    if (data) {
+      setSessions(data);
+      if (data.length > 0 && !data.some(d => d.id === activeSessionId)) {
+        setActiveSessionId(data[0].id);
+      } else if (data.length === 0) {
+        setActiveSessionId(null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchSessions(currentYear, currentWeek);
+  }, [currentYear, currentWeek, selectedLine]);
+
+  useEffect(() => {
+    if (!activeSessionId) return;
+    const session = sessions.find(s => s.id === activeSessionId);
+    if (session && session.status === 'open') {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      const timeout = setTimeout(async () => {
+         const { supabase } = await import('../../supabase');
+         await supabase
+           .from('collini_maintenance_logs')
+           .update({ tasks_data: session.tasks_data })
+           .eq('id', activeSessionId);
+      }, 1000);
+      setSaveTimeout(timeout);
+    }
+    return () => { if (saveTimeout) clearTimeout(saveTimeout); };
+  }, [tasks]);
+
+  const handleNewSession = async () => {
+    const { supabase } = await import('../../supabase');
+    const prodDay = getProductionDay();
+    const newSession = {
+      machine_line: selectedLine || 'KS-24',
+      status: 'open',
+      calendar_week: currentWeek,
+      year: currentYear,
+      tasks_data: DEFAULT_MAINTENANCE_TASKS,
+      staff_count: staffCount,
+      total_tasks: DEFAULT_MAINTENANCE_TASKS.length,
+      completed_tasks: 0,
+      duration_min: 0,
+      production_day: prodDay
+    };
+    
+    const { data, error } = await supabase
+      .from('collini_maintenance_logs')
+      .insert(newSession)
+      .select()
+      .single();
+      
+    if (data) {
+      setSessions(prev => [data, ...prev]);
+      setActiveSessionId(data.id);
+    }
+  };
+
+  const changeWeek = (delta) => {
+    let w = currentWeek + delta;
+    let y = currentYear;
+    if (w < 1) {
+      w = 52;
+      y -= 1;
+    } else if (w > 52) {
+      w = 1;
+      y += 1;
+    }
+    setCurrentWeek(w);
+    setCurrentYear(y);
+  };
 
   const bathLayout = {
     top: [
@@ -64,16 +168,32 @@ const Wartungsplaner = () => {
   };
 
   const handleFinishMaintenance = async () => {
-    if (!window.confirm('Alle erledigten Aufgaben werden gespeichert und der Plan wird zurückgesetzt. Fortfahren?')) return;
+    if (!activeSessionId) return;
+    if (!window.confirm('Alle erledigten Aufgaben werden gespeichert und die Wartung wird abgeschlossen. Fortfahren?')) return;
     
     setIsSubmitting(true);
-    const success = await saveMaintenanceLog();
+    const session = sessions.find(s => s.id === activeSessionId);
+    const doneCount = session.tasks_data.filter(t => t.status === 'done').length;
+    const totalEffort = session.tasks_data.filter(t => t.status !== 'done').reduce((sum, t) => sum + t.time, 0);
+    const duration = Math.round(totalEffort / staffCount);
+
+    const { supabase } = await import('../../supabase');
+    const { error } = await supabase
+      .from('collini_maintenance_logs')
+      .update({
+         status: 'completed',
+         completed_tasks: doneCount,
+         duration_min: duration,
+         staff_count: staffCount
+      })
+      .eq('id', activeSessionId);
+      
     setIsSubmitting(false);
-    
-    if (success) {
-      alert('Wartung erfolgreich protokolliert!');
+    if (!error) {
+       alert('Wartung erfolgreich protokolliert!');
+       fetchSessions(currentYear, currentWeek);
     } else {
-      alert('Fehler beim Speichern der Wartung!');
+       alert('Fehler beim Speichern der Wartung!');
     }
   };
 
@@ -363,7 +483,7 @@ const Wartungsplaner = () => {
           <button 
             className={`finish-btn ${isSubmitting ? 'loading' : ''}`}
             onClick={handleFinishMaintenance}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !activeSession || activeSession.status === 'completed'}
           >
             {isSubmitting ? 'SPEICHERN...' : 'ABSCHLIESSEN'}
           </button>
@@ -378,9 +498,33 @@ const Wartungsplaner = () => {
         </div>
       </div>
 
+      <div className="kw-navigation-bar">
+        <div className="kw-controls">
+          <button onClick={() => changeWeek(-1)}><ChevronLeft size={20}/></button>
+          <span className="kw-label">KW {currentWeek} / {currentYear}</span>
+          <button onClick={() => changeWeek(1)}><ChevronRight size={20}/></button>
+        </div>
+        
+        <div className="session-tabs">
+          {sessions.map((s, idx) => (
+            <button 
+              key={s.id} 
+              className={`session-tab ${s.id === activeSessionId ? 'active' : ''} ${s.status}`}
+              onClick={() => setActiveSessionId(s.id)}
+            >
+              {s.status === 'completed' ? <CheckCircle2 size={14}/> : <Circle size={14}/>}
+              <span>{new Date(s.created_at).toLocaleDateString('de-DE', {weekday:'short', hour:'2-digit', minute:'2-digit'})}</span>
+            </button>
+          ))}
+          <button className="new-session-btn" onClick={handleNewSession}>
+            <Plus size={16}/> NEU
+          </button>
+        </div>
+      </div>
+
       <div className="overall-progress-section">
         <div className="progress-info">
-          <span className="progress-text">Wartungsfortschritt</span>
+          <span className="progress-text">Wartungsfortschritt {activeSession ? (activeSession.status === 'completed' ? '(Abgeschlossen)' : '(Aktiv)') : ''}</span>
           <span className="progress-percentage">{progress}%</span>
         </div>
         <div className="progress-bar-track">

@@ -3,7 +3,7 @@ import { translations } from '../utils/translations';
 
 const AppContext = createContext();
 
-const DEFAULT_MAINTENANCE_TASKS = [
+export const DEFAULT_MAINTENANCE_TASKS = [
   // Chemie-Bäder
   { id: '2432', name: 'Kupferbad', action: 'Nur Analyse', status: 'pending', time: 30, type: 'chemical' },
   { id: '2453', name: 'Zinnbad', action: 'Nur Analyse', status: 'pending', time: 48, type: 'chemical' },
