@@ -1,19 +1,30 @@
 # Projektstátusz és Frissítési Napló - Collini Industrial Suite
 
-## Aktuális Elkészültségi Fázis: **v1.4.0 - Modular Enterprise Architecture**
+## Aktuális Elkészültségi Fázis: **v1.6.0 - Industrial Bath Controls & Timelines**
 
 ### Főbb képességek jelenleg:
-- [x] **Moduláris Architektúra**: Teljesen szeparált funkcionális modulok (`Hub`, `Calculator`, `Logbook`, `InfoWall`, `Admin`).
+- [x] **Moduláris Architektúra**: Teljesen szeparált funkcionális modulok (`Hub`, `Calculator`, `Logbook`, `InfoWall`, `Admin`, `ChemNickel`).
 - [x] **Központosított Állapotkezelés**: React Context API alapú globális állapotszinkronizálás.
+- [x] **ChemNickel Umpumpen**: Valós idejű vegyi nikkel kádállapot-követés automatikus pácidő (Beizzeit) folyamatjelzőkkel, manuális felülbírálásokkal és korai átpumpálási időkülönbségek fagyasztott rögzítésével.
+- [x] **Wartungsplaner**: Moduláris ipari gépkarbantartási ütemterv kémiai és vizes pozíciók külön kezelésével.
 - [x] **Rétegvastagság kalkuláció**: Precíz maradékidő számítás PDF exporttal.
 - [x] **Logbuch (KS24)**: Teljes értékű ipari eseménynapló státusz- és prioritáskezeléssel.
-- [x] **Infotafel**: Központi hirdetőtábla valós idejű futófény (Ticker) integrációval.
+- [x] **Infotafel**: Központi hirdetőtábla valós idejű futófény (Ticker) integrációval és sima, animált kinyitással/becsukással.
 - [x] **Multilingual**: Teljes HU/DE támogatás külső fordítási fájlokkal.
 - [x] **Industrial UI**: Sötét módú, nagy kontrasztú ipari megjelenés (Outfit Typography).
 
 ---
 
 ## Frissítési Napló (Changelog)
+
+### [1.6.0] - 2026-05-20
+#### Hozzáadva
+- **ChemNickel Umpumpen Modul**: Vegyi nikkel kádak átpumpálási és karbantartási folyamatkövető modulja.
+- **Kádvezérlő Hibrid Logika**: A kádak státuszának valós idejű auto-kalkulációja naplókból kombinálva Supabase manuális felülbírálásokkal (`collini_chemnickel_overrides`).
+- **Folyamatjelző Timeline (Beizzeit)**: Teljes szélességű folyamatjelző sáv a Wannenbeize leteltét (12 óra) mutató animált pulzálással (100%), indítási és tervezett lejárati időpontokkal, valamint hátralévő idő számlálóval.
+- **Megszakított Ciklusok Különbségkezelése**: Ha a WB letelte előtt újabb művelet történik a káddal, a betöltősáv fagyasztott állapotú narancs-szürke átmenetet kap, és kiírja a pácidőtől való negatív eltérést (pl. `Vorzeitig: -2h 15m`).
+- **Összecsukható Manuális Sorok**: A manuális naplósorok alapértelmezetten becsukva jelennek meg, csökkentve a vizuális zajt, de nyomtatáskor automatikusan kibontakoznak.
+- **Infosáv layout és animációs javítások**: A visszaigazolást jelző pontokat elszeparáltuk a gomboktól a fejlécbe, megszüntetve a vizuális átfedést. Emellett hardveresen gyorsított kinyitás/összecsukás animációt adtunk az infosávhoz (`transform` és `opacity` eltolással).
 
 ### [1.5.1] - 2026-05-17
 #### Hozzáadva

@@ -32,8 +32,21 @@ Der Collini Schichtstärke Rechner ist eine für industrielle Umgebungen konzipi
 - Admin-Oberfläche zur Verwaltung der Nachrichten.
 - Prioritätsbasierte Farbkodierung (Normal, Hoch, Dringend).
 - Verwaltung von Ablaufdaten (automatisches Ausblenden).
+- **Global Ticker**: Echtzeit-Laufschrift für dringende Nachrichten mit flüssigen Animationen beim Ein- und Ausklappen sowie einem Bestätigungssystem für Bediener.
 
-## 4. Administration und Sicherheit
+### 3.4. ChemNickel (Chemisch Nickel Umpumpen)
+- Echtzeit-Zustandsverfolgung von Chemisch-Nickel-Bädern (Ansatz und Wannenbeize).
+- **Hybrid-Zustandslogik**: Automatische Berechnung des Badzustands aus dem Umpumpverlauf oder manueller Modus (Überschreiben per Supabase).
+- **Beizzeit Progress Bar**: Breite Fortschrittsanzeige für die Beizzeit (12 Stunden) mit Pulsieren bei Fertigstellung (100%), Echtzeit-Countdown und Start-/Zieldaten.
+- **Unterbrechungserfassung**: Bei vorzeitigem Umpumpen friert der Fortschrittsbalken im aktuellen Prozentwert ein, ändert seine Farbe in ein Orange-Grau-Gradient und zeigt die negative Zeitdifferenz an (z. B. `-2h 15m`).
+- **Einklappbarer Verlauf**: Manuell definierte Initialisierungszeilen sind standardmäßig ausgeblendet, werden aber für den Ausdruck automatisch sichtbar.
+
+### 3.5. Wartungsplaner
+- Wöchentliche und sitzungsbasierte Wartung von Chemie- und Wasserbädern.
+- Echtzeitspeicherung und Zustandssynchronisation der Aufgaben (State Persistence).
+- Visuelle Rückmeldung auf dem Anlagenplan und Schienen-Auswahlbereich mit violettem Pulsierungseffekt.
+
+## 4. Instandhaltung und Sicherheit
 - **Admin-Login**: Passwortgeschützter Bereich (Standard: `Admin`).
 - **Produktverwaltung**: Hinzufügen, Bearbeiten und Löschen von Produkten.
 - **Konfiguration**: Verwaltung von Abteilungen, Instandhaltern und Anlagenführern.
@@ -44,6 +57,10 @@ Der Collini Schichtstärke Rechner ist eine für industrielle Umgebungen konzipi
 - `logbook`: Einträge im Ereignisprotokoll.
 - `collini_logbook_config`: Dynamische Einstellungen (Abteilungen, Namen).
 - `collini_info_wall`: Daten der Infotafel.
+- `collini_wartung_sessions`: Abschluss- und Kalenderwochen-Daten (KW) von Wartungssitzungen.
+- `collini_wartung_tasks`: Spezifischer Status und Erledigungszeitpunkte der Wartungsaufgaben.
+- `collini_chemnickel_pumpings`: Verlaufsprotokoll für Chemisch-Nickel-Umpumpvorgänge.
+- `collini_chemnickel_overrides`: Manuelle Badzustands-Überschreibungen (Ansatz/Wannenbeize).
 
 ## 6. Installation und Ausführung
 1. Abhängigkeiten installieren: `npm install`

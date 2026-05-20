@@ -32,6 +32,19 @@ A Collini Schichtstärke Rechner egy ipari környezetre tervezett webalkalmazás
 - Adminisztrátori felület az üzenetek kezeléséhez.
 - Prioritás alapú színezés (Normal, High, Urgent).
 - Lejárati idő kezelése (automatikus elrejtés).
+- **Global Ticker**: A kiemelt hirdetmények valós idejű futósávja sima kinyitási és becsukási animációkkal, valamint visszaigazolási rendszerrel az operátorok számára.
+
+### 3.4. ChemNickel (Vegyi Nikkel Átpumpálás)
+- Vegyi nikkel kádak (Ansatz és Wannenbeize) valós idejű állapotának követése.
+- **Hibrid állapot-kiszámítás**: Automatikus meghatározás a naplózott átpumpálási történetből, vagy kézi felülbírálás (Manueller Modus).
+- **Beizzeit Progress Bar**: Vastag folyamatjelző sáv a pácidőhöz (12 óra), pulzáló jelzéssel a befejezéskor (100%), valós idejű visszaszámlálóval és kiinduló/cél dátumokkal.
+- **Megszakítás követése**: Idő előtti átpumpálás esetén a folyamatjelző fagyasztásra kerül, a stílusa megváltozik, és kiírja az időkülönbséget (pl. `-2h 15m`).
+- **Összecsukható előzmények**: A kézzel definiált inicializáló sorok alapértelmezetten el vannak rejtve, de nyomtatáskor automatikusan láthatóvá válnak.
+
+### 3.5. Wartungsplaner (Gépkarbantartás)
+- Kémiai és vizes kádak heti és munkamenet alapú karbantartásának követése.
+- Feladatok valós idejű mentése és állapotszinkronizációja (State Persistence).
+- Géprajzi vizuális visszajelzés és síntartomány-kijelölés (Schienen) lila pulzáló effekttel.
 
 ## 4. Adminisztráció és Biztonság
 - **Admin Login**: Jelszóval védett felület (alapértelmezett: `Admin`).
@@ -44,6 +57,10 @@ A Collini Schichtstärke Rechner egy ipari környezetre tervezett webalkalmazás
 - `logbook`: Eseménynapló bejegyzések.
 - `collini_logbook_config`: Dinamikus beállítások (részlegek, nevek).
 - `collini_info_wall`: Hirdetmények adatai.
+- `collini_wartung_sessions`: Karbantartási munkamenetek lezárási és naptári heti (KW) adatai.
+- `collini_wartung_tasks`: Karbantartási feladatok egyedi státuszai és elvégzési időpontjai.
+- `collini_chemnickel_pumpings`: Vegyi nikkel átpumpálások és karbantartások történelmi logbook naplója.
+- `collini_chemnickel_overrides`: Vegyi nikkel kádak manuális állapot (Ansatz/Wannenbeize) felülbírálásai.
 
 ## 6. Telepítés és Futtatás
 1. Függőségek telepítése: `npm install`
