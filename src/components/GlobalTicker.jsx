@@ -82,68 +82,68 @@ const GlobalTicker = ({ activeInfos = [] }) => {
           )}
         </button>
         
-        {!isCollapsed && (
-          <>
-            <div className="ticker-header-info">
-          <span className="ticker-total-count">
-            {page * itemsPerPage + 1}-{Math.min((page + 1) * itemsPerPage, priorityInfos.length)} / {priorityInfos.length} INFOS
-          </span>
-          {priorityInfos.length > itemsPerPage && (
-            <div className="more-indicator-badge">
-               +{priorityInfos.length - itemsPerPage} WEITERE
-            </div>
-          )}
-          {totalPages > 1 && (
-            <div className="ticker-pagination">
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <div key={i} className={`pag-dot ${i === page ? 'active' : ''}`}></div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="ticker-grid">
-          {currentItems.map((info) => {
-            const acks = info.acknowledgments || [];
-            const isUnacknowledged = acks.length === 0;
-            const prioClass = info.priority.split('_')[1];
-            
-            return (
-              <div key={info.id} className={`ticker-card priority-${prioClass} ${isUnacknowledged ? 'ticker-new-blink' : ''}`}>
-                <div className="card-top">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    {prioClass === 'urgent' ? <AlertCircle size={10} color="#ff3b30" /> : <Bell size={10} color="#ffcc00" />}
-                    <span className="card-dept">{getDeptDisplay(info.department)}</span>
-                  </div>
-                  <div className="card-acks">
-                    {acks.slice(0, 2).map((a, i) => (
-                      <span key={i} className="mini-ack-dot" title={a.name}></span>
-                    ))}
-                    {acks.length > 2 && <span className="extra-acks">+{acks.length - 2}</span>}
-                  </div>
-                </div>
-                <div className="card-body">
-                  <p>{stripHtml(info.message)}</p>
-                </div>
-                <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }} title="GELESEN">
-                  <Check size={16} />
-                </button>
+        <div className="ticker-content-wrapper" aria-hidden={isCollapsed}>
+          <div className="ticker-header-info">
+            <span className="ticker-total-count">
+              {page * itemsPerPage + 1}-{Math.min((page + 1) * itemsPerPage, priorityInfos.length)} / {priorityInfos.length} INFOS
+            </span>
+            {priorityInfos.length > itemsPerPage && (
+              <div className="more-indicator-badge">
+                 +{priorityInfos.length - itemsPerPage} WEITERE
               </div>
-            );
-          })}
+            )}
+            {totalPages > 1 && (
+              <div className="ticker-pagination">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <div key={i} className={`pag-dot ${i === page ? 'active' : ''}`}></div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="ticker-grid">
+            {currentItems.map((info) => {
+              const acks = info.acknowledgments || [];
+              const isUnacknowledged = acks.length === 0;
+              const prioClass = info.priority.split('_')[1];
+              
+              return (
+                <div key={info.id} className={`ticker-card priority-${prioClass} ${isUnacknowledged ? 'ticker-new-blink' : ''}`}>
+                  <div className="card-top">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {prioClass === 'urgent' ? <AlertCircle size={10} color="#ff3b30" /> : <Bell size={10} color="#ffcc00" />}
+                      <span className="card-dept">{getDeptDisplay(info.department)}</span>
+                      {acks.length > 0 && (
+                        <div className="card-acks" style={{ borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '8px', marginLeft: '2px' }}>
+                          {acks.slice(0, 3).map((a, i) => (
+                            <span key={i} className="mini-ack-dot" title={a.name}></span>
+                          ))}
+                          {acks.length > 3 && <span className="extra-acks">+{acks.length - 3}</span>}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <p>{stripHtml(info.message)}</p>
+                  </div>
+                  <button className="card-ok-btn" onClick={() => { setSelectedInfoId(info.id); setShowSelector(true); }} title="GELESEN" tabIndex={isCollapsed ? -1 : 0}>
+                    <Check size={16} />
+                  </button>
+                </div>
+              );
+            })}
 
-          {/* Filler cards if less than 3 items on last page, and we have normal messages */}
-          {currentItems.length < itemsPerPage && normalCount > 0 && (
-            <div className="ticker-card status-card">
-              <div className="ticker-badge-more">+ WEITERE</div>
-              <div className="card-body centered">
-                <span className="status-label">INFOTAFEL</span>
-                <p>{normalCount} weitere Infos</p>
+            {/* Filler cards if less than 3 items on last page, and we have normal messages */}
+            {currentItems.length < itemsPerPage && normalCount > 0 && (
+              <div className="ticker-card status-card">
+                <div className="ticker-badge-more">+ WEITERE</div>
+                <div className="card-body centered">
+                  <span className="status-label">INFOTAFEL</span>
+                  <p>{normalCount} weitere Infos</p>
+                </div>
               </div>
-            </div>
-          )}
-            </div>
-          </>
-        )}
+            )}
+          </div>
+        </div>
       </div>
 
       {showSelector && (
