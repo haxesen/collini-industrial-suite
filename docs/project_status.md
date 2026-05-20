@@ -15,6 +15,13 @@
 
 ## Frissítési Napló (Changelog)
 
+### [1.5.1] - 2026-05-17
+#### Hozzáadva
+- **Integrációs Tervezés & Koncepció**: A WSlave vezérlő szoftver képernyőképének (5.jpeg) részletes vizsgálata. Kétirányú gyártáskövető számlálók és valós idejű gép-előrejelzés (Prognose/ZielWT) adatkinyerési terve.
+- **Német nyelvű Vezetői Pitch**: Műszaki és üzleti javaslat összeállítása a cégvezetés jóváhagyásához, fókuszban az OT-biztonsággal (Read-Only Agent).
+- **SAP ERP Integrációs Terv**: SFTP/OData/Staging DB alapú vállalati integrációs lehetőségek elemzése.
+- **IoT & Mikroszoftver Útmutató**: Okos adagolás, riasztások és mikroszámítógépes automatizációk tervezése.
+
 ### [1.5.0] - 2026-05-16
 #### Hozzáadva
 - **Wartungsplaner Modul**: Teljes körű gépkarbantartási ütemterv modul, amely külön kezeli a kémiai (`Chemical`) és vizes (`Water`) pozíciókat.
@@ -66,3 +73,5 @@
 - [ ] **Checklista**: Műszakátvételi ellenőrző lista implementálása.
 - [ ] **Produkciós Terv**: Vizuális produkciós ütemező modul.
 - [ ] **Barcode/QR**: Dokumentumok és termékek gyors beolvasása.
+- [ ] **WSlave Realtime Integráció (Koncepció fázis)**: Az óránkénti ZielWT és termelési számlálók (Input/Output) automatikus kinyerése a vezérlő PC-ről (`C:\SL_COLLINI_WIEN_KS24\DAT`) egy könnyűsúlyú, Read-Only Python/Node.js Agent segítségével (vezetői jóváhagyásra vár).
+

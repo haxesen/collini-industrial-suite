@@ -121,6 +121,23 @@ export const translations = {
     estFinish: 'Voraussichtliches Ende',
     staffCount: 'Personalstärke',
     bath: 'Bad',
-    expected: 'Erwartet'
+    expected: 'Erwartet',
+    ansatz: 'Ansatz',
+    sourcePos: 'Quelle (Von)',
+    targetPos: 'Ziel (Nach)',
+    wbTime: 'Wannenbeize (WB)',
+    wbLogged: 'WB befüllt',
+    wbPending: 'WB ausstehend',
+    addPumping: 'Umpumpen erfassen',
+    editPumping: 'Umpumpen bearbeiten',
+    pumpTime: 'Umpumpzeit',
+    operator: 'Bediener',
+    pumpAction: 'WB bepumpen',
+    confirmDeletePumping: 'Soll dieser Umpumpvorgang gelöscht werden?',
+    chemnickelTitle: 'CHEM-NICKEL UMPUMPEN',
+    wbCleaningProgress: 'Beizzeit läuft',
+    wbReadyForRinse: 'Bereit zum Spülen',
+    remaining: 'verbleibend',
+    manualAssignments: 'Manuelle Zuweisungen / Initialisierungen'
   }
 }
